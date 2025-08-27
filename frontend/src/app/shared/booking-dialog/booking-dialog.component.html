@@ -1,0 +1,95 @@
+<div class="booking-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Réserver {{data.place.title}}</h2>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <div class="place-summary">
+      <img [src]="data.place.images[0]" [alt]="data.place.title" class="place-image">
+      <div class="place-info">
+        <h4>{{data.place.title}}</h4>
+        <p class="location">
+          <mat-icon>location_on</mat-icon>
+          {{data.place.location}}
+        </p>
+        <p class="price">{{data.place.price}}€ / nuit</p>
+      </div>
+    </div>
+
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+      <div class="form-section">
+        <h3>Dates de séjour</h3>
+        <div class="date-inputs">
+          <mat-form-field appearance="outline">
+            <mat-label>Date d'arrivée</mat-label>
+            <input matInput [matDatepicker]="startPicker" 
+                   formControlName="startDate"
+                   [min]="minDate">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date de départ</mat-label>
+            <input matInput [matDatepicker]="endPicker" 
+                   formControlName="endDate"
+                   [min]="bookingForm.get('startDate')?.value || minDate">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Nombre de voyageurs</h3>
+        <mat-form-field appearance="outline">
+          <mat-label>Voyageurs</mat-label>
+          <input matInput type="number" formControlName="guests" min="1">
+        </mat-form-field>
+      </div>
+
+      <div class="form-section">
+        <h3>Demandes spéciales (optionnel)</h3>
+        <mat-form-field appearance="outline">
+          <mat-label>Vos demandes</mat-label>
+          <textarea matInput formControlName="specialRequests" 
+                    rows="3" 
+                    placeholder="Arrivée tardive, équipements spéciaux, etc."></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="price-breakdown" *ngIf="numberOfNights > 0">
+        <h3>Détail du prix</h3>
+        <div class="price-line">
+          <span>{{data.place.price}}€ × {{numberOfNights}} nuit(s)</span>
+          <span>{{data.place.price * numberOfNights}}€</span>
+        </div>
+        <div class="price-line">
+          <span>Frais de service</span>
+          <span>0€</span>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="price-line total">
+          <span><strong>Total</strong></span>
+          <span><strong>{{totalPrice}}€</strong></span>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button (click)="onCancel()" [disabled]="loading">
+      Annuler
+    </button>
+    <button mat-raised-button color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="!isFormValid() || loading">
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <span *ngIf="!loading">Confirmer la réservation</span>
+      <span *ngIf="loading">Réservation en cours...</span>
+    </button>
+  </mat-dialog-actions>
+</div>

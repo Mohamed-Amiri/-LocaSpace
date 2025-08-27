@@ -1,0 +1,429 @@
+<app-template-description description="Page de recherche LocaSpace - Interface moderne avec filtres sidebar et vue grille/carte"></app-template-description>
+
+<div class="search-page">
+  <!-- Enhanced Search Header -->
+  <div class="search-header">
+    <div class="container">
+      <div class="search-hero">
+        <div class="search-hero-content">
+          <h1>Find Your Perfect Space</h1>
+          <p>Discover unique locations for every occasion - from cozy studios to grand event venues</p>
+        </div>
+        
+        <!-- Enhanced Search Bar -->
+        <div class="main-search-bar">
+          <div class="search-input-group">
+            <div class="search-field location-field">
+              <label>Where</label>
+              <input 
+                type="text" 
+                [(ngModel)]="searchQuery" 
+                placeholder="Enter location or property name"
+                class="search-input">
+              <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            
+            <div class="search-field date-field">
+              <label>When</label>
+              <input 
+                type="date" 
+                [(ngModel)]="filters.availability"
+                class="search-input">
+              <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            
+            <div class="search-field guests-field">
+              <label>Guests</label>
+              <select [(ngModel)]="filters.capacity" class="search-input">
+                <option value="1">1 guest</option>
+                <option value="2">2 guests</option>
+                <option value="4">4 guests</option>
+                <option value="6">6 guests</option>
+                <option value="8">8+ guests</option>
+              </select>
+              <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            
+            <button class="main-search-btn" (click)="onSearch()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <span>Search</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Quick Filters -->
+  <div class="quick-filters">
+    <div class="container">
+      <div class="filter-tabs">
+        <button 
+          *ngFor="let type of placeTypes.slice(1, 6)" 
+          class="filter-tab"
+          [class.active]="filters.type === type.value"
+          (click)="filters.type = filters.type === type.value ? '' : type.value; applyFilters()">
+          <span class="tab-icon">🏢</span>
+          <span>{{ type.label }}</span>
+        </button>
+        <button class="advanced-filters-btn" (click)="toggleFilters()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          <span>More Filters</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-content">
+    <!-- Filters Sidebar -->
+    <aside class="filters-sidebar" [class.show]="showFilters">
+      <app-glass-card [customStyles]="{'height': 'fit-content', 'position': 'sticky', 'top': '2rem'}">
+        <div class="filters-header">
+          <h3>Filtres</h3>
+          <button class="clear-filters" (click)="clearFilters()">
+            Effacer tout
+          </button>
+        </div>
+
+        <div class="filters-content">
+          <!-- Price Range -->
+          <div class="filter-group">
+            <h4>Prix par jour</h4>
+            <div class="price-range">
+              <div class="price-inputs">
+                <div class="price-input">
+                  <label>Min</label>
+                  <input 
+                    type="number" 
+                    [(ngModel)]="filters.priceMin"
+                    (ngModelChange)="applyFilters()"
+                    min="0">
+                  <span>€</span>
+                </div>
+                <div class="price-separator">-</div>
+                <div class="price-input">
+                  <label>Max</label>
+                  <input 
+                    type="number" 
+                    [(ngModel)]="filters.priceMax"
+                    (ngModelChange)="applyFilters()"
+                    min="0">
+                  <span>€</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property Type -->
+          <div class="filter-group">
+            <h4>Type de propriété</h4>
+            <div class="type-options">
+              <label 
+                *ngFor="let type of placeTypes" 
+                class="type-option"
+                [class.selected]="filters.type === type.value">
+                <input 
+                  type="radio" 
+                  name="propertyType"
+                  [value]="type.value"
+                  [(ngModel)]="filters.type"
+                  (ngModelChange)="applyFilters()">
+                <span>{{ type.label }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Capacity -->
+          <div class="filter-group">
+            <h4>Capacité</h4>
+            <div class="capacity-selector">
+              <button 
+                class="capacity-btn"
+                [disabled]="filters.capacity <= 1"
+                (click)="filters.capacity = Math.max(1, filters.capacity - 1); applyFilters()">
+                -
+              </button>
+              <span class="capacity-value">{{ filters.capacity }} personne{{ filters.capacity > 1 ? 's' : '' }}</span>
+              <button 
+                class="capacity-btn"
+                (click)="filters.capacity = filters.capacity + 1; applyFilters()">
+                +
+              </button>
+            </div>
+          </div>
+
+          <!-- Amenities -->
+          <div class="filter-group">
+            <h4>Équipements</h4>
+            <div class="amenities-grid">
+              <button
+                *ngFor="let amenity of amenitiesList"
+                class="amenity-btn"
+                [class.selected]="filters.amenities.includes(amenity.id)"
+                (click)="toggleAmenity(amenity.id)">
+                <span class="amenity-icon">{{ amenity.icon }}</span>
+                <span class="amenity-label">{{ amenity.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Rating -->
+          <div class="filter-group">
+            <h4>Note minimum</h4>
+            <div class="rating-options">
+              <button
+                *ngFor="let rating of [0, 3, 4, 4.5]"
+                class="rating-btn"
+                [class.selected]="filters.rating === rating"
+                (click)="filters.rating = rating; applyFilters()">
+                <div class="stars">
+                  <span *ngFor="let star of getStarArray(rating || 5)" class="star filled">★</span>
+                  <span *ngFor="let star of getStarArray(5 - (rating || 5))" class="star">★</span>
+                </div>
+                <span *ngIf="rating === 0">Toutes</span>
+                <span *ngIf="rating > 0">{{ rating }}+ étoiles</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </app-glass-card>
+    </aside>
+
+    <!-- Results Section -->
+    <main class="results-section">
+      <!-- Results Header -->
+      <div class="results-header">
+        <div class="results-info">
+          <h2>{{ totalResults }} result{{ totalResults !== 1 ? 's' : '' }} found</h2>
+          <p *ngIf="filters.location">in "{{ filters.location }}"</p>
+        </div>
+        
+        <div class="results-controls">
+          <div class="view-toggle">
+            <button 
+              class="view-btn"
+              [class.active]="viewMode === 'grid'"
+              (click)="viewMode = 'grid'"
+              aria-label="Grid view">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button 
+              class="view-btn"
+              [class.active]="viewMode === 'map'"
+              (click)="viewMode = 'map'"
+              aria-label="Map view">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="sort-options">
+            <select class="sort-select">
+              <option value="relevance">Most Relevant</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="newest">Newest First</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="skeleton-grid">
+          <div *ngFor="let item of [1,2,3,4,5,6]" class="skeleton-card">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+              <div class="skeleton-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div *ngIf="!isLoading && viewMode === 'grid'" class="results-grid">
+        <div *ngFor="let place of paginatedPlaces; let i = index" class="place-card">
+          <div class="place-image">
+            <img [src]="place.image" [alt]="place.name">
+            <div class="place-badges">
+              <span class="badge verified">✓ Verified</span>
+              <span *ngFor="let badge of place.badges" class="badge">{{ badge }}</span>
+            </div>
+            <button 
+              class="favorite-btn" 
+              [class.active]="place.isFavorite"
+              (click)="toggleFavorite(place.id)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+            <div class="instant-book">⚡ Instant Book</div>
+          </div>
+          
+          <div class="place-content">
+            <div class="place-header">
+              <h3>{{ place.name }}</h3>
+              <div class="place-rating">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span>{{ place.rating }}</span>
+                <span class="review-count">({{ place.reviewCount || 24 }} reviews)</span>
+              </div>
+            </div>
+            
+            <p class="place-location">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              {{ place.location }}
+            </p>
+            
+            <div class="place-details">
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                </svg>
+                <span>{{ place.type }}</span>
+              </div>
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Up to {{ place.capacity }} guests</span>
+              </div>
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+                <span>{{ place.amenities?.length || 5 }} amenities</span>
+              </div>
+            </div>
+            
+            <div class="place-amenities">
+              <span class="amenity-tag">📶 WiFi</span>
+              <span class="amenity-tag">🚗 Parking</span>
+              <span class="amenity-tag">☕ Kitchen</span>
+              <span class="amenity-tag">+{{ (place.amenities?.length || 8) - 3 }} more</span>
+            </div>
+            
+            <div class="place-footer">
+              <div class="place-price">
+                <span class="price">€{{ place.price }}</span>
+                <span class="period">per night</span>
+                <div class="total-estimate">€{{ place.price * 3 }} total est.</div>
+              </div>
+              <button class="reserve-btn" (click)="reservePlace(place.id)">
+                <span>Reserve Now</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map View -->
+      <div *ngIf="!isLoading && viewMode === 'map'" class="map-view">
+        <div class="map-container" #mapContainer>
+          <div class="map-placeholder">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <p>Interactive Map View</p>
+            <small>{{ totalResults }} properties to display on map</small>
+            <div class="map-coming-soon">
+              <span>🗺️ Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && filteredPlaces.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <h3>No properties found</h3>
+        <p>We couldn't find any properties matching your search criteria. Try adjusting your filters or expanding your search area.</p>
+        <div class="empty-suggestions">
+          <p><strong>Suggestions:</strong></p>
+          <ul>
+            <li>Try different dates or remove date filters</li>
+            <li>Increase your price range</li>
+            <li>Remove location restrictions</li>
+            <li>Consider different property types</li>
+          </ul>
+        </div>
+        <app-modern-button variant="primary" (click)="clearFilters()">
+          Clear all filters
+        </app-modern-button>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!isLoading && totalPages > 1" class="pagination">
+        <button 
+          class="pagination-btn"
+          [disabled]="currentPage === 1"
+          (click)="changePage(currentPage - 1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15,18 9,12 15,6"/>
+          </svg>
+          Previous
+        </button>
+        
+        <div class="page-numbers">
+          <button
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            class="page-btn"
+            [class.active]="currentPage === i + 1"
+            (click)="changePage(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </div>
+        
+        <button 
+          class="pagination-btn"
+          [disabled]="currentPage === totalPages"
+          (click)="changePage(currentPage + 1)">
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"/>
+          </svg>
+        </button>
+      </div>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,262 @@
+<!-- MODERN PREMIUM PROPERTY CREATION FORM -->
+<div class="modern-container">
+  
+  <!-- Modern Header -->
+  <header class="modern-header">
+    <div class="header-content">
+      <div class="title-section">
+        <div class="icon-container">
+          <mat-icon>add_business</mat-icon>
+        </div>
+        <div class="title-text">
+          <h1>Créer une Propriété</h1>
+          <p>Publiez votre espace en quelques étapes</p>
+        </div>
+      </div>
+      <button mat-button class="back-btn" routerLink="/proprietaires/manage-properties">
+        <mat-icon>arrow_back</mat-icon>
+        Retour
+      </button>
+    </div>
+  </header>
+
+  <!-- Progress Steps -->
+  <div class="progress-container">
+    <div class="progress-steps">
+      <div class="step" [class.active]="stepper?.selectedIndex === 0" (click)="goToStep(0)">
+        <div class="step-number">1</div>
+        <span>Informations</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" [class.active]="stepper?.selectedIndex === 1" (click)="goToStep(1)">
+        <div class="step-number">2</div>
+        <span>Détails</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" [class.active]="stepper?.selectedIndex === 2" (click)="goToStep(2)">
+        <div class="step-number">3</div>
+        <span>Équipements</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" [class.active]="stepper?.selectedIndex === 3" (click)="goToStep(3)">
+        <div class="step-number">4</div>
+        <span>Photos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modern Form Card -->
+  <div class="form-container">
+
+    <!-- Form Content -->
+    <div class="form-content">
+      <form [formGroup]="propertyForm" (ngSubmit)="onSubmit($event)" (keydown)="onKeyDown($event)">
+        <mat-stepper #stepper orientation="horizontal" class="modern-stepper" [selectedIndex]="0">
+        
+        <!-- Step 1: Basic Information -->
+        <mat-step formGroupName="basicInfo">
+          <ng-template matStepLabel>Informations de base</ng-template>
+          
+          <div class="step-content">
+            <div class="form-section">
+              <h3>Informations principales</h3>
+              <p class="section-desc">Décrivez votre propriété de manière attractive</p>
+              
+              <div class="form-grid">
+                <!-- Title Field -->
+                <div class="form-field full-width">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Titre de l'annonce</mat-label>
+                    <input matInput formControlName="title" placeholder="Ex: Appartement moderne avec vue">
+                    <mat-icon matSuffix>title</mat-icon>
+                    <mat-hint>{{ propertyForm.get('basicInfo.title')?.value?.length || 0 }}/100</mat-hint>
+                    <mat-error *ngIf="propertyForm.get('basicInfo.title')?.hasError('required')">
+                      Le titre est requis
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Description Field -->
+                <div class="form-field full-width">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description" rows="4" placeholder="Décrivez votre espace..."></textarea>
+                    <mat-icon matSuffix>description</mat-icon>
+                    <mat-hint>{{ propertyForm.get('basicInfo.description')?.value?.length || 0 }}/1000</mat-hint>
+                    <mat-error *ngIf="propertyForm.get('basicInfo.description')?.hasError('required')">
+                      La description est requise
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Property Type and Location -->
+                <div class="form-field half-width">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Type de propriété</mat-label>
+                    <mat-select formControlName="propertyType">
+                      <mat-option *ngFor="let type of propertyTypes" [value]="type.value">
+                        {{ type.label }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>home</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-field half-width">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Localisation</mat-label>
+                    <input matInput formControlName="location" placeholder="Ex: Paris 15ème">
+                    <mat-icon matSuffix>place</mat-icon>
+                    <mat-error *ngIf="propertyForm.get('basicInfo.location')?.hasError('required')">
+                      La localisation est requise
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-raised-button color="primary" type="button" (click)="goToStep(1)">
+              Continuer
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </mat-step>
+
+        <!-- Step 2: Details -->
+        <mat-step formGroupName="details">
+          <ng-template matStepLabel>Détails de la propriété</ng-template>
+          
+          <div class="step-content">
+            <div class="form-section">
+              <h3>Caractéristiques</h3>
+              <p class="section-desc">Précisez les détails de votre propriété</p>
+              
+              <div class="form-grid details-grid">
+                <div class="form-field">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Invités max</mat-label>
+                    <input matInput type="number" formControlName="maxGuests" min="1">
+                    <mat-icon matSuffix>people</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-field">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Chambres</mat-label>
+                    <input matInput type="number" formControlName="bedrooms" min="0">
+                    <mat-icon matSuffix>bed</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-field">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Salles de bain</mat-label>
+                    <input matInput type="number" formControlName="bathrooms" min="1">
+                    <mat-icon matSuffix>bathtub</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-field">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Prix par nuit (€)</mat-label>
+                    <input matInput type="number" formControlName="price" min="10">
+                    <mat-icon matSuffix>euro</mat-icon>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-button type="button" (click)="goToStep(0)">
+              <mat-icon>arrow_back</mat-icon>
+              Précédent
+            </button>
+            <button mat-raised-button color="primary" type="button" (click)="goToStep(2)">
+              Continuer
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </mat-step>
+
+        <!-- Step 3: Amenities -->
+        <mat-step>
+          <ng-template matStepLabel>Équipements</ng-template>
+          
+          <div class="step-content">
+            <div class="form-section">
+              <h3>Équipements disponibles</h3>
+              <p class="section-desc">Sélectionnez les équipements de votre propriété</p>
+              
+              <div class="amenities-grid">
+                <mat-checkbox *ngFor="let amenity of availableAmenities"
+                             [checked]="isAmenitySelected(amenity)"
+                             (change)="onAmenityChange(amenity, $event.checked)"
+                             class="amenity-item">
+                  {{ amenity }}
+                </mat-checkbox>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-button type="button" (click)="goToStep(1)">
+              <mat-icon>arrow_back</mat-icon>
+              Précédent
+            </button>
+            <button mat-raised-button color="primary" type="button" (click)="goToStep(3)">
+              Continuer
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </mat-step>
+
+        <!-- Step 4: Photos -->
+        <mat-step>
+          <ng-template matStepLabel>Photos</ng-template>
+          
+          <div class="step-content">
+            <div class="form-section">
+              <h3>Photos de votre propriété</h3>
+              <p class="section-desc">Ajoutez des photos attractives (max 10 photos, 5MB chacune)</p>
+              
+              <div class="upload-area" (click)="fileInput.click()">
+                <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                <h4>Glissez vos photos ici</h4>
+                <p>ou cliquez pour sélectionner</p>
+                <input #fileInput type="file" multiple accept="image/*" (change)="onFilesSelected($event)" hidden>
+              </div>
+
+              <div *ngIf="previewUrls.length > 0" class="photos-preview">
+                <div *ngFor="let url of previewUrls; let i = index" class="photo-item">
+                  <img [src]="url" [alt]="'Photo ' + (i + 1)">
+                  <button mat-icon-button class="remove-photo" (click)="removePhoto(i)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-button type="button" (click)="goToStep(2)">
+              <mat-icon>arrow_back</mat-icon>
+              Précédent
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading || previewUrls.length === 0">
+              <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+              <mat-icon *ngIf="!loading">rocket_launch</mat-icon>
+              {{ loading ? 'Création...' : 'Créer ma propriété' }}
+            </button>
+          </div>
+        </mat-step>
+
+        </mat-stepper>
+      </form>
+    </div>
+
+  </div>
+
+</div>

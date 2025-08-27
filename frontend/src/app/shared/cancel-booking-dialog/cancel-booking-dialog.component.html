@@ -1,0 +1,81 @@
+<div class="cancel-dialog">
+  <div class="dialog-header">
+    <div class="warning-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 mat-dialog-title>Annuler la réservation</h2>
+    <p class="dialog-subtitle">Êtes-vous sûr de vouloir annuler cette réservation ?</p>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <div class="booking-summary">
+      <div class="place-info">
+        @if (data.booking.place?.images?.length) {
+        <img 
+          [src]="data.booking.place?.images?.[0]" 
+          [alt]="data.booking.place?.title || 'Logement'"
+          class="place-image">
+        } @else {
+        <div class="place-image-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        }
+        <div class="place-details">
+          <h3 class="place-title">{{data.booking.place?.title || 'Logement'}}</h3>
+          <p class="place-location">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.3639 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{data.booking.place?.location || 'Localisation non disponible'}}
+          </p>
+        </div>
+      </div>
+
+      <div class="booking-info">
+        <div class="info-row">
+          <span class="label">Dates</span>
+          <span class="value">{{formatDate(data.booking.startDate)}} - {{formatDate(data.booking.endDate)}}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Prix total</span>
+          <span class="value price">{{data.booking.totalPrice}}€</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Voyageurs</span>
+          <span class="value">{{data.booking.guests || 1}} personne{{(data.booking.guests || 1) > 1 ? 's' : ''}}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Réservation</span>
+          <span class="value">#{{data.booking.id}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning-message">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span><strong>Action irréversible.</strong> Vous recevrez un email de confirmation.</span>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-btn">
+      Garder la réservation
+    </button>
+    <button mat-raised-button color="warn" (click)="onConfirm()" class="confirm-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Oui, annuler la réservation
+    </button>
+  </div>
+</div>

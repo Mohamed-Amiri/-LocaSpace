@@ -1,0 +1,81 @@
+<div class="login-wrapper">
+  <!-- Left image side -->
+  <div class="login-left">
+    <div class="overlay">
+      <div class="logo-container">
+        <i class="fas fa-building" aria-hidden="true"></i>
+        <h1>LocaSpace</h1>
+      </div>
+      <p>Louez ou proposez vos espaces facilement, en toute confiance.</p>
+    </div>
+  </div>
+
+  <!-- Right form side -->
+  <div class="login-right">
+    <div class="form-card">
+      <div class="form-header">
+        <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+        <h2>Connexion</h2>
+      </div>
+      
+      <div class="error-message" *ngIf="errorMessage">
+        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Email input -->
+        <div>
+          <div class="input-group" [class.ng-invalid]="email.invalid" [class.ng-touched]="email.touched">
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <input type="email" placeholder="Adresse email" formControlName="email" />
+          </div>
+          <div class="error" *ngIf="email.invalid && (email.dirty || email.touched)">
+            <small *ngIf="email.errors?.['required']">L'email est requis.</small>
+            <small *ngIf="email.errors?.['email']">Format d'email invalide.</small>
+          </div>
+        </div>
+
+        <!-- Password input -->
+        <div>
+          <div class="input-group password-input-group" [class.ng-invalid]="password.invalid" [class.ng-touched]="password.touched">
+            <i class="fas fa-lock" aria-hidden="true"></i>
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              placeholder="Mot de passe" 
+              formControlName="password" 
+            />
+            <i 
+              [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" 
+              class="password-toggle-icon"
+              (click)="togglePasswordVisibility()"
+              [title]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <div class="error" *ngIf="password.invalid && (password.dirty || password.touched)">
+            <small *ngIf="password.errors?.['required']">Le mot de passe est requis.</small>
+          </div>
+        </div>
+
+        <!-- Remember Me checkbox -->
+        <div class="remember-me-container">
+          <label class="remember-me-label">
+            <input type="checkbox" formControlName="rememberMe" class="remember-me-checkbox">
+            <span class="checkmark"></span>
+            Se souvenir de moi
+          </label>
+        </div>
+
+        <button type="submit" [disabled]="loginForm.invalid || isLoading">
+          <i class="fas fa-sign-in-alt" *ngIf="!isLoading" aria-hidden="true"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="isLoading" aria-hidden="true"></i>
+          {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+        </button>
+      </form>
+
+      <p class="register-redirect">Pas encore de compte ? <a routerLink="/register">Inscrivez-vous</a></p>
+    </div>
+  </div>
+</div>

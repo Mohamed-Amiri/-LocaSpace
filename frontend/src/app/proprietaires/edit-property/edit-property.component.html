@@ -1,0 +1,287 @@
+<!-- PREMIUM EDIT PROPERTY DESIGN -->
+<div class="premium-container">
+  
+  <!-- Premium Header -->
+  <header class="premium-header">
+    <div class="header-content">
+      <div class="title-section">
+        <div class="icon-container">
+          <mat-icon>edit</mat-icon>
+        </div>
+        <div class="title-text">
+          <h1>Modifier la Propriété</h1>
+          <p *ngIf="property">{{ property.title }}</p>
+          <p *ngIf="!property">Chargement des informations...</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button mat-button class="back-btn" routerLink="/proprietaires/manage-properties">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+        <button mat-raised-button class="save-btn" form="editPropertyForm" type="submit" [disabled]="loading || !propertyForm.valid">
+          <mat-icon *ngIf="!loading">save</mat-icon>
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+          {{ loading ? 'Sauvegarde...' : 'Sauvegarder' }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !property" class="loading-container">
+    <div class="loading-content">
+      <mat-spinner diameter="60"></mat-spinner>
+      <h3>Chargement de la propriété...</h3>
+      <p>Récupération des informations</p>
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <div *ngIf="property" class="form-container">
+    <form [formGroup]="propertyForm" (ngSubmit)="onSubmit()" id="editPropertyForm">
+      
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <mat-icon>info</mat-icon>
+          </div>
+          <div class="section-title">
+            <h2>Informations de base</h2>
+            <p>Détails principaux de votre propriété</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field full-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Titre de l'annonce</mat-label>
+              <input matInput formControlName="title" maxlength="100" placeholder="Ex. Appartement lumineux au centre-ville">
+              <mat-icon matSuffix>title</mat-icon>
+              <mat-hint align="end">{{ propertyForm.get('title')?.value?.length || 0 }}/100</mat-hint>
+              <mat-error *ngIf="propertyForm.get('title')?.hasError('required')">
+                Le titre est requis
+              </mat-error>
+              <mat-error *ngIf="propertyForm.get('title')?.hasError('minlength')">
+                Le titre doit contenir au moins 5 caractères
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-field full-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="4" maxlength="1000" placeholder="Décrivez votre propriété en détail..."></textarea>
+              <mat-icon matSuffix>description</mat-icon>
+              <mat-hint align="end">{{ propertyForm.get('description')?.value?.length || 0 }}/1000</mat-hint>
+              <mat-error *ngIf="propertyForm.get('description')?.hasError('required')">
+                La description est requise
+              </mat-error>
+              <mat-error *ngIf="propertyForm.get('description')?.hasError('minlength')">
+                La description doit contenir au moins 20 caractères
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-field half-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Type de propriété</mat-label>
+              <mat-select formControlName="propertyType">
+                <mat-option *ngFor="let type of propertyTypes" [value]="type.value">
+                  {{ type.label }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>home</mat-icon>
+              <mat-error *ngIf="propertyForm.get('propertyType')?.hasError('required')">
+                Le type est requis
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-field half-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Localisation</mat-label>
+              <input matInput formControlName="location" placeholder="Ex. Paris 15ème">
+              <mat-icon matSuffix>place</mat-icon>
+              <mat-error *ngIf="propertyForm.get('location')?.hasError('required')">
+                La localisation est requise
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Details Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <mat-icon>hotel</mat-icon>
+          </div>
+          <div class="section-title">
+            <h2>Détails de la propriété</h2>
+            <p>Caractéristiques techniques</p>
+          </div>
+        </div>
+
+        <div class="form-grid details-grid">
+          <div class="form-field">
+            <mat-form-field appearance="outline">
+              <mat-label>Invités maximum</mat-label>
+              <input matInput type="number" formControlName="maxGuests" min="1" max="20">
+              <mat-icon matSuffix>people</mat-icon>
+              <mat-error *ngIf="propertyForm.get('maxGuests')?.hasError('required')">
+                Le nombre d'invités est requis
+              </mat-error>
+              <mat-error *ngIf="propertyForm.get('maxGuests')?.hasError('min')">
+                Minimum 1 invité
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-field">
+            <mat-form-field appearance="outline">
+              <mat-label>Chambres</mat-label>
+              <input matInput type="number" formControlName="bedrooms" min="0" max="10">
+              <mat-icon matSuffix>bed</mat-icon>
+              <mat-error *ngIf="propertyForm.get('bedrooms')?.hasError('required')">
+                Le nombre de chambres est requis
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-field">
+            <mat-form-field appearance="outline">
+              <mat-label>Salles de bain</mat-label>
+              <input matInput type="number" formControlName="bathrooms" min="1" max="10">
+              <mat-icon matSuffix>bathtub</mat-icon>
+              <mat-error *ngIf="propertyForm.get('bathrooms')?.hasError('required')">
+                Le nombre de salles de bain est requis
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-field">
+            <mat-form-field appearance="outline">
+              <mat-label>Prix par nuit (€)</mat-label>
+              <input matInput type="number" formControlName="price" min="10" max="10000">
+              <mat-icon matSuffix>euro_symbol</mat-icon>
+              <mat-error *ngIf="propertyForm.get('price')?.hasError('required')">
+                Le prix est requis
+              </mat-error>
+              <mat-error *ngIf="propertyForm.get('price')?.hasError('min')">
+                Prix minimum 10€
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- Amenities Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <mat-icon>star</mat-icon>
+          </div>
+          <div class="section-title">
+            <h2>Équipements disponibles</h2>
+            <p>Sélectionnez les équipements de votre propriété</p>
+          </div>
+        </div>
+
+        <div class="amenities-grid">
+          <div class="amenity-item" *ngFor="let amenity of availableAmenities" 
+               [class.selected]="isAmenitySelected(amenity)"
+               (click)="toggleAmenity(amenity)">
+            <div class="amenity-icon">
+              <mat-icon>{{ getAmenityIcon(amenity) }}</mat-icon>
+            </div>
+            <div class="amenity-content">
+              <span class="amenity-name">{{ amenity }}</span>
+              <mat-icon class="check-icon" *ngIf="isAmenitySelected(amenity)">check_circle</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Photos Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <mat-icon>photo_camera</mat-icon>
+          </div>
+          <div class="section-title">
+            <h2>Photos de la propriété</h2>
+            <p>Images actuelles et ajout de nouvelles photos</p>
+          </div>
+        </div>
+
+        <!-- Current Photos -->
+        <div class="current-photos" *ngIf="currentPhotos.length > 0">
+          <h3>Photos actuelles</h3>
+          <div class="photos-grid">
+            <div class="photo-item" *ngFor="let photo of currentPhotos; let i = index">
+              <img [src]="photo" [alt]="'Photo ' + (i + 1)">
+              <div class="photo-overlay">
+                <button mat-mini-fab color="warn" (click)="removeCurrentPhoto(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload New Photos -->
+        <div class="upload-section">
+          <h3>Ajouter de nouvelles photos</h3>
+          <div class="upload-area" (click)="fileInput.click()">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <h4>Glissez ou cliquez pour ajouter des photos</h4>
+            <p>JPG, PNG, WebP — max 5MB, jusqu'à 10 photos au total</p>
+            <input #fileInput type="file" multiple accept="image/*" (change)="onFilesSelected($event)" style="display: none;">
+          </div>
+
+          <!-- New Photos Preview -->
+          <div *ngIf="previewUrls.length > 0" class="new-photos-preview">
+            <h4>Nouvelles photos à ajouter</h4>
+            <div class="photos-grid">
+              <div class="photo-item" *ngFor="let url of previewUrls; let i = index">
+                <img [src]="url" [alt]="'Nouvelle photo ' + (i + 1)">
+                <div class="photo-overlay">
+                  <button mat-mini-fab color="warn" (click)="removeNewPhoto(i)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <mat-icon>visibility</mat-icon>
+          </div>
+          <div class="section-title">
+            <h2>Statut de la propriété</h2>
+            <p>Disponibilité et visibilité publique</p>
+          </div>
+        </div>
+
+        <div class="status-controls">
+          <div class="status-item">
+            <div class="status-info">
+              <h4>Propriété active</h4>
+              <p>Visible par les voyageurs et disponible à la réservation</p>
+            </div>
+            <mat-slide-toggle formControlName="isActive" color="primary"></mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+</div>

@@ -1,0 +1,396 @@
+<!-- PREMIUM MANAGE PROPERTIES DESIGN -->
+<div class="premium-container">
+  
+  <!-- Premium Header -->
+  <header class="premium-header">
+    <div class="header-content">
+      <div class="title-section">
+        <div class="icon-container">
+          <mat-icon>business</mat-icon>
+        </div>
+        <div class="title-text">
+          <h1>Mes Propriétés</h1>
+          <p>Gérez votre portefeuille immobilier avec style</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button mat-button class="back-btn" routerLink="/proprietaires/dashboard">
+          <mat-icon>arrow_back</mat-icon>
+          Tableau de bord
+        </button>
+        <button mat-raised-button class="add-btn" routerLink="/proprietaires/add-property">
+          <mat-icon>add</mat-icon>
+          Nouvelle Propriété
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats Overview -->
+  <div class="stats-container">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>home_work</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ properties.length }}</h3>
+        <p>Propriétés totales</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>visibility</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getActivePropertiesCount() }}</h3>
+        <p>Propriétés actives</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>euro_symbol</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getAveragePrice() }}€</h3>
+        <p>Prix moyen/nuit</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>trending_up</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ getTotalRevenue() }}€</h3>
+        <p>Revenus ce mois</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filters-container">
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher une propriété</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (input)="onSearchChange()" placeholder="Titre, localisation...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+    
+    <div class="filter-section">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="filterType" (selectionChange)="applyFilters()">
+          <mat-option value="">Tous les types</mat-option>
+          <mat-option value="apartment">Appartement</mat-option>
+          <mat-option value="house">Maison</mat-option>
+          <mat-option value="villa">Villa</mat-option>
+          <mat-option value="studio">Studio</mat-option>
+          <mat-option value="loft">Loft</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Statut</mat-label>
+        <mat-select [(ngModel)]="filterStatus" (selectionChange)="applyFilters()">
+          <mat-option value="">Tous</mat-option>
+          <mat-option value="active">Actif</mat-option>
+          <mat-option value="inactive">Inactif</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="view-toggle">
+        <mat-button-toggle-group [(ngModel)]="viewMode" (change)="onViewModeChange()">
+          <mat-button-toggle value="grid">
+            <mat-icon>grid_view</mat-icon>
+          </mat-button-toggle>
+          <mat-button-toggle value="list">
+            <mat-icon>view_list</mat-icon>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Actions -->
+  <div class="bulk-actions-container" *ngIf="selectedProperties.length > 0">
+    <div class="bulk-info">
+      <span class="selection-count">{{ selectedProperties.length }} sélectionné(s)</span>
+    </div>
+    <div class="bulk-buttons">
+      <button mat-stroked-button (click)="bulkActivate()">
+        <mat-icon>visibility</mat-icon>
+        Activer
+      </button>
+      <button mat-stroked-button (click)="bulkDeactivate()">
+        <mat-icon>visibility_off</mat-icon>
+        Désactiver
+      </button>
+      <button mat-stroked-button color="warn" (click)="bulkDelete()">
+        <mat-icon>delete</mat-icon>
+        Supprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-content">
+      <mat-spinner diameter="60"></mat-spinner>
+      <h3>Chargement de vos propriétés...</h3>
+      <p>Préparation de votre portefeuille</p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && properties.length === 0" class="empty-state">
+    <div class="empty-content">
+      <div class="empty-icon">
+        <mat-icon>home_work</mat-icon>
+      </div>
+      <h2>Votre portefeuille est vide</h2>
+      <p>Commencez à générer des revenus en ajoutant votre première propriété</p>
+      <button mat-raised-button color="primary" routerLink="/proprietaires/add-property" class="empty-action">
+        <mat-icon>add_home</mat-icon>
+        Ajouter ma première propriété
+      </button>
+    </div>
+  </div>
+
+  <!-- Properties Grid/List -->
+  <div *ngIf="!loading && filteredProperties.length > 0" class="properties-container">
+    <!-- Grid View -->
+    <div *ngIf="viewMode === 'grid'" class="properties-grid">
+      <div *ngFor="let property of filteredProperties" class="property-card-wrapper">
+        <div class="property-card" [class.selected]="isPropertySelected(property.id!)">
+          <!-- Selection Checkbox -->
+          <div class="selection-checkbox">
+            <mat-checkbox 
+              [checked]="isPropertySelected(property.id!)"
+              (change)="togglePropertySelection(property.id!, $event.checked)">
+            </mat-checkbox>
+          </div>
+
+          <!-- Property Image -->
+          <div class="property-image">
+            <img [src]="property.photos[0] || '/assets/images/loft.jpg'" [alt]="property.title">
+            <div class="image-overlay">
+              <div class="status-badge" [class]="property.isActive ? 'active' : 'inactive'">
+                <mat-icon>{{ property.isActive ? 'visibility' : 'visibility_off' }}</mat-icon>
+                {{ property.isActive ? 'Actif' : 'Inactif' }}
+              </div>
+              <div class="quick-actions">
+                <button mat-mini-fab [routerLink]="['/proprietaires/edit-property', property.id]">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-mini-fab [routerLink]="['/proprietaires/calendar', property.id]">
+                  <mat-icon>calendar_today</mat-icon>
+                </button>
+                <button mat-mini-fab color="warn" (click)="deleteProperty(property)" title="Supprimer la propriété">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Property Content -->
+          <div class="property-content">
+            <div class="property-header">
+              <h3 class="property-title">{{ property.title }}</h3>
+              <div class="property-type">
+                <mat-icon>{{ getPropertyTypeIcon(property.propertyType) }}</mat-icon>
+                <span>{{ getPropertyTypeLabel(property.propertyType) }}</span>
+              </div>
+            </div>
+
+            <div class="property-location">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ property.location }}</span>
+            </div>
+
+            <div class="property-specs">
+              <div class="spec-item">
+                <mat-icon>people</mat-icon>
+                <span>{{ property.maxGuests }}</span>
+              </div>
+              <div class="spec-item">
+                <mat-icon>bed</mat-icon>
+                <span>{{ property.bedrooms }}</span>
+              </div>
+              <div class="spec-item">
+                <mat-icon>bathtub</mat-icon>
+                <span>{{ property.bathrooms }}</span>
+              </div>
+            </div>
+
+            <div class="property-amenities" *ngIf="property.amenities.length > 0">
+              <span class="amenity-chip" *ngFor="let amenity of property.amenities.slice(0, 3)">
+                {{ amenity }}
+              </span>
+              <span class="more-chip" *ngIf="property.amenities.length > 3">
+                +{{ property.amenities.length - 3 }}
+              </span>
+            </div>
+
+            <div class="property-price">
+              <span class="price">{{ property.price }}€</span>
+              <span class="period">/ nuit</span>
+            </div>
+          </div>
+
+          <!-- Property Actions -->
+          <div class="property-actions">
+            <div class="primary-actions">
+              <button mat-button [routerLink]="['/proprietaires/edit-property', property.id]">
+                <mat-icon>edit</mat-icon>
+                Modifier
+              </button>
+              <button mat-button [routerLink]="['/proprietaires/calendar', property.id]">
+                <mat-icon>calendar_today</mat-icon>
+                Calendrier
+              </button>
+              <button mat-button color="warn" (click)="deleteProperty(property)">
+                <mat-icon>delete</mat-icon>
+                Supprimer
+              </button>
+            </div>
+            <div class="secondary-actions">
+              <mat-slide-toggle 
+                [checked]="property.isActive"
+                (change)="togglePropertyStatus(property)"
+                color="primary">
+              </mat-slide-toggle>
+              <button mat-icon-button [matMenuTriggerFor]="propertyMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              
+              <mat-menu #propertyMenu="matMenu">
+                <button mat-menu-item (click)="duplicateProperty(property)">
+                  <mat-icon>content_copy</mat-icon>
+                  <span>Dupliquer</span>
+                </button>
+                <button mat-menu-item (click)="viewAnalytics(property)">
+                  <mat-icon>analytics</mat-icon>
+                  <span>Statistiques</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="deleteProperty(property)" class="delete-action">
+                  <mat-icon>delete</mat-icon>
+                  <span>Supprimer</span>
+                </button>
+              </mat-menu>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View -->
+    <div *ngIf="viewMode === 'list'" class="properties-list">
+      <div class="list-container">
+        <div class="list-header">
+          <div class="list-column">
+            <mat-checkbox 
+              (change)="toggleAllSelection($event.checked)"
+              [checked]="allSelected"
+              [indeterminate]="someSelected">
+            </mat-checkbox>
+          </div>
+          <div class="list-column">Propriété</div>
+          <div class="list-column">Type</div>
+          <div class="list-column">Caractéristiques</div>
+          <div class="list-column">Prix</div>
+          <div class="list-column">Statut</div>
+          <div class="list-column">Actions</div>
+        </div>
+
+        <div class="list-item" *ngFor="let property of filteredProperties">
+          <div class="list-column">
+            <mat-checkbox 
+              [checked]="isPropertySelected(property.id!)"
+              (change)="togglePropertySelection(property.id!, $event.checked)">
+            </mat-checkbox>
+          </div>
+          
+          <div class="list-column property-info">
+            <img [src]="property.photos[0] || '/assets/images/loft.jpg'" [alt]="property.title" class="property-thumbnail">
+            <div class="property-details">
+              <h4>{{ property.title }}</h4>
+              <p>
+                <mat-icon>location_on</mat-icon>
+                {{ property.location }}
+              </p>
+            </div>
+          </div>
+          
+          <div class="list-column type-cell">
+            <mat-icon>{{ getPropertyTypeIcon(property.propertyType) }}</mat-icon>
+            {{ getPropertyTypeLabel(property.propertyType) }}
+          </div>
+          
+          <div class="list-column specs-cell">
+            <span><mat-icon>people</mat-icon>{{ property.maxGuests }}</span>
+            <span><mat-icon>bed</mat-icon>{{ property.bedrooms }}</span>
+            <span><mat-icon>bathtub</mat-icon>{{ property.bathrooms }}</span>
+          </div>
+          
+          <div class="list-column price-cell">
+            <span class="price">{{ property.price }}€</span>
+            <span class="period">/ nuit</span>
+          </div>
+          
+          <div class="list-column status-cell">
+            <mat-slide-toggle 
+              [checked]="property.isActive"
+              (change)="togglePropertyStatus(property)"
+              color="primary">
+            </mat-slide-toggle>
+          </div>
+          
+          <div class="list-column actions-cell">
+            <button mat-icon-button [routerLink]="['/proprietaires/edit-property', property.id]">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button [routerLink]="['/proprietaires/calendar', property.id]">
+              <mat-icon>calendar_today</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteProperty(property)" title="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button [matMenuTriggerFor]="listPropertyMenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            
+            <mat-menu #listPropertyMenu="matMenu">
+              <button mat-menu-item (click)="duplicateProperty(property)">
+                <mat-icon>content_copy</mat-icon>
+                <span>Dupliquer</span>
+              </button>
+              <button mat-menu-item (click)="viewAnalytics(property)">
+                <mat-icon>analytics</mat-icon>
+                <span>Statistiques</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="deleteProperty(property)" class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Supprimer</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!loading && properties.length > 0 && filteredProperties.length === 0" class="no-results">
+    <div class="no-results-content">
+      <mat-icon>search_off</mat-icon>
+      <h3>Aucun résultat trouvé</h3>
+      <p>Essayez de modifier vos critères de recherche</p>
+      <button mat-button (click)="clearFilters()">
+        <mat-icon>clear</mat-icon>
+        Effacer les filtres
+      </button>
+    </div>
+  </div>
+</div>

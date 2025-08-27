@@ -1,0 +1,513 @@
+/* You can add global styles to this file, and also import other style files */
+
+// Import Design System Variables and base styles (must be declared before any other rules)
+@use './styles/variables' as *;
+@use './styles/base' as *;
+
+// Modern Design CSS Variables
+:root {
+  --primary: #4361ee;
+  --primary-dark: #3a0ca3;
+  --secondary: #7209b7;
+  --accent: #4cc9f0;
+  --success: #2ec4b6;
+  --warning: #ff9f1c;
+  --danger: #e71d36;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --gray: #6c757d;
+  --light-bg: #f5f7fb;
+  --card-bg: #ffffff;
+  --sidebar-bg: #1a2238;
+  --sidebar-active: #2d3a6c;
+}
+
+// Import Google Fonts (Polices : Titres : Poppins, gras / Corps de texte : Inter, normal)
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+// Import Premium Fonts for Add Property
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap');
+
+// Import flatpickr styles (base and dark theme)
+@import 'flatpickr/dist/flatpickr.min.css';
+@import 'flatpickr/dist/themes/dark.css';
+
+// CRITICAL: Override Angular Material theme AFTER it loads
+// This MUST come after Material theme is loaded
+
+// --- Enhanced Global Resets & Base Styles ---
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  font-family: $font-body;
+  font-weight: $font-weight-regular;
+  background-color: $neutral-50;
+  color: $neutral-700;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  overflow-x: hidden;
+  
+  // Espacements généreux : 24px+ entre sections
+  section + section {
+    margin-top: 6rem;
+  }
+}
+
+// Enhanced focus styles for accessibility
+*:focus {
+  outline: 2px solid $primary-color-start;
+  outline-offset: 2px;
+}
+
+// Better button focus
+button:focus,
+a:focus {
+  outline: 2px solid $primary-color-start;
+  outline-offset: 2px;
+}
+
+// Smooth transitions for theme changes
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-headers;
+  font-weight: $font-weight-bold;
+  color: $neutral-900;
+}
+
+a {
+  color: $primary-color-start;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: $primary-color-end;
+  }
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"] {
+  background: #f9fafb !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #1f2937 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+  border-radius: 12px !important;
+  font-size: 1rem;
+  padding: 1rem !important;
+}
+
+// --- Dark Mode Styles ---
+body.dark-mode {
+  background-color: $neutral-900; // Darkest background
+  color: $neutral-200; // Lighter text
+
+  // Invert header/card backgrounds
+  .main-header,
+  .place-card,
+  .form-panel {
+    background: $neutral-900;
+    border-color: $neutral-700;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  // Invert text colors
+  h1, h2, h3, h4, h5, h6, .logo a {
+    color: $neutral-100;
+  }
+
+  // Invert form inputs and buttons
+  .input-group input {
+    background: $neutral-700;
+    border-color: $neutral-700;
+    color: $neutral-100;
+
+    &:focus {
+      border-color: $primary-color-start;
+      box-shadow: 0 0 0 3px rgba($primary-color-start, 0.2);
+    }
+  }
+
+  .btn-secondary {
+    background: $neutral-700;
+    color: $neutral-100;
+    &:hover {
+      background: $neutral-500;
+    }
+  }
+
+  .main-nav a {
+    color: $neutral-300;
+    &:hover, &.active {
+      color: $neutral-100;
+    }
+  }
+
+  // How it works section background
+  .how-it-works {
+    background: $neutral-950;
+  }
+}
+
+// Smooth theme transition
+body.theme-transition {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* CLEAN MODERN FORM DESIGN - PROPERLY CENTERED */
+.add-property-container {
+  min-height: 100vh !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+  padding: 40px 20px !important;
+  font-family: 'Inter', sans-serif !important;
+  
+  /* Center everything properly */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+
+  /* Clean Header */
+  .page-header {
+    width: 100% !important;
+    padding: 20px 0 40px 0 !important;
+    text-align: center !important;
+    margin-bottom: 30px !important;
+    
+    h1 {
+      font-size: 2.5rem !important;
+      color: #2d3748 !important;
+      margin: 0 0 10px 0 !important;
+      font-weight: 600 !important;
+    }
+    
+    p {
+      color: #4a5568 !important;
+      margin: 0 !important;
+      font-size: 1.1rem !important;
+    }
+  }
+
+  /* Clean Modern Form Card */
+  .form-card {
+    background: white !important;
+    border-radius: 16px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    width: 100% !important;
+    max-width: 800px !important;
+    padding: 40px !important;
+    margin: 0 auto 40px auto !important;
+  }
+}
+
+/* CLEAN MODERN STEPPER */
+.mat-stepper {
+  background: transparent !important;
+  
+  .mat-stepper-header {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 20px !important;
+    margin: -40px -40px 20px -40px !important;
+    border-radius: 16px 16px 0 0 !important;
+    
+    .mat-step-header {
+      .mat-step-icon {
+        background: #4299e1 !important;
+        color: white !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 18px !important;
+        margin-right: 12px !important;
+        
+        &.mat-step-icon-selected {
+          background: #38b2ac !important;
+        }
+        
+        &.mat-step-icon-completed {
+          background: #48bb78 !important;
+        }
+      }
+      
+      .mat-step-label {
+        font-weight: 500 !important;
+        color: #2d3748 !important;
+        font-size: 1rem !important;
+      }
+    }
+    
+    .mat-stepper-horizontal-line {
+      border-top-color: #e2e8f0 !important;
+    }
+  }
+  
+  .mat-stepper-content {
+    padding: 30px 0 !important;
+    
+    .step-content {
+      .form-row {
+        display: flex !important;
+        gap: 20px !important;
+        margin-bottom: 24px !important;
+        align-items: flex-start !important;
+        
+        .full-width {
+          width: 100% !important;
+        }
+        
+        .half-width {
+          flex: 1 !important;
+          min-width: 0 !important;
+        }
+        
+        .quarter-width {
+          flex: 1 !important;
+          min-width: 0 !important;
+        }
+      }
+    }
+    
+    .step-actions {
+      display: flex !important;
+      justify-content: space-between !important;
+      margin-top: 40px !important;
+      padding-top: 30px !important;
+      border-top: 1px solid #e2e8f0 !important;
+      
+      button {
+        padding: 12px 24px !important;
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        font-size: 0.95rem !important;
+        transition: all 0.2s ease !important;
+        
+        &.mat-raised-button.mat-primary {
+          background: #4299e1 !important;
+          color: white !important;
+          border: none !important;
+          
+          &:hover:not(:disabled) {
+            background: #3182ce !important;
+            transform: translateY(-1px) !important;
+          }
+        }
+        
+        &.mat-button {
+          color: #4a5568 !important;
+          
+          &:hover {
+            background: #f7fafc !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* CLEAN MODERN FORM FIELDS */
+.mat-form-field {
+  width: 100% !important;
+  margin-bottom: 4px !important;
+  
+  .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+    margin: 0 !important;
+  }
+  
+  .mat-form-field-flex {
+    background: #f8fafc !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 16px 14px !important;
+    transition: all 0.2s ease !important;
+    align-items: center !important;
+    
+    &:hover {
+      border-color: #cbd5e0 !important;
+      background: white !important;
+    }
+    
+    &.mat-focused {
+      border-color: #4299e1 !important;
+      background: white !important;
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1) !important;
+    }
+  }
+  
+  /* Hide outline elements */
+  .mat-form-field-outline,
+  .mat-form-field-outline-start,
+  .mat-form-field-outline-end,
+  .mat-form-field-outline-gap,
+  .mat-form-field-outline-thick {
+    display: none !important;
+  }
+  
+  /* Hide underline */
+  .mat-form-field-underline,
+  .mat-form-field-underline-wrapper {
+    display: none !important;
+  }
+  
+  /* Style labels */
+  .mat-form-field-label {
+    color: #4a5568 !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    top: 1.3em !important;
+    
+    &.mat-focused {
+      color: #4299e1 !important;
+    }
+  }
+  
+  /* Style inputs */
+  .mat-form-field-infix {
+    padding: 0 !important;
+    border: none !important;
+    
+    input.mat-input-element,
+    textarea.mat-input-element {
+      color: #2d3748 !important;
+      font-size: 1rem !important;
+      font-weight: 400 !important;
+      border: none !important;
+      outline: none !important;
+      background: transparent !important;
+      padding: 8px 0 !important;
+      
+      &::placeholder {
+        color: #a0aec0 !important;
+      }
+    }
+  }
+  
+  /* Style select */
+  .mat-select {
+    .mat-select-value {
+      color: #2d3748 !important;
+      font-size: 1rem !important;
+    }
+    
+    .mat-select-arrow {
+      color: #a0aec0 !important;
+    }
+    
+    .mat-select-trigger {
+      border: none !important;
+      outline: none !important;
+    }
+  }
+  
+  /* Style hints and errors */
+  .mat-form-field-subscript-wrapper {
+    margin-top: 8px !important;
+    padding: 0 4px !important;
+    
+    .mat-hint {
+      color: #718096 !important;
+      font-size: 0.875rem !important;
+    }
+    
+    .mat-error {
+      color: #e53e3e !important;
+      font-size: 0.875rem !important;
+    }
+  }
+}
+
+/* Specific fixes for outline appearance */
+.mat-form-field-appearance-outline {
+  .mat-form-field-wrapper {
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .add-property-container {
+    padding: 20px 15px !important;
+    
+    .page-header {
+      padding: 15px 0 25px 0 !important;
+      
+      h1 {
+        font-size: 2rem !important;
+      }
+      
+      p {
+        font-size: 1rem !important;
+      }
+    }
+    
+    .form-card {
+      padding: 25px !important;
+      margin-bottom: 30px !important;
+    }
+  }
+  
+  .mat-stepper {
+    .mat-stepper-header {
+      padding: 15px !important;
+      margin: -25px -25px 15px -25px !important;
+      
+      .mat-step-header .mat-step-icon {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 16px !important;
+      }
+    }
+    
+    .mat-stepper-content {
+      padding: 20px 0 !important;
+      
+      .step-content .form-row {
+        flex-direction: column !important;
+        gap: 10px !important;
+        
+        .half-width,
+        .quarter-width {
+          width: 100% !important;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .add-property-container {
+    padding: 15px 10px !important;
+    
+    .form-card {
+      padding: 20px !important;
+    }
+  }
+}

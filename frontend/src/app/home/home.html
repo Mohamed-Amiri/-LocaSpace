@@ -1,0 +1,288 @@
+
+<!-- Modern Hero Section -->
+<section class="hero-section">
+  <div class="hero-background">
+    <div class="hero-gradient"></div>
+    <div class="hero-pattern"></div>
+    <div class="hero-particles"></div>
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+  </div>
+  <div class="hero-content" [ngStyle]="heroContentStyle">
+    <div class="hero-badge" data-aos="fade-up" data-aos-delay="100">
+      <span class="badge-icon">✨</span>
+      <span>Over 10,000+ spaces available</span>
+    </div>
+    <h1 data-aos="fade-up" data-aos-delay="200">
+      <span class="hero-title-main">Find rental spaces</span>
+      <span class="hero-title-accent">easily, anytime</span>
+    </h1>
+    <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="300">
+      Your smart platform for space rentals. Discover exceptional venues for events, 
+      business meetings, creative projects, or special moments. Simple and secure booking.
+    </p>
+    
+    <!-- Welcome Message -->
+    <div class="welcome-message" data-aos="fade-up" data-aos-delay="350">
+      <p class="welcome-text">
+        <span class="highlight">Welcome!</span> Here's what you can do on our platform:
+      </p>
+      <div class="welcome-features">
+        <div class="feature-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <span>Search & discover unique spaces</span>
+        </div>
+        <div class="feature-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>Book instantly with secure payment</span>
+        </div>
+        <div class="feature-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 12l2 2 4-4"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          <span>Enjoy premium experiences</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modern Glassmorphism Search Bar -->
+    <div class="search-wrapper" data-aos="fade-up" data-aos-delay="400">
+      <app-modern-search (search)="onSearch($event)"></app-modern-search>
+    </div>
+    
+
+  </div>
+</section>
+
+<!-- Popular Places Section -->
+<section class="popular-places">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-badge">
+        <span class="badge-icon">✨</span>
+        <span>Discover</span>
+      </div>
+      <h2>Most Popular Spaces</h2>
+      <p class="section-subtitle">Exceptional venues handpicked for you</p>
+    </div>
+    
+    <div class="places-grid" data-aos="fade-up" data-aos-delay="200">
+      <app-place-card 
+        *ngFor="let place of popularPlaces; let i = index" 
+        [place]="place"
+        [attr.data-aos]="'fade-up'"
+        [attr.data-aos-delay]="(i * 100) + 300"
+        (toggleFavorite)="toggleFavorite($event)">
+      </app-place-card>
+    </div>
+    
+    <div class="section-footer" data-aos="fade-up" data-aos-delay="600">
+      <a class="premium-button" routerLink="/search">
+        <div class="button-bg"></div>
+        <div class="button-content">
+          <span class="text">Explore All Spaces</span>
+          <div class="icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Simple Stats Section -->
+<section class="simple-stats">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-item">
+        <h3>10K+</h3>
+        <p>Available Spaces</p>
+      </div>
+      <div class="stat-item">
+        <h3>50K+</h3>
+        <p>Happy Customers</p>
+      </div>
+      <div class="stat-item">
+        <h3>4.9</h3>
+        <p>Average Rating</p>
+      </div>
+      <div class="stat-item">
+        <h3>24/7</h3>
+        <p>Support</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <div class="section-badge">
+        <span class="badge-icon">💬</span>
+        <span>Testimonials</span>
+      </div>
+      <h2>What Our Customers Say</h2>
+      <p class="section-subtitle">Thousands of satisfied customers trust us</p>
+    </div>
+    
+    <div class="testimonials-carousel" data-aos="fade-up" data-aos-delay="200">
+      <div class="carousel-container">
+        <div class="carousel-track" [style.transform]="'translateX(' + currentTransform + '%)'">
+          <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+            <div class="quote-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" fill="currentColor"/>
+                <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" fill="currentColor"/>
+              </svg>
+            </div>
+            <p class="quote">"{{ testimonial.quote }}"</p>
+            <div class="author-info">
+              <img [src]="testimonial.avatar" [alt]="'Avatar de ' + testimonial.author" class="avatar">
+              <div class="author-details">
+                <span class="author-name">{{ testimonial.author }}</span>
+                <div class="rating">
+                  <svg *ngFor="let star of [1,2,3,4,5]" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="carousel-controls">
+        <button class="carousel-btn prev" (click)="previousTestimonial()" [disabled]="currentTransform === 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15,18 9,12 15,6"/>
+          </svg>
+        </button>
+        <div class="carousel-indicators">
+          <button 
+            *ngFor="let testimonial of testimonials; let i = index"
+            class="indicator"
+            [class.active]="Math.abs(currentTransform / 100) === i"
+            (click)="goToTestimonial(i)">
+          </button>
+        </div>
+        <button class="carousel-btn next" (click)="nextTestimonial()" [disabled]="Math.abs(currentTransform) >= (testimonials.length - 1) * 100">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9,18 15,12 9,6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Clean Footer -->
+<footer class="footer">
+  <div class="footer-container">
+    <!-- Main Footer Content -->
+    <div class="footer-main">
+      <!-- Brand Section -->
+      <div class="footer-brand">
+        <div class="brand-logo">
+          <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+            <rect width="36" height="36" rx="8" fill="url(#logoGrad)"/>
+            <path d="M10 14h16v8H10z" fill="white" opacity="0.9"/>
+            <path d="M14 10h8v4h-8z" fill="white" opacity="0.7"/>
+            <circle cx="18" cy="18" r="2" fill="white"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#2563EB"/>
+                <stop offset="100%" style="stop-color:#7C3AED"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="brand-name">LocaSpace</span>
+        </div>
+        <p class="brand-tagline">Your smart platform for space rentals</p>
+      </div>
+
+      <!-- Links Grid -->
+      <div class="footer-links">
+        <div class="link-group">
+          <h3>Discover</h3>
+          <a href="/search?type=villa">Villas</a>
+          <a href="/search?type=apartment">Apartments</a>
+          <a href="/search?type=office">Offices</a>
+          <a href="/search?type=event">Event Spaces</a>
+          <a href="/search?type=studio">Studios</a>
+        </div>
+        
+        <div class="link-group">
+          <h3>Hosting</h3>
+          <a href="/proprietaire">Become a Host</a>
+          <a href="/proprietaire/dashboard">Host Dashboard</a>
+          <a href="/help/hosting">Host Guide</a>
+          <a href="/help/hosting-responsibly">Host Responsibly</a>
+        </div>
+        
+        <div class="link-group">
+          <h3>Support</h3>
+          <a href="/help">Help Center</a>
+          <a href="/contact">Contact Us</a>
+          <a href="/help/safety">Safety</a>
+          <a href="/help/cancellation">Cancellation</a>
+          <a href="/help/accessibility">Accessibility</a>
+        </div>
+        
+        <div class="link-group">
+          <h3>LocaSpace</h3>
+          <a href="/about">About</a>
+          <a href="/careers">Careers</a>
+          <a href="/press">Press</a>
+          <a href="/investors">Investors</a>
+          <a href="/blog">Blog</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <span>&copy; 2024 LocaSpace, Inc.</span>
+        <div class="legal-links">
+          <a href="/terms">Terms</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/sitemap">Sitemap</a>
+        </div>
+      </div>
+      
+      <div class="footer-settings">
+        <button class="setting-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          English (US)
+        </button>
+        <button class="setting-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          USD
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>

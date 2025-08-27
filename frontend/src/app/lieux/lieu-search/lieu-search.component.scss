@@ -1,0 +1,1268 @@
+@use '../../../styles/variables' as *;
+@use 'sass:color';
+
+// --- Modern Search Container ---
+.search-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: calc(100vh - 70px); // Adjusted for header height
+  transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.filters-collapsed {
+    grid-template-columns: 0 1fr;
+    .filters-sidebar {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+// --- Modern Filters Sidebar ---
+.filters-sidebar {
+  background: $neutral-50;
+  border-right: 1px solid rgba(226, 232, 240, 0.5);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.03);
+
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $neutral-800;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      svg {
+        color: $primary-color;
+      }
+    }
+
+    .close-filters-btn {
+      background: transparent;
+      border: none;
+      color: $neutral-500;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: $border-radius-full;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: $neutral-100;
+        color: $neutral-700;
+      }
+    }
+  }
+
+  .sidebar-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    
+    .filter-group { 
+      margin-bottom: 2.5rem;
+      
+      .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        
+        h4 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: $neutral-700;
+        }
+        
+        .price-display {
+          font-weight: 600;
+          font-size: 0.9rem;
+          color: $primary-color;
+          background: rgba(37, 99, 235, 0.1);
+          padding: 0.25rem 0.5rem;
+          border-radius: $border-radius-lg;
+        }
+        
+        .filter-count {
+          background: $primary-color;
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 600;
+          width: 20px;
+          height: 20px;
+          border-radius: $border-radius-full;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid rgba(226, 232, 240, 0.5);
+    display: flex;
+    gap: 1rem;
+    
+    .btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: $border-radius-xl;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
+      &.btn-ghost {
+        background: transparent;
+        border: 1px solid $neutral-300;
+        color: $neutral-600;
+        
+        &:hover {
+          background: $neutral-100;
+          border-color: $neutral-400;
+          color: $neutral-800;
+        }
+      }
+      
+      &.btn-primary {
+        background: $primary-gradient;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+        
+        svg {
+          transition: transform 0.2s ease;
+        }
+        
+        &:hover svg {
+          transform: translateX(2px);
+        }
+      }
+    }
+  }
+}
+
+// --- Modern Filter Controls ---
+.slider-container {
+  position: relative;
+  padding: 0.5rem 0;
+  
+  .price-slider {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(90deg, $primary-color-start, $primary-color-end);
+    border-radius: $border-radius-full;
+    outline: none;
+    cursor: pointer;
+    
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid $primary-color;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+    
+    &::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid $primary-color;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+  
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: $neutral-500;
+  }
+}
+
+.modern-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $neutral-100;
+    border-radius: $border-radius-full;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $neutral-300;
+    border-radius: $border-radius-full;
+    
+    &:hover {
+      background: $neutral-400;
+    }
+  }
+}
+
+.modern-checkbox-item {
+  position: relative;
+  
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    
+    &:checked ~ label .checkbox-custom {
+      background: $primary-color;
+      border-color: $primary-color;
+      
+      &:after {
+        opacity: 1;
+        transform: rotate(45deg) scale(1);
+      }
+    }
+    
+    &:focus ~ label .checkbox-custom {
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+  }
+  
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      color: $primary-color;
+      
+      .checkbox-custom {
+        border-color: $primary-color;
+      }
+    }
+    
+    .checkbox-custom {
+      width: 20px;
+      height: 20px;
+      border: 2px solid $neutral-300;
+      border-radius: $border-radius-md;
+      position: relative;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      
+      &:after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        opacity: 0;
+        transform: rotate(45deg) scale(0);
+        transition: all 0.2s ease;
+      }
+    }
+    
+    .checkbox-label {
+      font-size: 0.95rem;
+      color: $neutral-600;
+      transition: color 0.2s ease;
+    }
+  }
+}
+
+.modern-rating-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  .star {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: $neutral-300;
+    
+    &.selected, &:hover {
+      color: $secondary-color;
+      transform: scale(1.1);
+    }
+    
+    svg {
+      transition: transform 0.2s ease;
+    }
+  }
+  
+  .rating-text {
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    color: $neutral-600;
+    background: $neutral-100;
+    padding: 0.25rem 0.5rem;
+    border-radius: $border-radius-lg;
+  }
+}
+
+// --- Modern Main Content ---
+.main-content {
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    .open-filters-btn {
+      display: none; // Hidden by default, shown on mobile
+      background: white;
+      border: 1px solid $neutral-200;
+      border-radius: $border-radius-xl;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      color: $neutral-700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      svg {
+        color: $primary-color;
+      }
+      
+      &:hover {
+        background: $neutral-50;
+        border-color: $neutral-300;
+        transform: translateY(-1px);
+        box-shadow: $shadow-sm;
+      }
+    }
+    
+    .results-count {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: $neutral-600;
+      
+      svg {
+        color: $primary-color;
+      }
+    }
+    
+    .view-toggle {
+      display: flex;
+      background: white;
+      border: 1px solid $neutral-200;
+      border-radius: $border-radius-xl;
+      overflow: hidden;
+      
+      button {
+        background: transparent;
+        border: none;
+        padding: 0.6rem 1rem;
+        cursor: pointer;
+        color: $neutral-500;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        &:hover {
+          color: $neutral-700;
+        }
+        
+        &.active {
+          background: $primary-color;
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// --- Modern Active Filters ---
+.active-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  
+  .active-filters-header {
+    font-size: 0.9rem;
+    color: $neutral-500;
+  }
+  
+  .active-filters-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    
+    .filter-badge {
+      background: rgba(37, 99, 235, 0.1);
+      color: $primary-color;
+      padding: 0.4rem 0.75rem;
+      border-radius: $border-radius-xl;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      svg {
+        color: $primary-color;
+      }
+      
+      &:hover {
+        background: rgba(37, 99, 235, 0.15);
+        transform: translateY(-1px);
+      }
+    }
+    
+    .clear-all-btn {
+      background: transparent;
+      border: none;
+      color: $neutral-500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0.4rem 0.75rem;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        color: $status-error;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// --- Modern Results Grid & Cards ---
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  
+  // Skeleton Loading
+  .skeleton-card {
+    background: white;
+    border-radius: $border-radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+    animation: pulse 1.5s ease-in-out infinite;
+    
+    .skeleton-image {
+      height: 220px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    .skeleton-content {
+      padding: 1.25rem;
+      
+      .skeleton-line {
+        height: 16px;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: $border-radius-lg;
+        margin-bottom: 1rem;
+        
+        &.skeleton-title {
+          height: 20px;
+          width: 70%;
+        }
+        
+        &.skeleton-subtitle {
+          width: 50%;
+        }
+        
+        &.skeleton-price {
+          width: 30%;
+          margin-left: auto;
+        }
+      }
+    }
+  }
+  
+  // Location Card
+  .location-card {
+    background: white;
+    border-radius: $border-radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-sm;
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    cursor: pointer;
+    
+    &.active {
+      transform: translateY(-8px);
+      box-shadow: $shadow-lg;
+      border-color: rgba(37, 99, 235, 0.2);
+      
+      .card-image img {
+        transform: scale(1.05);
+      }
+    }
+    
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    
+    .favorite-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(4px);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s ease;
+      color: $neutral-400;
+      
+      svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 1.5;
+        fill: transparent;
+        transition: all 0.2s ease;
+      }
+      
+      &.fav {
+        color: $status-error;
+        
+        svg {
+          fill: currentColor;
+        }
+      }
+      
+      &:hover {
+        transform: scale(1.1);
+        background: white;
+        box-shadow: $shadow-md;
+        
+        svg {
+          transform: scale(1.1);
+        }
+      }
+    }
+    
+    .card-image {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+      
+      .image-nav {
+        position: absolute;
+        bottom: 12px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        
+        .nav-btn {
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(4px);
+          border: none;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          color: $neutral-700;
+          
+          &:hover {
+            background: white;
+            transform: scale(1.1);
+            box-shadow: $shadow-md;
+          }
+          
+          &.prev {
+            position: absolute;
+            left: 12px;
+          }
+          
+          &.next {
+            position: absolute;
+            right: 12px;
+          }
+        }
+        
+        .image-indicators {
+          display: flex;
+          gap: 0.25rem;
+          background: rgba(0, 0, 0, 0.3);
+          backdrop-filter: blur(4px);
+          border-radius: $border-radius-full;
+          padding: 0.25rem 0.5rem;
+          
+          .indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+            
+            &.active {
+              background: white;
+              transform: scale(1.2);
+            }
+          }
+        }
+      }
+      
+      .card-badges {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        
+        .badge {
+          padding: 0.4rem 0.75rem;
+          border-radius: $border-radius-xl;
+          font-size: 0.75rem;
+          font-weight: 600;
+          backdrop-filter: blur(4px);
+          
+          &.type-badge {
+            background: rgba(37, 99, 235, 0.8);
+            color: white;
+          }
+          
+          &.price-badge {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+          }
+        }
+      }
+    }
+    
+    .card-content {
+      padding: 1.25rem;
+      
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        
+        .card-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: $neutral-800;
+          margin: 0;
+          line-height: 1.4;
+        }
+        
+        .card-rating {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          color: $neutral-700;
+          font-weight: 600;
+          font-size: 0.9rem;
+        }
+      }
+      
+      .card-location {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $neutral-500;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        
+        svg {
+          color: $neutral-400;
+        }
+      }
+      
+      .card-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        
+        .feature {
+          background: $neutral-100;
+          color: $neutral-600;
+          padding: 0.25rem 0.5rem;
+          border-radius: $border-radius-lg;
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
+// --- Modern Load More Button ---
+.load-more-btn {
+  margin: 3rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  background: $primary-gradient;
+  color: white;
+  border: none;
+  border-radius: $border-radius-xl;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: $shadow-md;
+  min-width: 180px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+// --- Modern Map View ---
+.map-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border-radius: $border-radius-xl;
+  overflow: hidden;
+  
+  #map {
+    height: 100%;
+    width: 100%;
+  }
+  
+  .map-controls {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    .map-control-btn {
+      background: white;
+      border: none;
+      border-radius: $border-radius-lg;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: $shadow-md;
+      transition: all 0.2s ease;
+      color: $neutral-700;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-lg;
+        color: $primary-color;
+      }
+    }
+  }
+}
+
+// --- No Results Message ---
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  
+  svg {
+    color: $neutral-300;
+    margin-bottom: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $neutral-700;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: $neutral-500;
+    margin-bottom: 2rem;
+    max-width: 400px;
+  }
+  
+  .btn-primary {
+    background: $primary-gradient;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: $border-radius-xl;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+  }
+}
+
+// --- Animations ---
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// --- Responsive Design ---
+@media (max-width: 992px) {
+  .search-container {
+    grid-template-columns: 1fr;
+    
+    .filters-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 320px;
+      z-index: 1000;
+      transform: translateX(-100%);
+      box-shadow: $shadow-xl;
+    }
+    
+    &.filters-collapsed .filters-sidebar {
+      transform: translateX(-100%);
+    }
+    
+    &:not(.filters-collapsed) .filters-sidebar {
+      transform: translateX(0);
+    }
+  }
+  
+  .main-content {
+    .main-header {
+      .open-filters-btn {
+        display: flex;
+      }
+    }
+    
+    .results-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+    
+    .main-header {
+      flex-wrap: wrap;
+      gap: 1rem;
+      
+      .open-filters-btn {
+        order: 1;
+        flex: 1;
+      }
+      
+      .results-count {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .view-toggle {
+        order: 2;
+        flex: 1;
+        
+        button {
+          flex: 1;
+        }
+      }
+    }
+    
+    .results-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+}
+
+// --- Dark Mode ---
+body.dark-mode {
+  .filters-sidebar { 
+    background: $neutral-900;
+    border-right-color: rgba(51, 65, 85, 0.5);
+    
+    .sidebar-header, .sidebar-footer {
+      border-color: rgba(51, 65, 85, 0.5);
+    }
+    
+    .filter-header {
+      h4 {
+        color: $neutral-200;
+      }
+      
+      .price-display {
+        background: rgba(96, 165, 250, 0.1);
+        color: #60A5FA;
+      }
+    }
+    
+    .sidebar-footer {
+      .btn-ghost {
+        border-color: $neutral-700;
+        color: $neutral-300;
+        
+        &:hover {
+          background: $neutral-800;
+          border-color: $neutral-600;
+          color: $neutral-100;
+        }
+      }
+    }
+  }
+  
+  .modern-checkbox-item {
+    label {
+      .checkbox-custom {
+        border-color: $neutral-600;
+      }
+      
+      .checkbox-label {
+        color: $neutral-300;
+      }
+      
+      &:hover {
+        color: #60A5FA;
+        
+        .checkbox-custom {
+          border-color: #60A5FA;
+        }
+      }
+    }
+    
+    input[type="checkbox"]:checked ~ label .checkbox-custom {
+      background: #60A5FA;
+      border-color: #60A5FA;
+    }
+  }
+  
+  .modern-rating-filter {
+    .star {
+      color: $neutral-700;
+      
+      &.selected, &:hover {
+        color: $secondary-color;
+      }
+    }
+    
+    .rating-text {
+      background: $neutral-800;
+      color: $neutral-300;
+    }
+  }
+  
+  .slider-container {
+    .price-slider {
+      background: linear-gradient(90deg, #60A5FA, #A78BFA);
+      
+      &::-webkit-slider-thumb {
+        background: $neutral-800;
+        border-color: #60A5FA;
+      }
+      
+      &::-moz-range-thumb {
+        background: $neutral-800;
+        border-color: #60A5FA;
+      }
+    }
+    
+    .slider-labels {
+      color: $neutral-400;
+    }
+  }
+  
+  .main-content {
+    .main-header {
+      .open-filters-btn {
+        background: $neutral-800;
+        border-color: $neutral-700;
+        color: $neutral-300;
+        
+        svg {
+          color: #60A5FA;
+        }
+        
+        &:hover {
+          background: $neutral-700;
+          border-color: $neutral-600;
+        }
+      }
+      
+      .results-count {
+        color: $neutral-400;
+        
+        svg {
+          color: #60A5FA;
+        }
+      }
+      
+      .view-toggle {
+        background: $neutral-800;
+        border-color: $neutral-700;
+        
+        button {
+          color: $neutral-400;
+          
+          &:hover {
+            color: $neutral-200;
+          }
+          
+          &.active {
+            background: #60A5FA;
+            color: $neutral-900;
+          }
+        }
+      }
+    }
+  }
+  
+  .active-filters {
+    .active-filters-header {
+      color: $neutral-400;
+    }
+    
+    .active-filters-badges {
+      .filter-badge {
+        background: rgba(96, 165, 250, 0.1);
+        color: #60A5FA;
+        
+        svg {
+          color: #60A5FA;
+        }
+        
+        &:hover {
+          background: rgba(96, 165, 250, 0.15);
+        }
+      }
+      
+      .clear-all-btn {
+        color: $neutral-400;
+        
+        &:hover {
+          color: #F87171;
+        }
+      }
+    }
+  }
+  
+  .results-grid {
+    .skeleton-card {
+      background: $neutral-800;
+      
+      .skeleton-image,
+      .skeleton-content .skeleton-line {
+        background: linear-gradient(90deg, #374151 25%, #4B5563 50%, #374151 75%);
+      }
+    }
+    
+    .location-card {
+      background: $neutral-800;
+      border-color: rgba(51, 65, 85, 0.5);
+      box-shadow: none;
+      
+      &.active {
+        border-color: rgba(96, 165, 250, 0.3);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      }
+      
+      .favorite-btn {
+        background: rgba(30, 41, 59, 0.9);
+        color: $neutral-500;
+        
+        &.fav {
+          color: #F87171;
+        }
+        
+        &:hover {
+          background: $neutral-800;
+        }
+      }
+      
+      .card-image {
+        .image-nav {
+          .nav-btn {
+            background: rgba(30, 41, 59, 0.9);
+            color: $neutral-300;
+            
+            &:hover {
+              background: $neutral-800;
+              color: $neutral-100;
+            }
+          }
+        }
+      }
+      
+      .card-content {
+        .card-header {
+          .card-title {
+            color: $neutral-200;
+          }
+          
+          .card-rating {
+            color: $neutral-300;
+          }
+        }
+        
+        .card-features {
+          .feature {
+            background: $neutral-700;
+            color: $neutral-300;
+          }
+        }
+      }
+    }
+  }
+  
+  .load-more-btn {
+    background: linear-gradient(135deg, #60A5FA, #A78BFA);
+  }
+  
+  .no-results {
+    svg {
+      color: $neutral-700;
+    }
+    
+    h3 {
+      color: $neutral-200;
+    }
+    
+    p {
+      color: $neutral-400;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #60A5FA, #A78BFA);
+    }
+  }
+  
+  .map-container {
+    .map-controls {
+      .map-control-btn {
+        background: $neutral-800;
+        color: $neutral-300;
+        
+        &:hover {
+          color: #60A5FA;
+        }
+      }
+    }
+  }
+}

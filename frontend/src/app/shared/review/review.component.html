@@ -1,0 +1,113 @@
+<div class="reviews-container">
+  <!-- Reviews Summary -->
+  <div class="reviews-summary">
+    <div class="average-rating">
+      <div class="rating-display">
+        <span class="rating-number">{{averageRating | number:'1.1-1'}}</span>
+        <div class="stars">
+          <mat-icon *ngFor="let filled of getStarArray(averageRating)" 
+                   [class.filled]="filled">
+            star
+          </mat-icon>
+        </div>
+      </div>
+      <p>{{reviews.length}} avis</p>
+    </div>
+    
+    <button mat-raised-button color="primary" 
+            (click)="toggleAddReview()"
+            *ngIf="!showAddReview">
+      <mat-icon>rate_review</mat-icon>
+      Laisser un avis
+    </button>
+  </div>
+
+  <!-- Add Review Form -->
+  <mat-card *ngIf="showAddReview" class="add-review-card">
+    <mat-card-header>
+      <mat-card-title>Votre avis</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+        <!-- Rating Selection -->
+        <div class="rating-section">
+          <label>Note :</label>
+          <div class="rating-input">
+            <button *ngFor="let star of [1,2,3,4,5]; let i = index"
+                    type="button"
+                    mat-icon-button
+                    [class.selected]="reviewForm.get('rating')?.value >= star"
+                    (click)="reviewForm.patchValue({rating: star})">
+              <mat-icon>star</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Comment -->
+        <mat-form-field appearance="outline" class="comment-field">
+          <mat-label>Votre commentaire</mat-label>
+          <textarea matInput 
+                    formControlName="comment"
+                    rows="4"
+                    placeholder="Partagez votre expérience..."></textarea>
+          <mat-error *ngIf="reviewForm.get('comment')?.hasError('required')">
+            Le commentaire est requis
+          </mat-error>
+          <mat-error *ngIf="reviewForm.get('comment')?.hasError('minlength')">
+            Le commentaire doit contenir au moins 10 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button mat-button type="button" (click)="toggleAddReview()">
+            Annuler
+          </button>
+          <button mat-raised-button color="primary" 
+                  type="submit" 
+                  [disabled]="!reviewForm.valid || loading">
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <span *ngIf="!loading">Publier l'avis</span>
+            <span *ngIf="loading">Publication...</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Reviews List -->
+  <div class="reviews-list">
+    <div *ngFor="let review of reviews" class="review-item">
+      <div class="review-header">
+        <div class="user-info">
+          <div class="avatar">
+            {{review.userName.charAt(0).toUpperCase()}}
+          </div>
+          <div class="user-details">
+            <h4>{{review.userName}}</h4>
+            <p class="review-date">{{formatDate(review.date)}}</p>
+          </div>
+        </div>
+        
+        <div class="review-rating">
+          <mat-icon *ngFor="let filled of getStarArray(review.rating)" 
+                   [class.filled]="filled">
+            star
+          </mat-icon>
+        </div>
+      </div>
+      
+      <div class="review-content">
+        <p>{{review.comment}}</p>
+      </div>
+    </div>
+
+    <!-- No Reviews -->
+    <div *ngIf="reviews.length === 0" class="no-reviews">
+      <mat-icon>rate_review</mat-icon>
+      <h4>Aucun avis pour le moment</h4>
+      <p>Soyez le premier à laisser un avis sur ce logement</p>
+    </div>
+  </div>
+</div>

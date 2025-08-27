@@ -1,0 +1,335 @@
+.login-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.login-left {
+  flex: 1;
+  background: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1973&q=80') center/cover;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-container i {
+  font-size: 4rem;
+  color: #667eea;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.overlay h1 {
+  font-size: 3rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.overlay p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-top: 1rem;
+}
+
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: white;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.form-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-header i {
+  font-size: 2rem;
+  color: #667eea;
+}
+
+.form-card h2 {
+  text-align: center;
+  margin: 0;
+  color: #667eea;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.form-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ✅ SAME AS REGISTER: Input group positioning */
+.input-group {
+  position: relative;
+  width: 100%;
+}
+
+/* ✅ SAME AS REGISTER: Icons with background to prevent overlap */
+.input-group i:not(.password-toggle-icon) {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #667eea !important;
+  z-index: 100 !important;
+  pointer-events: none;
+  font-size: 1rem !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 3px !important;
+}
+
+/* ✅ SAME AS REGISTER: Input styling - exclude checkbox */
+.form-card input:not([type="checkbox"]) {
+  width: 100% !important;
+  padding: 16px 16px 16px 48px !important;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+  color: #333;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box !important;
+}
+
+/* ✅ SAME AS REGISTER: Password toggle icon */
+.password-toggle-icon {
+  position: absolute !important;
+  right: 15px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #6b7280 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 100 !important;
+  font-size: 0.9rem !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 3px !important;
+}
+
+.password-toggle-icon:hover {
+  color: #667eea;
+}
+
+/* Password input needs padding for toggle icon */
+.password-input-group input {
+  padding-right: 50px !important;
+}
+
+.form-card input:not([type="checkbox"]):focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-card input:not([type="checkbox"]).ng-invalid.ng-touched {
+  border-color: #dc3545;
+}
+
+.form-card button {
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.form-card button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.form-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error {
+  margin-top: 0.5rem;
+}
+
+.error small {
+  color: #dc3545;
+  font-size: 0.875rem;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.register-redirect {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+}
+
+.register-redirect a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-redirect a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Remember Me Checkbox Styling */
+.remember-me-container {
+  margin: 0.5rem 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.remember-me-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #666;
+  user-select: none;
+  line-height: 1.2;
+}
+
+.remember-me-checkbox {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 2px !important;
+  background: white !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+  box-sizing: border-box !important;
+}
+
+.remember-me-checkbox:checked {
+  background: #667eea !important;
+  border-color: #667eea !important;
+}
+
+.remember-me-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.remember-me-checkbox:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+}
+
+.remember-me-label:hover .remember-me-checkbox {
+  border-color: #667eea;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+  }
+
+  .login-left {
+    min-height: 200px;
+  }
+
+  .overlay h1 {
+    font-size: 2rem;
+  }
+
+  .overlay p {
+    font-size: 1rem;
+  }
+
+  .login-right {
+    padding: 1rem;
+  }
+
+  .form-card {
+    padding: 1.5rem;
+  }
+}

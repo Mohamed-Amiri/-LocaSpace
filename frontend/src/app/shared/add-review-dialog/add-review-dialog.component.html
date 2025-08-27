@@ -1,0 +1,104 @@
+<div class="review-dialog">
+  <div class="dialog-header">
+    <div class="review-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
+      </svg>
+    </div>
+    <h2 mat-dialog-title>Évaluer votre séjour</h2>
+    <p class="dialog-subtitle">Partagez votre expérience avec les futurs voyageurs</p>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <!-- Place Info -->
+    <div class="place-summary">
+      @if (data.booking.place?.images?.length) {
+      <img 
+        [src]="data.booking.place?.images?.[0]" 
+        [alt]="data.booking.place?.title || 'Logement'"
+        class="place-image">
+      } @else {
+      <div class="place-image-placeholder">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      }
+      <div class="place-info">
+        <h3>{{data.booking.place?.title || 'Logement'}}</h3>
+        <p>{{data.booking.place?.location || 'Localisation'}}</p>
+      </div>
+    </div>
+
+    <!-- Rating Section -->
+    <div class="rating-section">
+      <label class="section-label">Note générale *</label>
+      <div class="star-rating">
+        @for (star of [1, 2, 3, 4, 5]; track star) {
+        <button 
+          type="button"
+          class="star-btn"
+          [class]="getStarClass(star)"
+          (click)="setRating(star)"
+          (mouseenter)="setHoverRating(star)"
+          (mouseleave)="clearHoverRating()">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        }
+      </div>
+      <div class="rating-labels">
+        <span class="rating-label" [class.active]="rating === 1">Très mauvais</span>
+        <span class="rating-label" [class.active]="rating === 2">Mauvais</span>
+        <span class="rating-label" [class.active]="rating === 3">Correct</span>
+        <span class="rating-label" [class.active]="rating === 4">Bon</span>
+        <span class="rating-label" [class.active]="rating === 5">Excellent</span>
+      </div>
+    </div>
+
+    <!-- Comment Section -->
+    <div class="comment-section">
+      <label for="comment" class="section-label">Votre commentaire *</label>
+      <textarea 
+        id="comment"
+        [(ngModel)]="comment"
+        class="comment-textarea"
+        placeholder="Décrivez votre expérience : propreté, emplacement, équipements, accueil..."
+        rows="4"
+        maxlength="500"></textarea>
+      <div class="character-count">
+        {{comment.length}}/500 caractères (minimum 10)
+      </div>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips-section">
+      <h4>💡 Conseils pour un bon avis</h4>
+      <ul>
+        <li>Soyez honnête et constructif</li>
+        <li>Mentionnez les points positifs et négatifs</li>
+        <li>Parlez de la propreté, l'emplacement, les équipements</li>
+        <li>Aidez les futurs voyageurs dans leur choix</li>
+      </ul>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-btn">
+      Annuler
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()" 
+      class="submit-btn"
+      [disabled]="!canSubmit()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
+      </svg>
+      Publier l'avis
+    </button>
+  </div>
+</div>

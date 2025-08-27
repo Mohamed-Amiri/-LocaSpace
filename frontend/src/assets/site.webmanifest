@@ -1,0 +1,10 @@
+{
+  "name": "LocaSpace",
+  "short_name": "LocaSpace",
+  "description": "Louez ou proposez vos espaces facilement, en toute confiance",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "icons": []
+}

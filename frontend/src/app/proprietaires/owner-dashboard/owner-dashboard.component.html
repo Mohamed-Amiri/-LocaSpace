@@ -1,0 +1,312 @@
+<!-- Modern Dashboard Container -->
+<div class="modern-dashboard">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="welcome-section">
+        <h1 class="main-title">Tableau de Bord Propriétaire</h1>
+        <p class="subtitle">Gérez vos propriétés et réservations efficacement</p>
+      </div>
+      <div class="header-actions">
+        <button class="custom-add-button" aria-label="Ajouter une propriété" routerLink="/proprietaires/add-property" type="button">
+          <mat-icon class="button-icon">add</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-content">
+      <mat-spinner diameter="60"></mat-spinner>
+      <h3>Chargement de votre tableau de bord...</h3>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading" class="dashboard-content">
+    
+    <!-- Statistics Cards -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card primary-card">
+          <div class="card-header">
+            <div class="icon-wrapper primary">
+              <mat-icon>home</mat-icon>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn" mat-icon-button routerLink="/proprietaires/manage-properties" aria-label="Voir propriétés">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="card-content">
+            <h2 class="stat-number">{{ stats.totalProperties || properties.length }}</h2>
+            <p class="stat-label">Propriétés</p>
+            <div class="stat-trend positive">
+              <mat-icon class="trend-icon">trending_up</mat-icon>
+              <span>+2 ce mois</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card warning-card">
+          <div class="card-header">
+            <div class="icon-wrapper warning">
+              <mat-icon>hourglass_empty</mat-icon>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn" mat-icon-button routerLink="/proprietaires/booking-requests" aria-label="Voir demandes">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="card-content">
+            <h2 class="stat-number">{{ stats.pendingRequests || 0 }}</h2>
+            <p class="stat-label">Demandes en attente</p>
+            <div class="stat-trend neutral">
+              <mat-icon class="trend-icon">schedule</mat-icon>
+              <span>Nécessite attention</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card success-card">
+          <div class="card-header">
+            <div class="icon-wrapper success">
+              <mat-icon>attach_money</mat-icon>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn" mat-icon-button aria-label="Voir détails revenus">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="card-content">
+            <h2 class="stat-number">{{ stats.monthlyRevenue || 0 }}€</h2>
+            <p class="stat-label">Revenus ce mois</p>
+            <div class="stat-trend positive">
+              <mat-icon class="trend-icon">trending_up</mat-icon>
+              <span>+15% vs mois dernier</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card info-card">
+          <div class="card-header">
+            <div class="icon-wrapper info">
+              <mat-icon>calendar_today</mat-icon>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn" mat-icon-button aria-label="Voir réservations">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="card-content">
+            <h2 class="stat-number">{{ stats.activeBookings || 0 }}</h2>
+            <p class="stat-label">Réservations actives</p>
+            <div class="stat-trend positive">
+              <span class="trend-icon">✅</span>
+              <span>Tout va bien</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="actions-section">
+      <div class="section-header">
+        <h2>Actions Rapides</h2>
+        <p>Accédez rapidement aux fonctionnalités principales</p>
+      </div>
+      <div class="actions-grid">
+        <button class="action-button primary-action" routerLink="/proprietaires/add-property" aria-label="Ajouter une propriété">
+          <div class="action-icon">
+            <mat-icon>home</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Ajouter une Propriété</h3>
+            <p>Créez une nouvelle annonce</p>
+          </div>
+        </button>
+
+        <button class="action-button warning-action" routerLink="/proprietaires/booking-requests" aria-label="Demandes de réservation">
+          <div class="action-icon">
+            <mat-icon>notifications</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Demandes de Réservation</h3>
+            <p>Gérez vos demandes en attente</p>
+          </div>
+        </button>
+
+        <button class="action-button info-action" routerLink="/proprietaires/manage-properties" aria-label="Gérer mes propriétés">
+          <div class="action-icon">
+            <mat-icon>tune</mat-icon>
+          </div>
+          <div class="action-content">
+            <h3>Gérer mes Propriétés</h3>
+            <p>Modifiez vos annonces existantes</p>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+      <!-- Properties Section -->
+      <div class="content-card properties-section">
+        <div class="card-header">
+          <div class="header-info">
+            <h3>
+              <mat-icon>apartment</mat-icon>
+              Mes Propriétés
+            </h3>
+            <p>{{ properties.length }} propriété(s) au total</p>
+          </div>
+          <button routerLink="/proprietaires/manage-properties" class="view-all-btn" mat-button>
+            Voir tout
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+        
+        <div class="card-content">
+          <div *ngIf="properties.length === 0" class="empty-state">
+            <div class="empty-icon">
+              <mat-icon>apartment</mat-icon>
+            </div>
+            <h4>Aucune propriété</h4>
+            <p>Commencez par ajouter votre première propriété pour commencer à recevoir des réservations.</p>
+            <button mat-raised-button color="primary" routerLink="/proprietaires/add-property">
+              <mat-icon>add</mat-icon>
+              Ajouter ma première propriété
+            </button>
+          </div>
+          
+          <div *ngIf="properties.length > 0" class="properties-preview">
+            <div *ngFor="let property of properties.slice(0, 2)" class="property-preview-item">
+              <div class="property-image">
+                <img [src]="property.photos[0] || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'" 
+                     [alt]="property.title"
+                     (error)="$any($event.target).src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'">
+                <div class="property-status" [class]="property.isActive ? 'active' : 'inactive'">
+                  {{ property.isActive ? 'Actif' : 'Inactif' }}
+                </div>
+              </div>
+              <div class="property-details">
+                <h4>{{ property.title }}</h4>
+                <p class="location">
+                  <mat-icon>location_on</mat-icon>
+                  {{ property.location }}
+                </p>
+                <div class="property-meta">
+                  <span class="price">{{ property.price }}€/nuit</span>
+                  <div class="property-actions">
+                    <button class="action-btn" mat-icon-button [routerLink]="['/proprietaires/edit-property', property.id]" aria-label="Modifier">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button class="action-btn" mat-icon-button [routerLink]="['/proprietaires/calendar', property.id]" aria-label="Calendrier">
+                      <mat-icon>calendar_today</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Booking Requests Section -->
+      <div class="content-card requests-section">
+        <div class="card-header">
+          <div class="header-info">
+            <h3>
+              <mat-icon>notifications</mat-icon>
+              Demandes Récentes
+            </h3>
+            <p>{{ recentBookingRequests.length }} demande(s) récente(s)</p>
+          </div>
+          <button routerLink="/proprietaires/booking-requests" class="view-all-btn" mat-button>
+            Voir tout
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+        
+        <div class="card-content">
+          <div *ngIf="recentBookingRequests.length === 0" class="empty-state">
+            <div class="empty-icon">
+              <mat-icon>notifications_off</mat-icon>
+            </div>
+            <h4>Aucune demande récente</h4>
+            <p>Les nouvelles demandes de réservation apparaîtront ici.</p>
+          </div>
+          
+          <div *ngIf="recentBookingRequests.length > 0" class="compact-requests-preview">
+            <div *ngFor="let request of recentBookingRequests.slice(0, 3)" class="compact-request-item">
+              <div class="request-header">
+                <div class="property-info">
+                  <div class="property-icon">
+                    <mat-icon>home</mat-icon>
+                  </div>
+                  <div class="property-details">
+                    <h4 class="property-title">{{ request.propertyTitle }}</h4>
+                    <div class="status-badge" [class]="request.status">
+                      <mat-icon>{{ request.status === 'pending' ? 'schedule' : request.status === 'approved' ? 'check_circle' : 'cancel' }}</mat-icon>
+                      <span>{{ request.status === 'pending' ? 'En attente' : request.status === 'approved' ? 'Approuvée' : 'Rejetée' }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="request-date">
+                  <span class="date-value">{{ request.createdAt | date:'dd/MM' }}</span>
+                </div>
+              </div>
+
+              <div class="request-details">
+                <div class="guest-info">
+                  <div class="info-item">
+                    <mat-icon>person</mat-icon>
+                    <div>
+                      <strong>{{ request.tenantName }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="booking-info">
+                  <div class="info-item">
+                    <mat-icon>date_range</mat-icon>
+                    <div>
+                      <strong>{{ request.checkIn | date:'dd/MM' }} - {{ request.checkOut | date:'dd/MM' }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <mat-icon>hotel</mat-icon>
+                    <div>
+                      <strong>{{ calculateNights(request.checkIn, request.checkOut) }} nuit(s)</strong>
+                    </div>
+                  </div>
+
+                  <div class="info-item">
+                    <mat-icon>people</mat-icon>
+                    <div>
+                      <strong>{{ request.guests }} invité(s)</strong>
+                    </div>
+                  </div>
+
+                  <div class="info-item price-item">
+                    <mat-icon>euro</mat-icon>
+                    <div>
+                      <strong>{{ request.totalPrice }}€</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
