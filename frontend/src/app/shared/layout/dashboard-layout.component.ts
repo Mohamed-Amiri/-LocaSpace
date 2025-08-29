@@ -56,8 +56,8 @@ export class DashboardLayoutComponent implements OnInit {
 
     } else { // tenant
       return [
-        { label: 'Rechercher', route: '/tenant/search', icon: 'fas fa-search' },
-        { label: 'Mes Réservations', route: '/tenant/reservations', icon: 'fas fa-calendar-check' },
+        { label: 'Rechercher', route: '/locataire/search', icon: 'fas fa-search' },
+        { label: 'Mes Réservations', route: '/locataire/reservations', icon: 'fas fa-calendar-check' },
         { label: 'Favoris', route: '/tenant/favorites', icon: 'fas fa-heart' },
         { label: 'Messages', route: '/tenant/messages', icon: 'fas fa-envelope' },
         { label: 'Profil', route: '/tenant/profile', icon: 'fas fa-user' }

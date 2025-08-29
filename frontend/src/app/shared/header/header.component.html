@@ -28,7 +28,7 @@
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
         <span class="nav-text">Home</span>
       </a>
-      <a routerLink="/tenant-search" routerLinkActive="active" class="nav-link nav-link--primary">
+      <a routerLink="/locataire/search" routerLinkActive="active" class="nav-link nav-link--primary">
         <span class="nav-text">Explore Spaces</span>
       </a>
 
@@ -78,7 +78,7 @@
           </div>
           <div class="user-info">
             <span class="user-name">{{user.firstName}}</span>
-            <a *ngIf="user.role === 'tenant'" routerLink="/reservations" class="user-link">
+            <a *ngIf="user.role === 'tenant'" routerLink="/locataire/reservations" class="user-link">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                 <line x1="16" y1="2" x2="16" y2="6"/>
@@ -112,7 +112,7 @@
   <!-- Mobile Navigation Panel -->
   <div class="mobile-nav-panel" [class.open]="isMenuOpen">
     <a routerLink="/" (click)="closeMenu()">Accueil</a>
-    <a routerLink="/tenant-search" (click)="closeMenu()">Nos Lieux</a>
+    <a routerLink="/locataire/search" (click)="closeMenu()">Nos Lieux</a>
 
     
     <!-- Show login/register links only when NOT authenticated -->
@@ -125,7 +125,7 @@
     <ng-container *ngIf="authService.currentUser$ | async as user">
       <div class="mobile-user-info">
         <span>Bonjour, {{user.firstName}}</span>
-        <a routerLink="/reservations" (click)="closeMenu()">Mes réservations</a>
+        <a routerLink="/locataire/reservations" (click)="closeMenu()">Mes réservations</a>
         <button class="btn btn-secondary" (click)="logout(); closeMenu()">Déconnexion</button>
       </div>
     </ng-container>

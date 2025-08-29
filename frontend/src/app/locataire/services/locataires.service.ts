@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { ImageService } from '../../shared/services/image.service';
 
 export interface Place {
   id: number;
@@ -80,7 +81,7 @@ interface LieuResponse {
 export class LocatairesService {
   private apiUrl = 'http://localhost:8082/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private imageService: ImageService) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
@@ -91,18 +92,21 @@ export class LocatairesService {
   }
 
   private mapLieuResponseToPlace(lieu: LieuResponse): Place {
-    return {
+    console.log('Mapping lieu to place:', lieu);
+    const place: Place = {
       id: lieu.id,
       title: lieu.titre,
       description: lieu.description,
       price: lieu.prix,
       location: lieu.adresse,
-      images: lieu.photos || [],
+      images: this.imageService.getImageUrls(lieu.photos),
       amenities: [], // Would need to add amenities to backend
-      rating: lieu.averageRating || 0,
+      rating: lieu.averageRating || 4.5, // Default rating
       reviews: [], // Reviews loaded separately
-      availability: lieu.valide
+      availability: lieu.valide === true // Ensure boolean conversion
     };
+    console.log('Mapped place:', place);
+    return place;
   }
 
   // Places API
@@ -115,9 +119,25 @@ export class LocatairesService {
     
     const queryString = params.toString();
     const url = queryString ? `${this.apiUrl}/lieux/search?${queryString}` : `${this.apiUrl}/lieux`;
+    
+    console.log('LocatairesService: Searching places with URL:', url);
+    console.log('Search filters:', filters);
 
     return this.http.get<LieuResponse[]>(url).pipe(
-      map(responses => responses.map(lieu => this.mapLieuResponseToPlace(lieu)))
+      map(responses => {
+        console.log('Search response:', responses);
+        if (!Array.isArray(responses)) {
+          console.warn('Expected array but received:', responses);
+          return [];
+        }
+        const places = responses.map(lieu => this.mapLieuResponseToPlace(lieu));
+        console.log('Search mapped places:', places);
+        return places;
+      }),
+      catchError(error => {
+        console.error('Error searching places:', error);
+        return of([]); // Return empty array on error
+      })
     );
   }
 
@@ -128,8 +148,45 @@ export class LocatairesService {
   }
 
   getAllPlaces(): Observable<Place[]> {
+    console.log('LocatairesService: Fetching all places from:', `${this.apiUrl}/lieux`);
     return this.http.get<LieuResponse[]>(`${this.apiUrl}/lieux`).pipe(
-      map(responses => responses.map(lieu => this.mapLieuResponseToPlace(lieu)))
+      map(responses => {
+        console.log('Raw backend response:', responses);
+        if (!Array.isArray(responses)) {
+          console.warn('Expected array but received:', responses);
+          return [];
+        }
+        const places = responses.map(lieu => this.mapLieuResponseToPlace(lieu));
+        console.log('All mapped places:', places);
+        console.log('Available places:', places.filter(p => p.availability));
+        return places;
+      }),
+      catchError(error => {
+        console.error('Error fetching places:', error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+
+  getMyPlaces(): Observable<Place[]> {
+    console.log('LocatairesService: Fetching my places from:', `${this.apiUrl}/lieux/my`);
+    return this.http.get<LieuResponse[]>(`${this.apiUrl}/lieux/my`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map(responses => {
+        console.log('Raw my places response:', responses);
+        if (!Array.isArray(responses)) {
+          console.warn('Expected array but received:', responses);
+          return [];
+        }
+        const places = responses.map(lieu => this.mapLieuResponseToPlace(lieu));
+        console.log('My mapped places:', places);
+        return places;
+      }),
+      catchError(error => {
+        console.error('Error fetching my places:', error);
+        return of([]); // Return empty array on error
+      })
     );
   }
 

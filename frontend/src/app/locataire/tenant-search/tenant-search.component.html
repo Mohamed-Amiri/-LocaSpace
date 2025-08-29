@@ -1,243 +1,249 @@
-<div class="search-container">
-  <!-- Hero Search Section -->
-  <div class="hero-search">
-    <div class="hero-content">
-      <h1 class="hero-title">Trouvez votre logement parfait</h1>
-      <p class="hero-subtitle">Découvrez des milliers de logements uniques pour vos séjours</p>
-      
-      <!-- Quick Search Bar -->
-      <div class="quick-search">
-        <div class="search-input-group">
-          <div class="search-input">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.3639 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <input 
-              type="text" 
-              placeholder="Où souhaitez-vous séjourner ?" 
-              [(ngModel)]="quickSearchLocation">
+<div class="premium-estate">
+  <!-- Executive Header -->
+  <header class="executive-header">
+    <div class="header-glass">
+      <div class="container">
+        <div class="brand-suite">
+          <div class="brand-emblem">
+            <div class="emblem-circle">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2"/>
+                <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
           </div>
-          <button class="search-btn" (click)="searchPlaces()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Rechercher
-          </button>
+          <div class="brand-identity">
+            <h1 class="brand-name">LOCASPACE</h1>
+            <span class="brand-tagline">PROPERTY SEARCH</span>
+          </div>
+        </div>
+        
+        <div class="executive-metrics">
+          <div class="metric-card">
+            <div class="metric-value">{{ totalProperties }}</div>
+            <div class="metric-label">Found</div>
+          </div>
+          <div class="metric-card active">
+            <div class="metric-value">{{ availableProperties }}</div>
+            <div class="metric-label">Available</div>
+          </div>
+          <div class="metric-card premium">
+            <div class="metric-value">{{ getAveragePrice() | currency:'EUR':'symbol':'1.0-0' }}</div>
+            <div class="metric-label">Avg Price</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Advanced Filters -->
-  <div class="filters-section">
-    <div class="filters-container">
-      <div class="filters-header">
-        <h3>Affinez votre recherche</h3>
-        <button class="reset-btn" (click)="resetFilters()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M19 6V20C19 20.5304 19.2107 21.0391 19.5858 21.4142C19.9609 21.7893 20.4696 22 21 22H3C2.46957 22 1.96086 21.7893 1.58579 21.4142C1.21071 21.0391 1 20.5304 1 20V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Command Center -->
+  <section class="command-center">
+    <div class="container">
+      <div class="search-console">
+        <div class="search-frame">
+          <div class="search-input-group">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input type="text" 
+                   class="search-field" 
+                   placeholder="Search available properties..."
+                   [(ngModel)]="searchTerm" (ngModelChange)="searchPlaces()">
+            <button class="search-submit">
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="control-suite">
+        <button class="control-button" [class.active]="showFilters" (click)="toggleFilters()">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" stroke-width="2" fill="none"/>
           </svg>
-          Réinitialiser
+          <span>Filters</span>
+          <div class="filter-indicator" *ngIf="hasActiveFilters()">{{ getActiveFiltersCount() }}</div>
+        </button>
+        
+        <button class="control-button" [class.active]="viewMode === 'grid'" (click)="toggleView()">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
+            <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
+            <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
+            <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+          <span>Grid</span>
+        </button>
+        
+        <button class="control-button" [class.active]="sortBy === 'price'" (click)="sortProperties('price')">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M3 6H21L19 8H5L3 6ZM6 10H18L17 12H7L6 10ZM9 14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Price</span>
+        </button>
+        
+        <button class="control-button danger" *ngIf="hasActiveFilters()" (click)="resetFilters()">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Reset</span>
         </button>
       </div>
+    </div>
+  </section>
 
-      <form [formGroup]="searchForm" class="filters-form">
-        <!-- Price Range -->
-        <div class="filter-group">
-          <label class="filter-label">Budget par nuit</label>
-          <div class="price-inputs">
-            <div class="price-input">
-              <span class="currency">€</span>
-              <input 
-                type="number" 
-                placeholder="Min" 
-                formControlName="minPrice">
-            </div>
-            <span class="price-separator">-</span>
-            <div class="price-input">
-              <span class="currency">€</span>
-              <input 
-                type="number" 
-                placeholder="Max" 
-                formControlName="maxPrice">
+  <!-- Advanced Filters -->
+  <section class="filter-suite" [class.expanded]="showFilters">
+    <div class="container">
+      <div class="filter-panel">
+        <div class="filter-grid">
+          <div class="filter-group">
+            <h3 class="filter-title">Price Range</h3>
+            <div class="price-inputs">
+              <div class="input-wrapper">
+                <label>Minimum</label>
+                <div class="currency-field">
+                  <span class="currency">€</span>
+                  <input type="number" placeholder="0" [(ngModel)]="priceMin" name="priceMin" (ngModelChange)="searchPlaces()">
+                </div>
+              </div>
+              <div class="separator"></div>
+              <div class="input-wrapper">
+                <label>Maximum</label>
+                <div class="currency-field">
+                  <span class="currency">€</span>
+                  <input type="number" placeholder="10000" [(ngModel)]="priceMax" name="priceMax" (ngModelChange)="searchPlaces()">
+                </div>
+              </div>
             </div>
           </div>
           
-          <!-- Rating Filter moved under budget -->
-          <div class="rating-section">
-            <label class="filter-label">Note minimum</label>
-            <div class="rating-filter">
-              @for (rating of ratingNumbers; track rating) {
-              <button 
-                type="button"
-                class="rating-btn"
-                [class.active]="searchForm.get('rating')?.value === rating.toString()"
-                (click)="onRatingSelect(rating)">
-                <span class="rating-number">{{rating}}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
+          <div class="filter-group">
+            <h3 class="filter-title">Quality Rating</h3>
+            <div class="rating-selector">
+              <div class="rating-option" 
+                   *ngFor="let rating of [3, 4, 5]" 
+                   [class.selected]="minRating === rating"
+                   (click)="minRating = rating; searchPlaces()">
+                <div class="stars">
+                  <svg *ngFor="let star of createStarArray(rating)" width="14" height="14" viewBox="0 0 24 24">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/>
+                  </svg>
+                </div>
+                <span>{{ rating }}+ Stars</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="amenities-grid">
+          <h3 class="filter-title">Premium Amenities</h3>
+          <div class="amenity-selector">
+            <div class="amenity-chip" 
+                 *ngFor="let amenity of availableAmenities" 
+                 [class.selected]="selectedAmenities.includes(amenity.id)"
+                 (click)="toggleAmenity(amenity.id)">
+              <span class="amenity-icon">{{ amenity.icon }}</span>
+              <span class="amenity-label">{{ amenity.name }}</span>
+              <div class="selection-mark"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Properties Gallery -->
+  <main class="gallery-section">
+    <div class="container">
+      <div *ngIf="isLoading" class="loading-suite">
+        <div class="spinner-luxury">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+        </div>
+        <p class="loading-text">Finding perfect properties for you...</p>
+      </div>
+      
+      <div *ngIf="!isLoading && filteredPlaces.length > 0" class="properties-grid">
+        <article class="property-card" *ngFor="let place of filteredPlaces">
+          <div class="card-media">
+            <img [src]="place.images[0] || '/assets/placeholder-property.jpg'" [alt]="place.title" class="property-image">
+            <div class="media-overlay">
+              <div class="status-badge" [class]="place.availability ? 'available' : 'occupied'">
+                {{ place.availability ? 'Available' : 'Occupied' }}
+              </div>
+              <button class="favorite-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z" stroke="currentColor" stroke-width="2" fill="none"/>
                 </svg>
-                <span class="plus-sign">+</span>
               </button>
-              }
+            </div>
+            <div class="price-tag">
+              <span class="price-amount">€{{ place.price }}</span>
+              <span class="price-period">/month</span>
             </div>
           </div>
-        </div>
-
-        <!-- Amenities -->
-        <div class="filter-group">
-          <label class="filter-label">Équipements</label>
-          <div class="amenities-grid">
-            @for (amenity of amenitiesList; track amenity) {
-            <button 
-              type="button"
-              class="amenity-btn"
-              [class.active]="(searchForm.get('amenities')?.value || []).includes(amenity)"
-              (click)="onAmenityChange(amenity, !(searchForm.get('amenities')?.value || []).includes(amenity))">
-              <span class="amenity-icon">{{getAmenityIcon(amenity)}}</span>
-              {{amenity}}
-            </button>
-            }
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Results Section -->
-  <div class="results-section">
-    <div class="results-header">
-      <h3 class="results-title">{{places.length}} logement(s) disponible(s)</h3>
-      <div class="view-toggle">
-        <button class="view-btn active">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button class="view-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    @if (loading) {
-    <div class="loading-state">
-      <div class="loading-spinner">
-        <div class="spinner"></div>
-      </div>
-      <p>Recherche des meilleurs logements...</p>
-    </div>
-    }
-
-    <!-- Places Grid -->
-    @if (!loading && places.length > 0) {
-    <div class="places-grid">
-      @for (place of places; track place.id) {
-      <div class="place-card" (click)="viewPlaceDetails(place.id)">
-        <!-- Image Container -->
-        <div class="place-image-container">
-          <img [src]="place.images[0]" [alt]="place.title" class="place-image">
-          <div class="image-overlay">
-            <button class="favorite-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          
+          <div class="card-content">
+            <header class="content-header">
+              <h3 class="property-title">{{ place.title }}</h3>
+              <div class="premium-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/>
+                </svg>
+                ELITE
+              </div>
+            </header>
+            
+            <div class="location-info">
+              <svg width="14" height="14" viewBox="0 0 24 24">
+                <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 5.02944 7.02944 1 12 1C16.9706 1 21 5.02944 21 10Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
               </svg>
-            </button>
-            <div class="price-badge">{{place.price}}€<span>/nuit</span></div>
-          </div>
-        </div>
-
-        <!-- Card Content -->
-        <div class="place-content">
-          <div class="place-header">
-            <h4 class="place-title">{{place.title}}</h4>
-            <div class="place-rating">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
-              </svg>
-              <span>{{place.rating}}</span>
-              <span class="reviews-count">({{place.reviews.length}})</span>
+              <span>{{ place.location }}</span>
+            </div>
+            
+            <p class="property-description">
+              {{ place.description || 'Exquisite property featuring premium finishes and world-class amenities designed for discerning residents.' }}
+            </p>
+            
+            <div class="amenities-preview">
+              <div class="amenity-indicator" *ngFor="let i of [1,2,3,4]"></div>
+              <span class="more-amenities">+6 amenities</span>
+            </div>
+            
+            <div class="card-actions">
+              <button class="action-btn primary" (click)="viewPlaceDetails(place.id)">
+                <svg width="16" height="16" viewBox="0 0 24 24">
+                  <path d="M15 3H6C4.895 3 4 3.895 4 5V19C4 20.105 4.895 21 6 21H18C19.105 21 20 20.105 20 19V8L15 3Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M14 3V9H20" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                View Details
+              </button>
             </div>
           </div>
-
-          <p class="place-location">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.3639 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </article>
+      </div>
+      
+      <div *ngIf="!isLoading && filteredPlaces.length === 0" class="empty-estate">
+        <div class="empty-content">
+          <div class="empty-icon">
+            <svg width="96" height="96" viewBox="0 0 24 24">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
             </svg>
-            {{place.location}}
+          </div>
+          <h2 class="empty-title">No Properties Found</h2>
+          <p class="empty-description">
+            No properties match your current search criteria. Try adjusting your filters or search terms.
           </p>
-
-          <p class="place-description">{{place.description | slice:0:120}}...</p>
-
-          <!-- Amenities Preview -->
-          <div class="amenities-preview">
-            @for (amenity of place.amenities.slice(0, 3); track amenity) {
-            <span class="amenity-tag">
-              {{amenity}}
-            </span>
-            }
-            @if (place.amenities.length > 3) {
-            <span class="amenity-more">
-              +{{place.amenities.length - 3}}
-            </span>
-            }
-          </div>
-
-          <!-- Action Button -->
-          <button class="view-details-btn">
-            <span>Voir les détails</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <line x1="7" y1="17" x2="17" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <polyline points="7,7 17,7 17,17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
         </div>
       </div>
-      }
     </div>
-    }
-
-    <!-- Empty State -->
-    @if (!loading && places.length === 0) {
-    <div class="empty-state">
-      <div class="empty-illustration">
-        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="11" y1="8" x2="11" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="8" y1="11" x2="14" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <h3 class="empty-title">Aucun logement trouvé</h3>
-      <p class="empty-description">
-        Essayez d'ajuster vos critères de recherche ou explorez d'autres destinations
-      </p>
-      <button class="reset-search-btn" (click)="resetFilters()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M20.49 9C19.9828 7.56678 19.1209 6.28392 17.9845 5.27304C16.8482 4.26216 15.4745 3.55682 13.9917 3.21834C12.5089 2.87986 10.9652 2.91902 9.50481 3.33329C8.04437 3.74757 6.70779 4.52437 5.64 5.59L1 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3.51 15C4.01723 16.4332 4.87908 17.7161 6.01547 18.727C7.15186 19.7378 8.52547 20.4432 10.0083 20.7817C11.4911 21.1201 13.0348 21.081 14.4952 20.6667C15.9556 20.2524 17.2922 19.4756 18.36 18.41L23 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Réinitialiser la recherche
-      </button>
-    </div>
-    }
-  </div>
+  </main>
 </div>

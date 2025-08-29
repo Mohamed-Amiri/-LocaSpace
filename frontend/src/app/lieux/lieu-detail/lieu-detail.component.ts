@@ -89,35 +89,52 @@ export class LieuDetailComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.lieu = this.lieuService.getLieuById(+id);
+      const lieuId = +id;
+      
+      // First try to get from current data
+      this.lieu = this.lieuService.getLieuById(lieuId);
       if (this.lieu) {
-        // Initialize reviews
-        if (this.lieu.reviews?.length > 0) {
-          this.calculateAverageRating();
-          this.generateRatingCategories();
-          this.displayedReviews = this.lieu.reviews.slice(0, 6);
-          
-          // Add dates to reviews if not present
-          this.lieu.reviews.forEach(review => {
-            if (!review.date) {
-              // Generate a random date within the last year
-              const today = new Date();
-              const randomDaysAgo = Math.floor(Math.random() * 365);
-              review.date = new Date(today.setDate(today.getDate() - randomDaysAgo));
-            }
-          });
-        }
-        
-        // Initialize photos
-        if (this.lieu.photos.length > 0) {
-          this.selectedImage = this.lieu.photos[0];
-        }
-        
-        // Initialize amenities
-        if (this.lieu.equipements?.length > 0) {
-          this.displayedAmenities = this.lieu.equipements.slice(0, 8);
-        }
+        this.initializeLieuData();
       }
+      
+      // Subscribe to updates in case data is still loading
+      this.lieuService.getLieuById$(lieuId).subscribe(lieu => {
+        if (lieu) {
+          this.lieu = lieu;
+          this.initializeLieuData();
+        }
+      });
+    }
+  }
+
+  private initializeLieuData(): void {
+    if (!this.lieu) return;
+    
+    // Initialize reviews
+    if (this.lieu.reviews?.length > 0) {
+      this.calculateAverageRating();
+      this.generateRatingCategories();
+      this.displayedReviews = this.lieu.reviews.slice(0, 6);
+      
+      // Add dates to reviews if not present
+      this.lieu.reviews.forEach(review => {
+        if (!review.date) {
+          // Generate a random date within the last year
+          const today = new Date();
+          const randomDaysAgo = Math.floor(Math.random() * 365);
+          review.date = new Date(today.setDate(today.getDate() - randomDaysAgo));
+        }
+      });
+    }
+    
+    // Initialize photos
+    if (this.lieu.photos.length > 0) {
+      this.selectedImage = this.lieu.photos[0];
+    }
+    
+    // Initialize amenities
+    if (this.lieu.equipements?.length > 0) {
+      this.displayedAmenities = this.lieu.equipements.slice(0, 8);
     }
   }
 

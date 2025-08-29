@@ -1,131 +1,229 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
+import { map, catchError, retry } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { Lieu, Review, Host } from './lieu.model';
+import { ImageService } from '../shared/services/image.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LieuService {
-  private lieux: Lieu[] = [
-    {
-      id: 1,
-      titre: 'Villa Spacieuse avec Piscine',
-      ville: 'Nice',
-      prix: 350,
-      type: 'Villa',
-      description: 'Une magnifique villa offrant une vue imprenable sur la mer. Profitez de la tranquillité et du luxe avec une piscine privée, un grand jardin et un intérieur moderne.',
-      photo: 'https://images.unsplash.com/photo-1613977257363-31b5a15e3a2b?q=80&w=2070&auto=format&fit=crop',
-      photos: [
-        'https://images.unsplash.com/photo-1613977257363-31b5a15e3a2b?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2070&auto=format&fit=crop'
-      ],
-      lat: 43.7102,
-      lng: 7.2620,
-      reviews: [
-        { user: 'Alice', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d', rating: 5, comment: 'Absolument parfait ! La vue est encore plus belle en vrai.' },
-        { user: 'Marc', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704e', rating: 4, comment: 'Super séjour, la villa est très confortable. Un petit bémol pour le wifi un peu lent.' }
-      ],
-      note: 4.5,
-      equipements: ['Piscine', 'WiFi', 'Parking', 'Cuisine', 'Climatisation', 'TV', 'Lave-linge', 'Sèche-linge', 'Chauffage', 'Jardin', 'Vue'],
-      host: { 
-        name: 'Jean', 
-        avatar: 'https://i.pravatar.cc/150?u=host1',
-        isSuperHost: true,
-        isIdentityVerified: true,
-        guestCount: 245,
-        rating: '4.9',
-        reviewCount: '124',
-        memberSince: 'janvier 2020',
-        description: 'Passionné par l\'accueil et le partage, je serai ravi de vous faire découvrir ma villa et de vous aider à passer un séjour inoubliable.'
-      },
-      capacity: 8,
-      bedrooms: 4,
-      bathrooms: 3,
-      locationDescription: 'Quartier calme et résidentiel, proche des transports en commun et des commerces. À 15 minutes à pied du centre-ville.'
-    },
-    {
-      id: 2,
-      titre: 'Appartement Moderne Centre-Ville',
-      ville: 'Paris',
-      prix: 120,
-      type: 'Appartement',
-      description: 'Un appartement chic et moderne au cœur de Paris. À quelques pas des principales attractions, des boutiques et des restaurants. Parfait pour un séjour en ville.',
-      photo: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop',
-      photos: [
-        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2057&auto=format&fit=crop'
-      ],
-      lat: 48.8566,
-      lng: 2.3522,
-      reviews: [
-        { user: 'Chloé', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704f', rating: 5, comment: 'Emplacement idéal, appartement très propre et bien équipé. Je recommande !' }
-      ],
-      note: 4.8,
-      equipements: ['Ascenseur', 'WiFi', 'Cuisine', 'TV', 'Chauffage', 'Vue'],
-      host: { 
-        name: 'Marie', 
-        avatar: 'https://i.pravatar.cc/150?u=host2',
-        isSuperHost: false,
-        isIdentityVerified: true,
-        guestCount: 87,
-        rating: '4.7',
-        reviewCount: '56',
-        memberSince: 'mars 2021',
-        description: 'Bonjour ! Je suis ravie de vous accueillir dans mon appartement parisien. N\'hésitez pas à me contacter pour toute question.'
-      },
-      capacity: 4,
-      bedrooms: 2,
-      bathrooms: 1,
-      locationDescription: 'En plein cœur de Paris, à deux pas des Champs-Élysées et à 5 minutes à pied du métro.'
-    },
-    {
-      id: 3,
-      titre: 'Maison de Campagne Charmante',
-      ville: 'Bordeaux',
-      prix: 210,
-      type: 'Maison',
-      description: 'Évadez-vous dans cette charmante maison de campagne entourée de vignobles. Un havre de paix avec tout le confort moderne. Idéal pour les amateurs de vin et de nature.',
-      photo: 'https://images.unsplash.com/photo-1559949339-724155133a83?q=80&w=1974&auto=format&fit=crop',
-      photos: [
-        'https://images.unsplash.com/photo-1559949339-724155133a83?q=80&w=1974&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=2070&auto=format&fit=crop'
-      ],
-      lat: 44.8378,
-      lng: -0.5792,
-      reviews: [
-        { user: 'Julien', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704a', rating: 5, comment: 'Un véritable havre de paix. La maison est encore plus charmante que sur les photos.' },
-        { user: 'Sophie', avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704b', rating: 4, comment: 'Très agréable, parfait pour se déconnecter.' }
-      ],
-      note: 4.6,
-      equipements: ['Jardin', 'Cheminée', 'WiFi', 'Cuisine', 'Parking', 'Barbecue', 'Terrasse'],
-      host: { 
-        name: 'Luc', 
-        avatar: 'https://i.pravatar.cc/150?u=host3',
-        isSuperHost: true,
-        isIdentityVerified: true,
-        guestCount: 156,
-        rating: '4.8',
-        reviewCount: '78',
-        memberSince: 'juin 2019',
-        description: 'Amoureux de la nature et du vin, je serai heureux de vous accueillir dans ma maison de campagne et de vous faire découvrir les meilleurs vignobles de la région.'
-      },
-      capacity: 6,
-      bedrooms: 3,
-      bathrooms: 2,
-      locationDescription: 'Située au cœur des vignobles bordelais, à 20 minutes en voiture du centre-ville de Bordeaux et à 10 minutes des premiers châteaux.'
-    }
-  ];
+  private apiUrl = `${environment.apiUrl}/lieux`;
+  private lieuxSubject = new BehaviorSubject<Lieu[]>([]);
+  public lieux$ = this.lieuxSubject.asObservable();
 
-  constructor() { }
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
 
-  getLieux() {
-    return this.lieux;
+  constructor(private http: HttpClient, private imageService: ImageService) {
+    this.loadValidatedLieux();
   }
 
-  getLieuById(id: number) {
-    return this.lieux.find(lieu => lieu.id === id);
+  // Enhanced error handling
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    console.error('LieuService error:', error);
+    
+    let errorMessage = 'Une erreur est survenue';
+    
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Erreur client: ${error.error.message}`;
+    } else {
+      // Server-side error
+      switch (error.status) {
+        case 0:
+          errorMessage = 'Impossible de contacter le serveur. Vérifiez que le backend est démarré.';
+          break;
+        case 404:
+          errorMessage = 'Aucun lieu trouvé';
+          break;
+        case 500:
+          errorMessage = 'Erreur serveur interne';
+          break;
+        default:
+          errorMessage = `Erreur HTTP ${error.status}: ${error.statusText}`;
+      }
+    }
+    
+    return throwError(() => new Error(errorMessage));
+  }
+
+  // Transform backend response to frontend Lieu model
+  private transformBackendToLieu(backendLieu: any): Lieu {
+    const lieu: Lieu = {
+      id: backendLieu.id,
+      titre: backendLieu.titre || '',
+      ville: this.extractCityFromAddress(backendLieu.adresse || ''),
+      prix: backendLieu.prix || 0,
+      type: backendLieu.type || 'Appartement',
+      description: backendLieu.description || '',
+      photo: this.imageService.getFirstImageUrl(backendLieu.photos),
+      photos: this.imageService.getImageUrls(backendLieu.photos),
+      lat: this.getDefaultLatForCity(this.extractCityFromAddress(backendLieu.adresse || '')),
+      lng: this.getDefaultLngForCity(this.extractCityFromAddress(backendLieu.adresse || '')),
+      note: 4.5, // Default rating, can be updated when reviews system is implemented
+      equipements: backendLieu.amenities || [],
+      reviews: [], // Will be populated when review system is implemented
+      host: this.createDefaultHost(backendLieu.owner),
+      capacity: backendLieu.maxGuests || 2,
+      bedrooms: backendLieu.bedrooms || 1,
+      bathrooms: backendLieu.bathrooms || 1,
+      locationDescription: backendLieu.adresse || ''
+    };
+    
+    return lieu;
+  }
+
+  // Helper method to extract city from address
+  private extractCityFromAddress(address: string): string {
+    if (!address) return 'Ville';
+    
+    // Simple extraction logic - can be enhanced based on address format
+    const parts = address.split(',');
+    if (parts.length > 1) {
+      return parts[parts.length - 1].trim();
+    }
+    return address.split(' ').pop() || 'Ville';
+  }
+
+  // Helper method to get default coordinates for major cities
+  private getDefaultLatForCity(city: string): number {
+    const cityCoords: { [key: string]: { lat: number, lng: number } } = {
+      'Paris': { lat: 48.8566, lng: 2.3522 },
+      'Nice': { lat: 43.7102, lng: 7.2620 },
+      'Bordeaux': { lat: 44.8378, lng: -0.5792 },
+      'Lyon': { lat: 45.7640, lng: 4.8357 },
+      'Marseille': { lat: 43.2965, lng: 5.3698 },
+      'Toulouse': { lat: 43.6047, lng: 1.4442 }
+    };
+    
+    const normalizedCity = city.toLowerCase();
+    for (const [key, coords] of Object.entries(cityCoords)) {
+      if (normalizedCity.includes(key.toLowerCase())) {
+        return coords.lat;
+      }
+    }
+    return 46.2276; // Center of France as default
+  }
+
+  private getDefaultLngForCity(city: string): number {
+    const cityCoords: { [key: string]: { lat: number, lng: number } } = {
+      'Paris': { lat: 48.8566, lng: 2.3522 },
+      'Nice': { lat: 43.7102, lng: 7.2620 },
+      'Bordeaux': { lat: 44.8378, lng: -0.5792 },
+      'Lyon': { lat: 45.7640, lng: 4.8357 },
+      'Marseille': { lat: 43.2965, lng: 5.3698 },
+      'Toulouse': { lat: 43.6047, lng: 1.4442 }
+    };
+    
+    const normalizedCity = city.toLowerCase();
+    for (const [key, coords] of Object.entries(cityCoords)) {
+      if (normalizedCity.includes(key.toLowerCase())) {
+        return coords.lng;
+      }
+    }
+    return 2.2137; // Center of France as default
+  }
+
+  // Helper method to create default host info
+  private createDefaultHost(owner: any): Host {
+    if (!owner) {
+      return {
+        name: 'Hôte',
+        avatar: 'https://i.pravatar.cc/150?u=default',
+        isSuperHost: false,
+        isIdentityVerified: false
+      };
+    }
+
+    return {
+      name: owner.nom || owner.name || 'Hôte',
+      avatar: `https://i.pravatar.cc/150?u=${owner.email || 'default'}`,
+      isSuperHost: false,
+      isIdentityVerified: true,
+      guestCount: 0,
+      rating: '4.5',
+      reviewCount: '0',
+      memberSince: 'récemment',
+      description: `Bienvenue chez ${owner.nom || 'nous'} ! N'hésitez pas à nous contacter pour toute question.`
+    };
+  }
+
+  // Load validated lieux from backend
+  private loadValidatedLieux(): void {
+    console.log('Loading validated lieux from:', this.apiUrl);
+    
+    this.http.get<any[]>(this.apiUrl, this.httpOptions).pipe(
+      retry(2),
+      map(backendLieux => {
+        console.log('Received backend lieux:', backendLieux);
+        if (!Array.isArray(backendLieux)) {
+          console.warn('Expected array but received:', backendLieux);
+          return [];
+        }
+        return backendLieux.map(lieu => this.transformBackendToLieu(lieu));
+      }),
+      catchError(error => {
+        console.error('Error loading validated lieux:', error);
+        // Return empty array on error, but don't crash the app
+        return of([]);
+      })
+    ).subscribe({
+      next: (lieux) => {
+        console.log('Transformed lieux for frontend:', lieux);
+        this.lieuxSubject.next(lieux);
+      },
+      error: (error) => {
+        console.error('Failed to load lieux:', error);
+        this.lieuxSubject.next([]); // Emit empty array to prevent app crash
+      }
+    });
+  }
+
+  // Public methods
+  getLieux(): Lieu[] {
+    return this.lieuxSubject.value;
+  }
+
+  getLieux$(): Observable<Lieu[]> {
+    return this.lieux$;
+  }
+
+  getLieuById(id: number): Lieu | undefined {
+    return this.lieuxSubject.value.find(lieu => lieu.id === id);
+  }
+
+  getLieuById$(id: number): Observable<Lieu | undefined> {
+    return this.lieux$.pipe(
+      map(lieux => lieux.find(lieu => lieu.id === id))
+    );
+  }
+
+  // Search and filter methods
+  searchLieux(keyword: string): Observable<Lieu[]> {
+    const params = keyword ? `?keyword=${encodeURIComponent(keyword)}` : '';
+    return this.http.get<any[]>(`${this.apiUrl}/search${params}`, this.httpOptions).pipe(
+      retry(1),
+      map(backendLieux => backendLieux.map(lieu => this.transformBackendToLieu(lieu))),
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getLieuxByType(type: string): Observable<Lieu[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/type/${type}`, this.httpOptions).pipe(
+      retry(1),
+      map(backendLieux => backendLieux.map(lieu => this.transformBackendToLieu(lieu))),
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Refresh data method
+  refreshLieux(): void {
+    this.loadValidatedLieux();
   }
 }

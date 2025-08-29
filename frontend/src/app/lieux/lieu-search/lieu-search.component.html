@@ -1,258 +1,237 @@
-<div class="search-container" [class.filters-collapsed]="!isFiltersVisible">
-  <!-- Modern Filters Sidebar -->
-  <aside class="filters-sidebar">
-    <div class="sidebar-header">
-      <h3>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+<div class="search-container">
+  <!-- Premium Hero Search Section -->
+  <div class="premium-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">Découvrez des lieux exceptionnels</h1>
+        <p class="hero-subtitle">Trouvez le logement idéal pour votre séjour parfait</p>
+      </div>
+      
+      <!-- Premium Search Bar -->
+      <div class="premium-search-bar">
+        <div class="search-input-group">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.3639 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <input type="text" placeholder="Où souhaitez-vous séjourner ?" class="search-input">
+          </div>
+          <button class="search-btn premium-btn" (click)="applyFilters()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Rechercher
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Premium Filters Section -->
+  <div class="premium-filters-section">
+    <div class="filters-header">
+      <h3>Affinez votre recherche</h3>
+      <button class="reset-btn premium-btn" (click)="resetFilters()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M19 6V20C19 20.5304 19.2107 21.0391 19.5858 21.4142C19.9609 21.7893 20.4696 22 21 22H3C2.46957 22 1.96086 21.7893 1.58579 21.4142C1.21071 21.0391 1 20.5304 1 20V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        Filtres
-      </h3>
-      <button class="close-filters-btn" (click)="toggleFilters()" aria-label="Fermer les filtres">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+        Réinitialiser
       </button>
     </div>
     
-    <form [formGroup]="filterForm" class="sidebar-content">
-      <!-- Price Filter -->
-      <div class="filter-group">
+    <form [formGroup]="filterForm" class="filters-form">
+      <!-- Price Range Filter -->
+      <div class="filter-card">
         <div class="filter-header">
-          <h4>Prix</h4>
-          <span class="price-display">{{ filterForm.get('maxPrice')?.value | currency:'EUR':'symbol':'1.0-0' }}</span>
+          <h4>Budget</h4>
         </div>
-        <div class="slider-container">
-          <input type="range" [min]="0" [max]="maxPrice" formControlName="maxPrice" class="price-slider">
-          <div class="slider-labels">
-            <span>0 €</span>
-            <span>{{ maxPrice | currency:'EUR':'symbol':'1.0-0' }}</span>
+        <div class="price-filter">
+          <div class="price-input">
+            <span class="currency">€</span>
+            <input type="range" [min]="0" [max]="maxPrice" formControlName="maxPrice" class="price-slider">
           </div>
+          <div class="price-display">{{filterForm.get('maxPrice')?.value | currency:'EUR':'symbol':'1.0-0'}}</div>
         </div>
       </div>
-      
-      <!-- Type Filter -->
-      <div class="filter-group" formGroupName="types">
-        <div class="filter-header">
-          <h4>Type de lieu</h4>
-          <span class="filter-count" *ngIf="getSelectedTypesCount() > 0">{{ getSelectedTypesCount() }}</span>
-        </div>
-        <div class="modern-checkbox-group">
-          <div *ngFor="let type of allTypes" class="modern-checkbox-item">
-            <input type="checkbox" [id]="'type-' + type" [formControlName]="type">
-            <label [for]="'type-' + type">
-              <span class="checkbox-custom"></span>
-              <span class="checkbox-label">{{ type }}</span>
-            </label>
-          </div>
-        </div>
-      </div>
-      
+
       <!-- Rating Filter -->
-      <div class="filter-group">
+      <div class="filter-card">
         <div class="filter-header">
-          <h4>Note minimale</h4>
+          <h4>Note minimum</h4>
         </div>
-        <div class="modern-rating-filter">
-          <span *ngFor="let i of [1,2,3,4,5]" 
-                class="star" 
-                [class.selected]="filterForm.get('minRating')?.value >= i"
-                (click)="filterForm.get('minRating')?.setValue(i)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-          </span>
-          <span class="rating-text" *ngIf="filterForm.get('minRating')?.value">
-            {{ filterForm.get('minRating')?.value }}+ étoiles
-          </span>
+        <div class="rating-filter">
+          <ng-container *ngFor="let i of [1,2,3,4,5]">
+            <button 
+              type="button"
+              class="rating-btn"
+              [class.active]="filterForm.get('minRating')?.value >= i"
+              (click)="filterForm.get('minRating')?.setValue(i)">
+              <span class="rating-number">{{i}}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
+              </svg>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="filter-card" formGroupName="types">
+        <div class="filter-header">
+          <h4>Type de logement</h4>
+        </div>
+        <div class="amenities-grid">
+          <ng-container *ngFor="let type of allTypes">
+            <button 
+              type="button"
+              class="amenity-btn premium-btn"
+              [class.active]="filterForm.get('types')?.get(type)?.value"
+              (click)="toggleTypeFilter(type)">
+              <span>{{type}}</span>
+            </button>
+          </ng-container>
         </div>
       </div>
       
       <!-- Amenities Filter -->
-      <div class="filter-group" formGroupName="amenities">
+      <div class="filter-card" formGroupName="amenities">
         <div class="filter-header">
           <h4>Équipements</h4>
-          <span class="filter-count" *ngIf="getSelectedAmenitiesCount() > 0">{{ getSelectedAmenitiesCount() }}</span>
         </div>
-        <div class="modern-checkbox-group">
-          <div *ngFor="let amenity of allAmenities" class="modern-checkbox-item">
-            <input type="checkbox" [id]="'amenity-' + amenity" [formControlName]="amenity">
-            <label [for]="'amenity-' + amenity">
-              <span class="checkbox-custom"></span>
-              <span class="checkbox-label">{{ amenity }}</span>
-            </label>
-          </div>
+        <div class="amenities-grid">
+          <ng-container *ngFor="let amenity of allAmenities">
+            <button 
+              type="button"
+              class="amenity-btn premium-btn"
+              [class.active]="filterForm.get('amenities')?.get(amenity)?.value"
+              (click)="toggleAmenityFilter(amenity)">
+              <span>{{amenity}}</span>
+            </button>
+          </ng-container>
         </div>
       </div>
     </form>
-    
-    <div class="sidebar-footer">
-      <button class="btn btn-ghost" (click)="resetFilters()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-          <path d="M3 3v5h5"></path>
-        </svg>
-        Réinitialiser
-      </button>
-      <button class="btn btn-primary" (click)="applyFilters()">
-        <span>Appliquer</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-    </div>
-  </aside>
+  </div>
 
-  <!-- Modern Main Content -->
-  <main class="main-content">
-    <header class="main-header">
-      <button class="open-filters-btn" (click)="toggleFilters()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-        </svg>
-        <span>Filtres</span>
-      </button>
-      
-      <div class="results-count">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <span>{{ filteredLocations.length }} résultats</span>
-      </div>
-      
+  <!-- Premium Results Section -->
+  <div class="premium-results-section">
+    <div class="results-header">
+      <h2 class="results-title">{{filteredLocations.length}} logements trouvés</h2>
       <div class="view-toggle">
-        <button [class.active]="viewMode === 'grid'" (click)="setViewMode('grid')" aria-label="Vue en grille">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="view-btn premium-btn" [class.active]="viewMode === 'grid'" (click)="setViewMode('grid')" aria-label="Vue en grille">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
             <rect x="14" y="14" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
           </svg>
         </button>
-        <button [class.active]="viewMode === 'map'" (click)="setViewMode('map')" aria-label="Vue sur carte">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="view-btn premium-btn" [class.active]="viewMode === 'map'" (click)="setViewMode('map')" aria-label="Vue sur carte">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
             <line x1="8" y1="2" x2="8" y2="18"></line>
             <line x1="16" y1="6" x2="16" y2="22"></line>
           </svg>
         </button>
       </div>
-    </header>
-
-    <!-- Active Filters -->
-    <div class="active-filters" *ngIf="getActiveFilterLabels().length">
-      <div class="active-filters-header">
-        <span>Filtres actifs:</span>
-      </div>
-      <div class="active-filters-badges">
-        <span class="filter-badge" *ngFor="let badge of getActiveFilterLabels()" (click)="removeFilter(badge)">
-          {{ badge.label }}
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </span>
-        <button class="clear-all-btn" *ngIf="getActiveFilterLabels().length > 1" (click)="resetFilters()">
-          Tout effacer
-        </button>
-      </div>
     </div>
 
-    <!-- Grid View -->
-    <div *ngIf="viewMode === 'grid'" class="results-grid" (mouseleave)="closePreview()">
-      <ng-container *ngIf="isLoading; else content">
-        <div class="skeleton-card" *ngFor="let s of skeletonArray">
-          <div class="skeleton-image"></div>
-          <div class="skeleton-content">
-            <div class="skeleton-line skeleton-title"></div>
-            <div class="skeleton-line skeleton-subtitle"></div>
-            <div class="skeleton-line skeleton-price"></div>
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+      <p>Recherche des meilleurs logements...</p>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="places-grid" *ngIf="!isLoading && viewMode === 'grid'">
+      <div class="place-card premium-card" *ngFor="let location of displayedLocations" (click)="navigateToDetail(location.id)">
+        <!-- Image Container -->
+        <div class="place-image-container">
+          <img [src]="location.photos[activePhoto[location.id] || 0]" [alt]="location.titre" class="place-image">
+          <div class="image-overlay">
+            <button class="favorite-btn premium-btn" [class.active]="isFav(location.id)" 
+                    (click)="toggleFav(location.id); $event.stopPropagation();">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="price-badge premium-badge">
+              {{location.prix}}€ <span>/ nuit</span>
+            </div>
+          </div>
+          
+          <!-- Image Navigation -->
+          <div class="image-nav" *ngIf="location.photos.length > 1">
+            <button class="nav-btn prev premium-btn" (click)="prevPhoto(location.id, $event)" aria-label="Photo précédente">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button class="nav-btn next premium-btn" (click)="nextPhoto(location.id, $event)" aria-label="Photo suivante">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
         </div>
-      </ng-container>
-      
-      <ng-template #content>
-        <div class="location-card" *ngFor="let location of displayedLocations" 
-             [class.active]="activeCard === location.id"
-             (click)="navigateToDetail(location.id)">
-          <button class="favorite-btn" [class.fav]="isFav(location.id)" 
-                  (click)="toggleFav(location.id); $event.stopPropagation();" 
-                  [attr.aria-label]="isFav(location.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        
+        <!-- Place Content -->
+        <div class="place-content">
+          <div class="place-header">
+            <h3 class="place-title">{{location.titre}}</h3>
+            <div class="place-rating">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="1">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+              </svg>
+              <span>{{location.note}}</span>
+            </div>
+          </div>
+          
+          <p class="place-location">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{location.ville}}
+          </p>
+          
+          <p class="place-description">{{location.description | slice:0:100}}{{location.description.length > 100 ? '...' : ''}}</p>
+          
+          <div class="amenities-preview">
+            <span class="amenity-tag premium-tag" *ngFor="let amenity of location.equipements.slice(0, 3)">
+              {{amenity}}
+            </span>
+            <span class="amenity-more premium-tag" *ngIf="location.equipements.length > 3">
+              +{{location.equipements.length - 3}} plus
+            </span>
+          </div>
+          
+          <button class="view-details-btn premium-btn">
+            <span>Voir les détails</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
           </button>
-          
-          <div class="card-link">
-            <div class="card-image">
-              <img [src]="location.photos[activePhoto[location.id] || 0]" [alt]="location.titre" loading="lazy">
-              
-              <!-- Image Navigation -->
-              <div class="image-nav" *ngIf="location.photos.length > 1">
-                <button class="nav-btn prev" (click)="prevPhoto(location.id, $event)" aria-label="Photo précédente">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                  </svg>
-                </button>
-                <button class="nav-btn next" (click)="nextPhoto(location.id, $event)" aria-label="Photo suivante">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-                
-                <!-- Image Indicators -->
-                <div class="image-indicators">
-                  <span *ngFor="let photo of location.photos; let i = index" 
-                        class="indicator" 
-                        [class.active]="activePhoto[location.id] === i"></span>
-                </div>
-              </div>
-              
-              <div class="card-badges">
-                <span class="badge type-badge">{{ location.type }}</span>
-                <span class="badge price-badge">{{ location.prix | currency:'EUR' }} / nuit</span>
-              </div>
-            </div>
-            
-            <div class="card-content">
-              <div class="card-header">
-                <h4 class="card-title">{{ location.titre }}</h4>
-                <div class="card-rating">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="0.5">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                  </svg>
-                  <span>{{ location.note }}</span>
-                </div>
-              </div>
-              
-              <p class="card-location">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                {{ location.ville }}
-              </p>
-              
-              <div class="card-features">
-                <span class="feature" *ngFor="let feature of getTopFeatures(location)">{{ feature }}</span>
-              </div>
-            </div>
-          </div>
         </div>
-        
-        <!-- Load More Button -->
-        <button *ngIf="!isLoading && displayedLocations.length < filteredLocations.length" 
-                [disabled]="isLoadingMore" 
-                class="load-more-btn" 
-                (click)="loadMore()">
-          <span *ngIf="!isLoadingMore">Charger plus</span>
-          <div *ngIf="isLoadingMore" class="loading-spinner"></div>
-        </button>
-        
-        <div #sentinel class="sentinel"></div>
-      </ng-template>
+      </div>
+      
+      <!-- Load More Button -->
+      <button *ngIf="!isLoading && displayedLocations.length < filteredLocations.length" 
+              [disabled]="isLoadingMore" 
+              class="load-more-btn" 
+              (click)="loadMore()">
+        <span *ngIf="!isLoadingMore">Charger plus</span>
+        <div *ngIf="isLoadingMore" class="loading-spinner"></div>
+      </button>
+      
+      <div #sentinel class="sentinel"></div>
     </div>
 
     <!-- Map View -->
@@ -283,9 +262,6 @@
       </div>
     </div>
     
-    <!-- Quick Preview -->
-    <app-quick-preview *ngIf="previewLocation" [location]="previewLocation" (close)="closePreview()" />
-    
     <!-- No Results Message -->
     <div class="no-results" *ngIf="!isLoading && filteredLocations.length === 0">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
@@ -298,5 +274,5 @@
       <p>Essayez de modifier vos filtres ou d'élargir votre recherche</p>
       <button class="btn btn-primary" (click)="resetFilters()">Réinitialiser les filtres</button>
     </div>
-  </main>
+  </div>
 </div>

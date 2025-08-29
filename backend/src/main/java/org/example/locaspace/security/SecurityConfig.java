@@ -79,6 +79,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/lieux", "/api/lieux/{id}", "/api/lieux/search").permitAll()
                 .requestMatchers("/api/lieux/{id}/avis").permitAll()
+                .requestMatchers("/uploads/**").permitAll() // Allow public access to uploaded files
                 
                 // User endpoints
                 .requestMatchers("/api/users/register").permitAll()

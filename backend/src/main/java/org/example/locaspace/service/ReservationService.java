@@ -28,33 +28,48 @@ public class ReservationService {
     
     // Create new reservation
     public Reservation createReservation(Reservation reservation) {
-        // Check if lieu exists
-        Optional<Lieu> lieuOpt = lieuRepository.findById(reservation.getLieu().getId());
-        if (lieuOpt.isEmpty()) {
-            throw new IllegalArgumentException("Lieu not found");
+        try {
+            System.out.println("ReservationService: Creating reservation for lieu ID: " + reservation.getLieu().getId());
+            
+            // Check if lieu exists and load it properly
+            Optional<Lieu> lieuOpt = lieuRepository.findById(reservation.getLieu().getId());
+            if (lieuOpt.isEmpty()) {
+                throw new IllegalArgumentException("Lieu not found");
+            }
+            Lieu lieu = lieuOpt.get();
+            reservation.setLieu(lieu);
+            
+            System.out.println("ReservationService: Checking for conflicts...");
+            // Check for date conflicts
+            List<Reservation> conflicts = reservationRepository.findConflictingReservations(
+                lieu,
+                reservation.getDateDebut(),
+                reservation.getDateFin()
+            );
+            
+            if (!conflicts.isEmpty()) {
+                throw new IllegalStateException("Dates not available - conflicting reservation exists");
+            }
+            
+            // Validate dates
+            if (reservation.getDateDebut().isAfter(reservation.getDateFin()) ||
+                reservation.getDateDebut().isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("Invalid reservation dates");
+            }
+            
+            reservation.setStatut("EN_ATTENTE"); // Default status
+            System.out.println("ReservationService: Saving reservation...");
+            Reservation saved = reservationRepository.save(reservation);
+            System.out.println("ReservationService: Reservation saved with ID: " + saved.getId());
+            
+            // Force refresh to load all relationships
+            reservationRepository.flush();
+            return reservationRepository.findByIdWithDetails(saved.getId()).orElse(saved);
+        } catch (Exception e) {
+            System.err.println("ReservationService: Error creating reservation: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
-        // For development, allow booking regardless of validation state
-        reservation.setLieu(lieuOpt.get());
-        
-        // Check for date conflicts
-        List<Reservation> conflicts = reservationRepository.findConflictingReservations(
-            reservation.getLieu(),
-            reservation.getDateDebut(),
-            reservation.getDateFin()
-        );
-        
-        if (!conflicts.isEmpty()) {
-            throw new IllegalStateException("Dates not available - conflicting reservation exists");
-        }
-        
-        // Validate dates
-        if (reservation.getDateDebut().isAfter(reservation.getDateFin()) ||
-            reservation.getDateDebut().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Invalid reservation dates");
-        }
-        
-        reservation.setStatut("EN_ATTENTE"); // Default status
-        return reservationRepository.save(reservation);
     }
     
     // Get reservation by ID

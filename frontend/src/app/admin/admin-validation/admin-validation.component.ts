@@ -161,9 +161,9 @@ interface PendingLieu {
       padding: 48px 32px;
       margin-bottom: 32px;
       overflow: hidden;
-      background: rgba(102, 126, 234, 0.05);
+      background: rgba(108, 99, 255, 0.05);
       backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      border-bottom: 1px solid rgba(108, 99, 255, 0.1);
     }
 
     .header-background {
@@ -183,7 +183,7 @@ interface PendingLieu {
 
     .element {
       position: absolute;
-      background: rgba(102, 126, 234, 0.08);
+      background: rgba(108, 99, 255, 0.08);
       border-radius: 50%;
       animation: float 6s ease-in-out infinite;
     }
@@ -234,7 +234,7 @@ interface PendingLieu {
     .icon-wrapper {
       width: 64px;
       height: 64px;
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba(108, 99, 255, 0.1);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -256,7 +256,7 @@ interface PendingLieu {
     }
 
     .header-text p {
-      color: rgba(102, 126, 234, 0.7);
+      color: rgba(108, 99, 255, 0.7);
       font-size: 1.1rem;
       margin: 8px 0 0 0;
     }
@@ -405,7 +405,7 @@ interface PendingLieu {
       align-items: center;
       gap: 8px;
       margin-bottom: 8px;
-      color: #4a5568;
+      color: #555555;
     }
 
     .description {

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '../../material.module';
 import { Place } from '../services/locataires.service';
 import { ReservationService } from '../services/reservation.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
     selector: 'app-booking-confirm',
@@ -34,15 +35,20 @@ export class BookingConfirmComponent implements OnInit {
     loading = false;
     isProcessing = false;
     currentStep = 1; // 1: Guest Info, 2: Payment (optional), 3: Confirmation
+    bookingNumber = ''; // Store booking number to avoid ExpressionChangedAfterItHasBeenCheckedError
 
     constructor(
         private route: ActivatedRoute,
         public router: Router, // Make router public for template access
         private reservationService: ReservationService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private authService: AuthService
     ) { }
 
     ngOnInit(): void {
+        // Initialize booking number once to avoid ExpressionChangedAfterItHasBeenCheckedError
+        this.bookingNumber = '#' + Date.now().toString().slice(-6);
+        
         // Get booking data from query params
         this.route.queryParams.subscribe(params => {
             if (params['placeData']) {
@@ -52,6 +58,13 @@ export class BookingConfirmComponent implements OnInit {
                     this.checkInDate = bookingData.checkInDate;
                     this.checkOutDate = bookingData.checkOutDate;
                     this.guests = bookingData.guests;
+                    
+                    // Debug authentication status
+                    console.log('Component initialized - Auth status:', {
+                        isAuthenticated: this.authService.isAuthenticated,
+                        currentUser: this.authService.currentUser,
+                        tokenExists: !!localStorage.getItem('authToken') || !!sessionStorage.getItem('authToken')
+                    });
                 } catch (error) {
                     console.error('Error parsing booking data:', error);
                     this.router.navigate(['/locataire/search']);
@@ -127,11 +140,44 @@ export class BookingConfirmComponent implements OnInit {
     confirmBooking(): void {
         if (!this.place) return;
 
+        // Check authentication status with detailed logging
+        if (!this.checkAuthenticationStatus()) {
+            console.log('Authentication failed - redirecting to login');
+            alert('Vous devez être connecté pour effectuer une réservation. Veuillez vous reconnecter.');
+            this.router.navigate(['/auth/login'], {
+                queryParams: { returnUrl: this.router.url }
+            });
+            return;
+        }
+
         this.isProcessing = true;
 
         const startDate = new Date(this.checkInDate);
         const endDate = new Date(this.checkOutDate);
         const totalPrice = this.calculateTotalPrice();
+
+        // Additional validation for dates
+        if (startDate >= endDate) {
+            this.isProcessing = false;
+            alert('La date de départ doit être postérieure à la date d\'arrivée');
+            return;
+        }
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        if (startDate <= today) {
+            this.isProcessing = false;
+            alert('La date d\'arrivée doit être postérieure à aujourd\'hui');
+            return;
+        }
+
+        console.log('Creating booking with dates:', {
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+            place: this.place.id,
+            guests: this.guests,
+            totalPrice
+        });
 
         this.reservationService.createBooking({
             place: this.place,
@@ -149,6 +195,7 @@ export class BookingConfirmComponent implements OnInit {
         }).subscribe({
             next: (booking) => {
                 this.isProcessing = false;
+                console.log('Booking created successfully:', booking);
                 // Defer step change to next tick to avoid NG0100
                 setTimeout(() => {
                     this.currentStep = 3;
@@ -163,14 +210,31 @@ export class BookingConfirmComponent implements OnInit {
             error: (error) => {
                 this.isProcessing = false;
                 console.error('Erreur lors de la réservation:', error);
-                alert('Erreur lors de la création de la réservation');
+                
+                // More specific error handling
+                if (error.status === 401) {
+                    alert('Votre session a expiré. Veuillez vous reconnecter.');
+                    this.router.navigate(['/auth/login'], {
+                        queryParams: { returnUrl: this.router.url }
+                    });
+                } else if (error.status === 400) {
+                    const errorMsg = error.error?.message || error.message || 'Données invalides';
+                    alert(`Erreur de validation: ${errorMsg}. Vérifiez les dates et les informations saisies.`);
+                } else if (error.status === 409) {
+                    alert('Ces dates ne sont pas disponibles. Veuillez choisir d\'autres dates.');
+                } else if (error.status === 500) {
+                    alert('Erreur serveur. Veuillez réessayer plus tard ou contactez le support.');
+                } else {
+                    const errorMsg = error.message || 'Erreur inconnue';
+                    alert(`Erreur lors de la création de la réservation: ${errorMsg}`);
+                }
             }
         });
     }
 
     goBack(): void {
         if (this.place) {
-            this.router.navigate(['/place-details', this.place.id]);
+            this.router.navigate(['/locataire/place', this.place.id]);
         } else {
             this.router.navigate(['/locataire/search']);
         }
@@ -203,10 +267,26 @@ export class BookingConfirmComponent implements OnInit {
     }
 
     getBookingNumber(): string {
-        return '#' + Date.now().toString().slice(-6);
+        // Return the pre-generated booking number to avoid ExpressionChangedAfterItHasBeenCheckedError
+        return this.bookingNumber;
     }
 
     navigateToReservations(): void {
         this.router.navigate(['/locataire/reservations']);
+    }
+
+    checkAuthenticationStatus(): boolean {
+        const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        const user = this.authService.currentUser;
+        const isAuthenticated = this.authService.isAuthenticated;
+        
+        console.log('Authentication Status Check:', {
+            hasToken: !!token,
+            hasUser: !!user,
+            isAuthenticated: isAuthenticated,
+            token: token ? token.substring(0, 20) + '...' : 'none'
+        });
+        
+        return isAuthenticated && !!token && !!user;
     }
 }

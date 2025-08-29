@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './auth/auth.guard';
 import { AUTH_ROUTES } from './auth/auth.routes';
-import { LOCATAIRE_ROUTES, LOCATAIRE_MODULE_ROUTE } from './locataire/locataire.routes';
+import { LOCATAIRE_ROUTES } from './locataire/locataire.routes';
 import { proprietairesRoutes } from './proprietaires/proprietaires.routes';
 import { adminRoutes } from './admin/admin.routes';
 
@@ -29,8 +29,8 @@ export const routes: Routes = [
   },
   {
     path: 'search',
-    loadComponent: () => import('./search/search').then(m => m.SearchComponent),
-    title: 'Recherche - LocaSpace'
+    redirectTo: '/locataire/search',
+    pathMatch: 'full'
   },
   {
     path: 'lieux',
@@ -60,7 +60,6 @@ export const routes: Routes = [
   },
   // Routes locataire
   ...LOCATAIRE_ROUTES,
-  ...LOCATAIRE_MODULE_ROUTE,
 
   // Routes propriétaires
   {

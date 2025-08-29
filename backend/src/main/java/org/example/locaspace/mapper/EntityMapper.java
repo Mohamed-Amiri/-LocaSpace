@@ -89,26 +89,124 @@ public class EntityMapper {
     public ReservationResponse toReservationResponse(Reservation reservation) {
         if (reservation == null) return null;
         
-        UserSummaryResponse locataire = toUserSummaryResponse(reservation.getLocataire());
-        LieuResponse lieu = toLieuResponse(reservation.getLieu());
-        
-        // Calculate total nights and price
-        Long totalNights = ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin());
-        Double totalPrice = null;
-        if (reservation.getLieu() != null && reservation.getLieu().getPrix() != null) {
-            totalPrice = reservation.getLieu().getPrix().doubleValue() * totalNights;
+        try {
+            System.out.println("Mapping reservation with ID: " + reservation.getId());
+            
+            UserSummaryResponse locataire = null;
+            if (reservation.getLocataire() != null) {
+                System.out.println("Mapping locataire: " + reservation.getLocataire().getId());
+                try {
+                    String nom = safeGetString(reservation.getLocataire()::getNom, "User " + reservation.getLocataire().getId());
+                    String email = safeGetString(reservation.getLocataire()::getEmail, "");
+                    String role = safeGetString(reservation.getLocataire()::getRole, "LOCATAIRE");
+                    
+                    locataire = new UserSummaryResponse(
+                        reservation.getLocataire().getId(),
+                        nom,
+                        email,
+                        role
+                    );
+                } catch (Exception e) {
+                    System.err.println("Error mapping locataire: " + e.getMessage());
+                    // Create minimal response if full mapping fails
+                    locataire = new UserSummaryResponse(
+                        reservation.getLocataire().getId(),
+                        "User " + reservation.getLocataire().getId(),
+                        "",
+                        "LOCATAIRE"
+                    );
+                }
+            }
+            
+            LieuResponse lieu = null;
+            if (reservation.getLieu() != null) {
+                System.out.println("Mapping lieu: " + reservation.getLieu().getId());
+                try {
+                    String titre = safeGetString(reservation.getLieu()::getTitre, "Lieu " + reservation.getLieu().getId());
+                    String description = safeGetString(reservation.getLieu()::getDescription, "");
+                    String type = safeGetString(reservation.getLieu()::getType, "");
+                    String adresse = safeGetString(reservation.getLieu()::getAdresse, "");
+                    
+                    lieu = new LieuResponse(
+                        reservation.getLieu().getId(),
+                        titre,
+                        description,
+                        type,
+                        reservation.getLieu().getPrix(),
+                        adresse,
+                        reservation.getLieu().isValide(),
+                        safeGetList(reservation.getLieu()::getPhotos),
+                        null, // Skip owner to avoid lazy loading issues
+                        null, // Skip rating
+                        null  // Skip review count
+                    );
+                } catch (Exception e) {
+                    System.err.println("Error mapping lieu: " + e.getMessage());
+                    e.printStackTrace();
+                    // Create minimal response if full mapping fails
+                    lieu = new LieuResponse(
+                        reservation.getLieu().getId(),
+                        "Lieu " + reservation.getLieu().getId(),
+                        "",
+                        "",
+                        reservation.getLieu().getPrix(),
+                        "",
+                        true,
+                        null,
+                        null,
+                        null,
+                        null
+                    );
+                }
+            }
+            
+            // Calculate total nights and price
+            Long totalNights = null;
+            Double totalPrice = null;
+            
+            if (reservation.getDateDebut() != null && reservation.getDateFin() != null) {
+                totalNights = ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin());
+                if (reservation.getLieu() != null && reservation.getLieu().getPrix() != null) {
+                    totalPrice = reservation.getLieu().getPrix().doubleValue() * totalNights;
+                }
+            }
+            
+            System.out.println("Creating ReservationResponse...");
+            return new ReservationResponse(
+                reservation.getId(),
+                reservation.getDateDebut(),
+                reservation.getDateFin(),
+                reservation.getStatut(),
+                locataire,
+                lieu,
+                totalNights,
+                totalPrice
+            );
+        } catch (Exception e) {
+            System.err.println("Error mapping reservation to response: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to map reservation", e);
         }
-        
-        return new ReservationResponse(
-            reservation.getId(),
-            reservation.getDateDebut(),
-            reservation.getDateFin(),
-            reservation.getStatut(),
-            locataire,
-            lieu,
-            totalNights,
-            totalPrice
-        );
+    }
+    
+    // Helper methods for safe property access
+    private String safeGetString(java.util.function.Supplier<String> supplier, String defaultValue) {
+        try {
+            String value = supplier.get();
+            return value != null ? value : defaultValue;
+        } catch (Exception e) {
+            System.err.println("Error accessing string property: " + e.getMessage());
+            return defaultValue;
+        }
+    }
+    
+    private java.util.List<String> safeGetList(java.util.function.Supplier<java.util.List<String>> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            System.err.println("Error accessing list property: " + e.getMessage());
+            return null;
+        }
     }
     
     // Simplified lieu response for reservation (to avoid circular references)

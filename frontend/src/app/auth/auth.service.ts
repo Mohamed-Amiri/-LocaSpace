@@ -69,7 +69,9 @@ export class AuthService {
   }
 
   get isAuthenticated(): boolean {
-    return !!this.currentUser;
+    const user = this.currentUser;
+    const token = this.getFromStorage('authToken');
+    return !!user && !!token;
   }
 
   login(credentials: LoginCredentials): Observable<User> {
@@ -167,6 +169,24 @@ export class AuthService {
   resetPassword(token: string, newPassword: string): Observable<void> {
     // Simulate API call
     return of(void 0).pipe(delay(1000));
+  }
+
+  validateToken(): Observable<boolean> {
+    const token = this.getFromStorage('authToken');
+    if (!token) {
+      return of(false);
+    }
+
+    return this.http.get<any>(`${this.API_URL}/validate`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).pipe(
+      switchMap(() => of(true)),
+      catchError(() => {
+        // Token is invalid, clear authentication
+        this.logout();
+        return of(false);
+      })
+    );
   }
 
   private getStorage(rememberMe?: boolean): Storage {

@@ -7,15 +7,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { FavoritesService } from '../../shared/favorites/favorites.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { QuickPreviewComponent } from '../../shared/preview/quick-preview.component';
-import { SkeletonLoaderComponent } from '../../shared/skeleton-loader/skeleton-loader.component';
+
 // @ts-ignore markercluster plugin
 import 'leaflet.markercluster';
 
 @Component({
   selector: 'app-lieu-search',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, QuickPreviewComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './lieu-search.component.html',
   styleUrls: ['./lieu-search.component.scss']
 })
@@ -52,9 +51,13 @@ export class LieuSearchComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private lieuService: LieuService, private fb: FormBuilder, private favs: FavoritesService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
-    this.locations = this.lieuService.getLieux();
-    this.filteredLocations = [...this.locations];
-    this.extractFilterOptions();
+    // Subscribe to real data from the updated service
+    this.lieuService.getLieux$().subscribe(lieux => {
+      this.locations = lieux;
+      this.filteredLocations = [...this.locations];
+      this.extractFilterOptions();
+      this.applyFilters(); // Reapply current filters
+    });
 
     this.filterForm = this.fb.group({
       maxPrice: [this.maxPrice],
@@ -62,9 +65,6 @@ export class LieuSearchComponent implements OnInit, OnDestroy, AfterViewInit {
       minRating: [0],
       amenities: this.fb.group({})
     });
-
-    this.buildCheckboxControls('types', this.allTypes);
-    this.buildCheckboxControls('amenities', this.allAmenities);
 
     this.filterForm.valueChanges.subscribe(() => {
       this.applyFilters();
@@ -85,6 +85,9 @@ export class LieuSearchComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.map) {
       this.map.remove();
     }
+    
+    // Clear all carousel timers
+    Object.values(this.carouselTimers).forEach(timer => clearInterval(timer));
   }
 
   ngAfterViewInit() {
@@ -99,14 +102,30 @@ export class LieuSearchComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private extractFilterOptions(): void {
+    if (this.locations.length === 0) {
+      this.maxPrice = 1000; // Default value
+      this.allTypes = [];
+      this.allAmenities = [];
+      return;
+    }
+
     const prices = this.locations.map(l => l.prix);
-    this.maxPrice = Math.max(...prices);
+    this.maxPrice = Math.max(...prices, 1000); // Ensure minimum value
 
     const types = this.locations.map(l => l.type);
     this.allTypes = [...new Set(types)];
 
     const amenities = this.locations.flatMap(l => l.equipements ?? []);
     this.allAmenities = [...new Set(amenities)];
+
+    // Rebuild form controls if the form exists
+    if (this.filterForm) {
+      this.buildCheckboxControls('types', this.allTypes);
+      this.buildCheckboxControls('amenities', this.allAmenities);
+      
+      // Update max price in form if it has changed
+      this.filterForm.get('maxPrice')?.setValue(this.maxPrice, { emitEvent: false });
+    }
   }
 
   private buildCheckboxControls(groupName: 'types' | 'amenities', options: string[]): void {
@@ -161,6 +180,61 @@ export class LieuSearchComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  navigateToDetail(id: number): void {
+    this.router.navigate(['/lieux', id]);
+  }
+
+  isFav(id: number): boolean {
+    return this.favs.isFavorite(id);
+  }
+
+  toggleFav(id: number): void {
+    this.favs.toggle(id);
+  }
+
+  // Image carousel methods
+  nextPhoto(locationId: number, event?: Event): void {
+    if (event) event.stopPropagation();
+    
+    const location = this.locations.find(l => l.id === locationId);
+    if (!location) return;
+    
+    const currentPhotoIndex = this.activePhoto[locationId] || 0;
+    const nextIndex = (currentPhotoIndex + 1) % location.photos.length;
+    this.activePhoto = { ...this.activePhoto, [locationId]: nextIndex };
+  }
+
+  prevPhoto(locationId: number, event?: Event): void {
+    if (event) event.stopPropagation();
+    
+    const location = this.locations.find(l => l.id === locationId);
+    if (!location) return;
+    
+    const currentPhotoIndex = this.activePhoto[locationId] || 0;
+    const prevIndex = (currentPhotoIndex - 1 + location.photos.length) % location.photos.length;
+    this.activePhoto = { ...this.activePhoto, [locationId]: prevIndex };
+  }
+
+  // Auto-rotate photos
+  startAutoRotate(locationId: number): void {
+    // Clear existing timer if any
+    if (this.carouselTimers[locationId]) {
+      clearInterval(this.carouselTimers[locationId]);
+    }
+    
+    // Start new timer
+    this.carouselTimers[locationId] = setInterval(() => {
+      this.nextPhoto(locationId);
+    }, 5000); // Rotate every 5 seconds
+  }
+
+  stopAutoRotate(locationId: number): void {
+    if (this.carouselTimers[locationId]) {
+      clearInterval(this.carouselTimers[locationId]);
+      delete this.carouselTimers[locationId];
+    }
+  }
+
   private initMap(): void {
     if (this.map) { return; }
 
@@ -181,167 +255,116 @@ export class LieuSearchComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.filteredLocations.length === 0) { return; }
 
-    const mcg = (L as any).markerClusterGroup ? (L as any).markerClusterGroup() : null;
-    this.filteredLocations.forEach(loc => {
-      const marker = L.marker([loc.lat, loc.lng]);
-      const popupHtml = `<div style="max-width:220px"><img src='${loc.photos[0]}' style='width:100%;height:110px;object-fit:cover;border-radius:6px 6px 0 0'><div style='padding:6px'><strong>${loc.titre}</strong><br>${loc.prix}€ / nuit<br><a href='/lieux/${loc.id}'>Détails →</a></div></div>`;
-      marker.bindPopup(popupHtml);
-      this.markers.push(marker);
-      if (mcg) mcg.addLayer(marker); else marker.addTo(this.map);
+    // @ts-ignore markercluster plugin
+    this.clusterGroup = L.markerClusterGroup();
+
+    this.filteredLocations.forEach(location => {
+      if (location.lat && location.lng) {
+        const marker = L.marker([location.lat, location.lng])
+          .bindPopup(`
+            <div class="map-popup">
+              <h4>${location.titre}</h4>
+              <p>${location.ville}</p>
+              <p><strong>${location.prix}€</strong> / nuit</p>
+              <button onclick="window.location.href='/lieux/${location.id}'">Voir détails</button>
+            </div>
+          `);
+        this.clusterGroup.addLayer(marker);
+      }
     });
 
-    if (mcg) {
-      this.clusterGroup = mcg.addTo(this.map);
-      this.map.fitBounds(mcg.getBounds().pad(0.1));
-    } else {
-      const group = L.featureGroup(this.markers).addTo(this.map);
-      this.map.fitBounds(group.getBounds().pad(0.1));
-    }
+    this.map.addLayer(this.clusterGroup);
   }
 
-  private updateDisplayed() {
-    this.displayedLocations = this.filteredLocations.slice(0, this.currentPage * this.pageSize);
+  private updateDisplayed(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.displayedLocations = this.filteredLocations.slice(start, end);
   }
 
-  loadMore() {
-    if (this.isLoadingMore) return;
+  loadMore(): void {
     this.isLoadingMore = true;
-    setTimeout(()=>{
+    // Simulate API call delay
+    setTimeout(() => {
       this.currentPage++;
       this.updateDisplayed();
       this.isLoadingMore = false;
-    }, 600);
+    }, 500);
   }
 
-  toggleFav(id: number) { this.favs.toggle(id); }
-  isFav(id: number) { return this.favs.isFavorite(id); }
-
-  private buildQueryParams(): any {
-    const filters = this.filterForm.value;
-    const selectedTypes = Object.keys(filters.types).filter(k=>filters.types[k]);
-    const selectedAmenities = Object.keys(filters.amenities).filter(k=>filters.amenities[k]);
-    return {
-      price: filters.maxPrice !== this.maxPrice ? filters.maxPrice : undefined,
-      rating: filters.minRating || undefined,
-      types: selectedTypes.length? selectedTypes.join(','): undefined,
-      amenities: selectedAmenities.length? selectedAmenities.join(','): undefined
-    };
-  }
-
-  private syncUrl() {
+  private syncUrl(): void {
     if (this.updatingUrl) return;
+    
+    const filters = this.filterForm.value;
+    const queryParams: any = {};
+    
+    if (filters.maxPrice !== this.maxPrice) queryParams.maxPrice = filters.maxPrice;
+    if (filters.minRating > 0) queryParams.minRating = filters.minRating;
+    
+    const selectedTypes = Object.keys(filters.types).filter(key => filters.types[key]);
+    if (selectedTypes.length > 0) queryParams.types = selectedTypes.join(',');
+    
+    const selectedAmenities = Object.keys(filters.amenities).filter(key => filters.amenities[key]);
+    if (selectedAmenities.length > 0) queryParams.amenities = selectedAmenities.join(',');
+    
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  private initFromParams(params: any): void {
     this.updatingUrl = true;
-    this.router.navigate([], { relativeTo: this.route, queryParams: this.buildQueryParams(), queryParamsHandling: 'merge' }).finally(()=> this.updatingUrl=false);
-  }
-
-  private initFromParams(params:any) {
-    if (this.updatingUrl) return;
-    const patch:any = {};
-    if(params['price']) patch.maxPrice = +params['price'];
-    if(params['rating']) patch.minRating = +params['rating'];
-    this.filterForm.patchValue(patch, {emitEvent:false});
-
-    if(params['types']){
-      const types=params['types'].split(',');
-      types.forEach((t: string)=>{ if(this.filterForm.get('types.'+t)) this.filterForm.get('types.'+t)?.setValue(true,{emitEvent:false});});
+    
+    if (params.maxPrice) {
+      this.filterForm.get('maxPrice')?.setValue(+params.maxPrice, { emitEvent: false });
     }
-    if(params['amenities']){
-      const a=params['amenities'].split(',');
-      a.forEach((am: string)=>{ if(this.filterForm.get('amenities.'+am)) this.filterForm.get('amenities.'+am)?.setValue(true,{emitEvent:false});});
+    
+    if (params.minRating) {
+      this.filterForm.get('minRating')?.setValue(+params.minRating, { emitEvent: false });
     }
-    this.applyFilters();
+    
+    if (params.types) {
+      const types = params.types.split(',');
+      types.forEach((type: string) => {
+        if (this.allTypes.includes(type)) {
+          this.filterForm.get('types')?.get(type)?.setValue(true, { emitEvent: false });
+        }
+      });
+    }
+    
+    if (params.amenities) {
+      const amenities = params.amenities.split(',');
+      amenities.forEach((amenity: string) => {
+        if (this.allAmenities.includes(amenity)) {
+          this.filterForm.get('amenities')?.get(amenity)?.setValue(true, { emitEvent: false });
+        }
+      });
+    }
+    
+    this.updatingUrl = false;
   }
 
-  getActiveFilterLabels(): {label:string,key:string}[] {
-    const filters = this.filterForm.value;
-    const badges: {label:string,key:string}[] = [];
-    if(filters.maxPrice!==this.maxPrice) badges.push({label:`< ${filters.maxPrice}€`, key:'price'});
-    if(filters.minRating>0) badges.push({label:`≥ ${filters.minRating}★`, key:'rating'});
-    Object.keys(filters.types).filter(k=>filters.types[k]).forEach(t=>badges.push({label:t,key:'type:'+t}));
-    Object.keys(filters.amenities).filter(k=>filters.amenities[k]).forEach(a=>badges.push({label:a,key:'amenity:'+a}));
-    return badges;
-  }
-  
-  getSelectedTypesCount(): number {
-    const types = this.filterForm.get('types')?.value;
-    return types ? Object.keys(types).filter(k => types[k]).length : 0;
-  }
-  
-  getSelectedAmenitiesCount(): number {
-    const amenities = this.filterForm.get('amenities')?.value;
-    return amenities ? Object.keys(amenities).filter(k => amenities[k]).length : 0;
-  }
-  
+  // Method to get top features for display
   getTopFeatures(location: Lieu): string[] {
-    // Return top 3 features/amenities for display in cards
-    return (location.equipements || []).slice(0, 3);
+    const features = location.equipements || [];
+    return features.slice(0, 3);
   }
-  
-  nextPhoto(locationId: number, event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
+
+  // Method to toggle type filter
+  toggleTypeFilter(type: string): void {
+    const control = this.filterForm.get('types')?.get(type);
+    if (control) {
+      control.setValue(!control.value);
     }
-    
-    const location = this.filteredLocations.find(loc => loc.id === locationId);
-    if (!location) return;
-    
-    const total = location.photos.length;
-    this.activePhoto[locationId] = ((this.activePhoto[locationId] ?? 0) + 1) % total;
   }
-  
-  prevPhoto(locationId: number, event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
+
+  // Method to toggle amenity filter
+  toggleAmenityFilter(amenity: string): void {
+    const control = this.filterForm.get('amenities')?.get(amenity);
+    if (control) {
+      control.setValue(!control.value);
     }
-    
-    const location = this.filteredLocations.find(loc => loc.id === locationId);
-    if (!location) return;
-    
-    const total = location.photos.length;
-    this.activePhoto[locationId] = ((this.activePhoto[locationId] ?? 0) - 1 + total) % total;
-  }
-
-  removeFilter(badge:{label:string,key:string}){
-    const k= badge.key;
-    if(k==='price') this.filterForm.get('maxPrice')?.setValue(this.maxPrice);
-    else if(k==='rating') this.filterForm.get('minRating')?.setValue(0);
-    else if(k.startsWith('type:')) this.filterForm.get('types.'+k.slice(5))?.setValue(false);
-    else if(k.startsWith('amenity:')) this.filterForm.get('amenities.'+k.slice(8))?.setValue(false);
-  }
-
-  showPreview(loc: Lieu) { this.previewLocation = loc; }
-  closePreview() { this.previewLocation = undefined; }
-
-  startCarousel(loc: Lieu){
-    if(this.carouselTimers[loc.id]) return;
-    this.activePhoto[loc.id]=0;
-    this.carouselTimers[loc.id]=setInterval(()=>{
-      const total = loc.photos.length;
-      this.activePhoto[loc.id] = ((this.activePhoto[loc.id] ?? 0)+1)%total;
-    },1500);
-  }
-
-  stopCarousel(loc: Lieu){
-    if(this.carouselTimers[loc.id]){ clearInterval(this.carouselTimers[loc.id]); delete this.carouselTimers[loc.id]; }
-    this.activePhoto[loc.id]=0;
-  }
-  
-  navigateToDetail(id: number): void {
-    // Set active card to show visual feedback before navigation
-    this.activeCard = id;
-    
-    // Show preview on click instead of hover
-    const location = this.filteredLocations.find(loc => loc.id === id);
-    if (location) {
-      this.showPreview(location);
-      this.startCarousel(location);
-    }
-    
-    // Navigate after a short delay to allow visual feedback
-    setTimeout(() => {
-      this.router.navigate(['/lieux', id]);
-    }, 300);
   }
 }

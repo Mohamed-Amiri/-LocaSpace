@@ -10,17 +10,20 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     
-    List<Reservation> findByLocataire(User locataire);
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.lieu l JOIN FETCH r.locataire u WHERE r.locataire = :locataire")
+    List<Reservation> findByLocataire(@Param("locataire") User locataire);
     
-    List<Reservation> findByLieu(Lieu lieu);
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.lieu l JOIN FETCH r.locataire u WHERE r.lieu = :lieu")
+    List<Reservation> findByLieu(@Param("lieu") Lieu lieu);
     
     List<Reservation> findByStatut(String statut);
     
-    @Query("SELECT r FROM Reservation r WHERE r.lieu.owner = :owner")
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.lieu l JOIN FETCH r.locataire u WHERE r.lieu.owner = :owner")
     List<Reservation> findByLieuOwner(@Param("owner") User owner);
     
     @Query("SELECT r FROM Reservation r WHERE r.lieu = :lieu AND r.statut IN ('EN_ATTENTE','CONFIRMEE') AND " +
@@ -45,4 +48,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     
     @Query("SELECT COUNT(r) FROM Reservation r WHERE r.lieu.owner = :owner")
     Long countByLieuOwner(@Param("owner") User owner);
+    
+    @Query("SELECT r FROM Reservation r JOIN FETCH r.lieu l JOIN FETCH r.locataire u LEFT JOIN FETCH l.owner WHERE r.id = :id")
+    Optional<Reservation> findByIdWithDetails(@Param("id") Long id);
 }

@@ -172,7 +172,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   onSearch(searchData: {location: string, dates: string, guests: string}) {
     console.log('Search data:', searchData);
     // Redirect to search page with parameters
-    // this.router.navigate(['/search'], { queryParams: searchData });
+    // this.router.navigate(['/locataire/search'], { queryParams: searchData });
   }
 
   toggleFavorite(placeId: number) {
