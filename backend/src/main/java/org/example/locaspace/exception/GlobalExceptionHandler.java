@@ -1,5 +1,9 @@
 package org.example.locaspace.exception;
 
+import org.example.locaspace.dto.error.ErrorResponse;
+import org.example.locaspace.dto.error.ValidationErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,17 +21,19 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
             ResourceNotFoundException ex, WebRequest request) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.NOT_FOUND.value(),
-            "Resource Not Found",
-            ex.getMessage(),
-            request.getDescription(false),
-            LocalDateTime.now()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Resource Not Found")
+            .message(ex.getMessage())
+            .path(request.getDescription(false))
+            .timestamp(LocalDateTime.now())
+            .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -36,13 +42,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadRequestException(
             BadRequestException ex, WebRequest request) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            "Bad Request",
-            ex.getMessage(),
-            request.getDescription(false),
-            LocalDateTime.now()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.BAD_REQUEST.value())
+            .error("Bad Request")
+            .message(ex.getMessage())
+            .path(request.getDescription(false))
+            .timestamp(LocalDateTime.now())
+            .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -51,13 +57,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(
             UnauthorizedException ex, WebRequest request) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.UNAUTHORIZED.value(),
-            "Unauthorized",
-            ex.getMessage(),
-            request.getDescription(false),
-            LocalDateTime.now()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .error("Unauthorized")
+            .message(ex.getMessage())
+            .path(request.getDescription(false))
+            .timestamp(LocalDateTime.now())
+            .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
@@ -66,13 +72,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(
             AccessDeniedException ex, WebRequest request) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.FORBIDDEN.value(),
-            "Access Denied",
-            "You don't have permission to access this resource",
-            request.getDescription(false),
-            LocalDateTime.now()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.FORBIDDEN.value())
+            .error("Access Denied")
+            .message("You don't have permission to access this resource")
+            .path(request.getDescription(false))
+            .timestamp(LocalDateTime.now())
+            .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
@@ -81,13 +87,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(
             BadCredentialsException ex, WebRequest request) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.UNAUTHORIZED.value(),
-            "Authentication Failed",
-            "Invalid email or password",
-            request.getDescription(false),
-            LocalDateTime.now()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.UNAUTHORIZED.value())
+            .error("Authentication Failed")
+            .message("Invalid email or password")
+            .path(request.getDescription(false))
+            .timestamp(LocalDateTime.now())
+            .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
@@ -119,13 +125,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConflictException(
             ConflictException ex, WebRequest request) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.CONFLICT.value(),
-            "Conflict",
-            ex.getMessage(),
-            request.getDescription(false),
-            LocalDateTime.now()
-        );
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.CONFLICT.value())
+            .error("Conflict")
+            .message(ex.getMessage())
+            .path(request.getDescription(false))
+            .timestamp(LocalDateTime.now())
+            .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
@@ -134,64 +140,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception ex, WebRequest request) {
         
-        ErrorResponse errorResponse = new ErrorResponse(
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "Internal Server Error",
-            "An unexpected error occurred",
-            request.getDescription(false),
-            LocalDateTime.now()
-        );
+        log.error("Unhandled exception occurred: ", ex);
         
-        // Log the full exception for debugging
-        ex.printStackTrace();
+        ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error("Internal Server Error")
+            .message("An unexpected error occurred")
+            .path(request.getDescription(false))
+            .timestamp(LocalDateTime.now())
+            .build();
         
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    
-    // Base Error Response Class
-    public static class ErrorResponse {
-        private int status;
-        private String error;
-        private String message;
-        private String path;
-        private LocalDateTime timestamp;
-        
-        public ErrorResponse(int status, String error, String message, String path, LocalDateTime timestamp) {
-            this.status = status;
-            this.error = error;
-            this.message = message;
-            this.path = path;
-            this.timestamp = timestamp;
-        }
-        
-        // Getters and Setters
-        public int getStatus() { return status; }
-        public void setStatus(int status) { this.status = status; }
-        
-        public String getError() { return error; }
-        public void setError(String error) { this.error = error; }
-        
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-        
-        public String getPath() { return path; }
-        public void setPath(String path) { this.path = path; }
-        
-        public LocalDateTime getTimestamp() { return timestamp; }
-        public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
-    }
-    
-    // Validation Error Response Class
-    public static class ValidationErrorResponse extends ErrorResponse {
-        private Map<String, String> validationErrors;
-        
-        public ValidationErrorResponse(int status, String error, String message, String path, 
-                                     LocalDateTime timestamp, Map<String, String> validationErrors) {
-            super(status, error, message, path, timestamp);
-            this.validationErrors = validationErrors;
-        }
-        
-        public Map<String, String> getValidationErrors() { return validationErrors; }
-        public void setValidationErrors(Map<String, String> validationErrors) { this.validationErrors = validationErrors; }
     }
 }

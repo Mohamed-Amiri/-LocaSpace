@@ -1,8 +1,8 @@
-<!-- EMERGENCY SIMPLE CALENDAR -->
+﻿<!-- EMERGENCY SIMPLE CALENDAR -->
 <div style="min-height: 100vh; background: white; padding: 20px; font-family: Arial, sans-serif;">
   
   <!-- ALWAYS VISIBLE HEADER -->
-  <div style="background: #667eea; color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+  <div style="background: #0A2540; color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
     <h1 style="margin: 0; font-size: 2rem;">📅 CALENDAR PAGE</h1>
     <p style="margin: 10px 0 0 0; opacity: 0.9;">Property Calendar & Pricing Management</p>
   </div>
@@ -33,26 +33,26 @@
         📅 Calendar for {{ property?.title || 'Loading Property...' }}
       </h2>
       <div style="display: flex; gap: 10px;">
-        <button (click)="previousMonth()" style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">← Previous</button>
-        <button (click)="nextMonth()" style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">Next →</button>
+        <button (click)="previousMonth()" style="background: #0A2540; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">← Previous</button>
+        <button (click)="nextMonth()" style="background: #0A2540; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">Next →</button>
       </div>
     </div>
     
     <!-- MONTH DISPLAY -->
     <div style="text-align: center; margin-bottom: 20px;">
-      <h3 style="color: #667eea; font-size: 1.5rem; margin: 0;">{{ getCurrentMonthYear() }}</h3>
+      <h3 style="color: #0A2540; font-size: 1.5rem; margin: 0;">{{ getCurrentMonthYear() }}</h3>
     </div>
     
     <!-- CALENDAR GRID -->
     <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background: #f1f3f4; padding: 2px; border-radius: 8px;">
       <!-- Days of week headers -->
-      <div style="background: #667eea; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Sun</div>
-      <div style="background: #667eea; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Mon</div>
-      <div style="background: #667eea; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Tue</div>
-      <div style="background: #667eea; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Wed</div>
-      <div style="background: #667eea; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Thu</div>
-      <div style="background: #667eea; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Fri</div>
-      <div style="background: #667eea; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Sat</div>
+      <div style="background: #0A2540; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Sun</div>
+      <div style="background: #0A2540; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Mon</div>
+      <div style="background: #0A2540; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Tue</div>
+      <div style="background: #0A2540; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Wed</div>
+      <div style="background: #0A2540; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Thu</div>
+      <div style="background: #0A2540; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Fri</div>
+      <div style="background: #0A2540; color: white; padding: 12px; text-align: center; font-weight: bold; border-radius: 6px;">Sat</div>
       
       <!-- Calendar days -->
       <div *ngFor="let day of calendarDays" 
@@ -86,7 +86,7 @@
       <div style="color: #666;">Blocked Days</div>
     </div>
     <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-      <div style="font-size: 2rem; color: #667eea; margin-bottom: 10px;">💰</div>
+      <div style="font-size: 2rem; color: #0A2540; margin-bottom: 10px;">💰</div>
       <div style="font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 5px;">€{{ getAveragePrice() }}</div>
       <div style="color: #666;">Average Price</div>
     </div>
@@ -94,7 +94,7 @@
   
   <!-- ACTION BUTTONS -->
   <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
-    <button (click)="forceRefreshCalendar()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+    <button (click)="forceRefreshCalendar()" style="background: #0A2540; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
       🔄 Refresh Calendar
     </button>
     <button routerLink="/proprietaires/manage-properties" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); text-decoration: none; display: inline-block;">

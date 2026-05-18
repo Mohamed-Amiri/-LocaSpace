@@ -1,8 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+
+interface Testimonial {
+  quote: string;
+  name: string;
+  role: string;
+  initials: string;
+}
 
 @Component({
   selector: 'app-login',
@@ -11,12 +18,38 @@ import { AuthService } from '../auth.service';
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   standalone: true
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm!: FormGroup;
   isLoading = false;
   errorMessage = '';
   showPassword = false;
+  emailFocused = false;
+  passwordFocused = false;
+
+  // Rotating testimonials
+  testimonials: Testimonial[] = [
+    {
+      quote: "Grâce à LocaSpace, j'ai trouvé le lieu parfait pour mon événement en quelques clics. Service au top !",
+      name: 'Amina Karzazi',
+      role: 'Organisatrice d\'événements',
+      initials: 'AK'
+    },
+    {
+      quote: "La plateforme est intuitive et la variété des espaces proposés est incroyable. Je recommande vivement.",
+      name: 'Youssef Lahmidi',
+      role: 'Entrepreneur',
+      initials: 'YL'
+    },
+    {
+      quote: "Louer mon bureau inoccupé sur LocaSpace a été une excellente source de revenus. Simple et efficace.",
+      name: 'Fatima Zahra',
+      role: 'Propriétaire',
+      initials: 'FZ'
+    }
+  ];
+  currentTestimonialIndex = 0;
+  private testimonialInterval: any;
 
   constructor(
     private fb: FormBuilder,
@@ -30,6 +63,17 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(8)]],
       rememberMe: [false]
     });
+
+    // Start testimonial rotation
+    this.testimonialInterval = setInterval(() => {
+      this.currentTestimonialIndex = (this.currentTestimonialIndex + 1) % this.testimonials.length;
+    }, 5000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.testimonialInterval) {
+      clearInterval(this.testimonialInterval);
+    }
   }
 
   get email() {
@@ -64,9 +108,6 @@ export class LoginComponent implements OnInit {
           this.isLoading = false;
           // Navigate based on user role
           switch (user.role) {
-            case 'admin':
-              this.router.navigate(['/admin/dashboard']);
-              break;
             case 'owner':
               this.router.navigate(['/proprietaires/dashboard']);
               break;

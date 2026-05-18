@@ -1,12 +1,11 @@
-import { Component, Input, Output, EventEmitter, Self, Optional, OnInit } from '@angular/core';
+﻿import { Component, Input, Output, EventEmitter, Self, Optional, OnInit } from '@angular/core';
 import { NgControl, ControlValueAccessor } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-checkbox',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule],
   template: `
     <div class="checkbox-container" [class.full-width]="fullWidth">
       <div 
@@ -27,8 +26,8 @@ import { MatIconModule } from '@angular/material/icon';
         />
 
         <div class="checkbox-inner">
-          <mat-icon *ngIf="checked && !indeterminate" class="check-icon">check</mat-icon>
-          <mat-icon *ngIf="indeterminate" class="indeterminate-icon">remove</mat-icon>
+          <i *ngIf="checked && !indeterminate" class="ph ph-check check-icon"></i>
+          <i *ngIf="indeterminate" class="ph ph-minus indeterminate-icon"></i>
         </div>
 
         <label 

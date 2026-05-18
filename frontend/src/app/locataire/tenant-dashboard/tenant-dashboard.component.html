@@ -1,15 +1,12 @@
-<div class="dashboard-container">
+﻿<div class="dashboard-container">
   <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <div class="welcome-text" *ngIf="user$ | async as user">
-        <h1 class="hero-title">Bonjour, {{ user!.firstName }} 👋</h1>
-        <p class="hero-subtitle">Prêt à découvrir votre prochain logement parfait ?</p>
-      </div>
-      <div class="hero-stats">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Bonjour, {{ (user$ | async)?.firstName || 'Locataire' }}</h1>
+    <div class="header-rule"></div>
+    <div class="hero-stats">
         <div class="stat-item">
           <div class="stat-number">0</div>
-          <div class="stat-label">Réservations</div>
+          <div class="stat-label">Rservations</div>
         </div>
         <div class="stat-item">
           <div class="stat-number">0</div>
@@ -19,11 +16,9 @@
           <div class="stat-number">24/7</div>
           <div class="stat-label">Support</div>
         </div>
-      </div>
     </div>
   </div>
-
-  <!-- Quick Actions -->
+  
   <div class="quick-actions-section">
     <h2 class="section-title">Actions rapides</h2>
     <div class="actions-grid">
@@ -78,11 +73,11 @@
         </div>
       </div>
       <div class="card-content">
-        <div class="empty-state">
-          <div class="empty-icon">📊</div>
-          <p>Aucune activité récente</p>
-          <span>Vos dernières actions apparaîtront ici</span>
-        </div>
+        <app-empty-state
+          icon="ph ph-chart-bar"
+          title="Aucune activité récente"
+          description="Vos dernières actions apparaîtront ici">
+        </app-empty-state>
       </div>
     </div>
 
@@ -97,11 +92,13 @@
         </div>
       </div>
       <div class="card-content">
-        <div class="empty-state">
-          <div class="empty-icon">❤️</div>
-          <p>Aucun favori pour le moment</p>
-          <a routerLink="/locataire/search" class="cta-link">Découvrir des logements</a>
-        </div>
+        <app-empty-state
+          icon="ph ph-heart"
+          title="Aucun favori pour le moment"
+          description="Vos logements sauvegardés apparaîtront ici"
+          actionLabel="Découvrir des logements"
+          (actionClick)="navigateToSearch()">
+        </app-empty-state>
       </div>
     </div>
 

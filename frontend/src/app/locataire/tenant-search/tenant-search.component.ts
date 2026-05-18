@@ -1,14 +1,16 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from '../../material.module';
 import { LocatairesService, Place, SearchFilters } from '../services/locataires.service';
+import { PlaceCardComponent, PlaceCardData } from '../../shared/components/place-card/place-card.component';
+import { SkeletonComponent } from '../../shared/components/skeleton/skeleton.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-tenant-search',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MaterialModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, PlaceCardComponent, SkeletonComponent, EmptyStateComponent],
   templateUrl: './tenant-search.component.html',
   styleUrls: ['./tenant-search.component.scss']
 })
@@ -315,5 +317,20 @@ export class TenantSearchComponent implements OnInit {
     
     // Trigger search
     this.searchPlaces();
+  }
+
+  mapToPlaceCardData(place: Place): PlaceCardData {
+    return {
+      id: place.id,
+      name: place.title,
+      location: place.location,
+      price: place.price,
+      rating: place.rating,
+      image: place.images && place.images.length > 0 ? place.images[0] : 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
+      capacity: 0,
+      type: 'Logement',
+      badges: place.rating >= 4.8 ? ['Populaire'] : [],
+      isFavorite: false
+    };
   }
 }

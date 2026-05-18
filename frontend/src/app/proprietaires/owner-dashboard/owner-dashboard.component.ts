@@ -1,15 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterModule, Router } from '@angular/router';
 import { ProprietairesService, Property, BookingRequest } from '../services/proprietaires.service';
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-owner-dashboard',
@@ -17,12 +12,7 @@ import { catchError, finalize } from 'rxjs/operators';
   imports: [
     CommonModule,
     RouterModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatGridListModule,
-    MatChipsModule,
-    MatProgressSpinnerModule
+    EmptyStateComponent
   ],
   templateUrl: './owner-dashboard.component.html',
   styleUrls: ['./owner-dashboard.component.scss']
@@ -33,7 +23,11 @@ export class OwnerDashboardComponent implements OnInit {
   stats: any = {};
   loading = true;
 
-  constructor(private proprietairesService: ProprietairesService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private proprietairesService: ProprietairesService, 
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -115,5 +109,9 @@ export class OwnerDashboardComponent implements OnInit {
     const end = new Date(checkOut);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  navigateToAddProperty(): void {
+    this.router.navigate(['/proprietaires/add-property']);
   }
 }

@@ -28,23 +28,25 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class AvisController {
 
-    @Autowired
-    private AvisService avisService;
+    private final AvisService avisService;
+    private final LieuService lieuService;
+    private final UserService userService;
+    private final ReservationService reservationService;
+    private final EntityMapper entityMapper;
 
-    @Autowired
-    private LieuService lieuService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ReservationService reservationService;
-
-    @Autowired
-    private EntityMapper entityMapper;
+    public AvisController(AvisService avisService, 
+                          LieuService lieuService, 
+                          UserService userService, 
+                          ReservationService reservationService, 
+                          EntityMapper entityMapper) {
+        this.avisService = avisService;
+        this.lieuService = lieuService;
+        this.userService = userService;
+        this.reservationService = reservationService;
+        this.entityMapper = entityMapper;
+    }
 
     // Get all reviews for a place
     @GetMapping("/lieux/{lieuId}/avis")
@@ -62,7 +64,7 @@ public class AvisController {
 
     // Add a review for a place
     @PostMapping("/lieux/{lieuId}/avis")
-    @PreAuthorize("hasRole('LOCATAIRE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('LOCATAIRE')")
     public ResponseEntity<AvisResponse> addAvis(@PathVariable Long lieuId,
                                                @Valid @RequestBody AvisRequest avisRequest,
                                                Authentication authentication) {
@@ -103,7 +105,7 @@ public class AvisController {
 
     // Get user's own reviews
     @GetMapping("/users/me/avis")
-    @PreAuthorize("hasRole('LOCATAIRE') or hasRole('PROPRIETAIRE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('LOCATAIRE') or hasRole('PROPRIETAIRE')")
     public ResponseEntity<List<AvisResponse>> getMyAvis(Authentication authentication) {
         UserDetailsServiceImpl.UserPrincipal userPrincipal = 
             (UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
@@ -119,7 +121,7 @@ public class AvisController {
 
     // Update a review (only by author)
     @PutMapping("/avis/{avisId}")
-    @PreAuthorize("hasRole('LOCATAIRE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('LOCATAIRE')")
     public ResponseEntity<AvisResponse> updateAvis(@PathVariable Long avisId,
                                                   @Valid @RequestBody AvisRequest avisRequest,
                                                   Authentication authentication) {
@@ -131,9 +133,8 @@ public class AvisController {
         Avis existingAvis = avisService.getAvisById(avisId)
             .orElseThrow(() -> new ResourceNotFoundException("Avis", "id", avisId));
 
-        // Check if user is the author or admin
-        if (!existingAvis.getAuteur().getId().equals(currentUser.getId()) && 
-            !currentUser.getRole().equals("ADMIN")) {
+        // Check if user is the author
+        if (!existingAvis.getAuteur().getId().equals(currentUser.getId())) {
             throw new UnauthorizedException("You can only update your own reviews");
         }
 
@@ -146,9 +147,9 @@ public class AvisController {
         return ResponseEntity.ok(response);
     }
 
-    // Delete a review (by author or admin)
+    // Delete a review (by author)
     @DeleteMapping("/avis/{avisId}")
-    @PreAuthorize("hasRole('LOCATAIRE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('LOCATAIRE')")
     public ResponseEntity<Void> deleteAvis(@PathVariable Long avisId,
                                           Authentication authentication) {
 
@@ -159,9 +160,8 @@ public class AvisController {
         Avis avis = avisService.getAvisById(avisId)
             .orElseThrow(() -> new ResourceNotFoundException("Avis", "id", avisId));
 
-        // Check if user is the author or admin
-        if (!avis.getAuteur().getId().equals(currentUser.getId()) && 
-            !currentUser.getRole().equals("ADMIN")) {
+        // Check if user is the author
+        if (!avis.getAuteur().getId().equals(currentUser.getId())) {
             throw new UnauthorizedException("You can only delete your own reviews");
         }
 

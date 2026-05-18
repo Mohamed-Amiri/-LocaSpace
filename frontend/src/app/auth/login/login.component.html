@@ -1,81 +1,183 @@
-<div class="login-wrapper">
-  <!-- Left image side -->
+﻿<div class="login-wrapper">
+  <!-- Left Brand Panel -->
   <div class="login-left">
-    <div class="overlay">
-      <div class="logo-container">
-        <i class="fas fa-building" aria-hidden="true"></i>
-        <h1>LocaSpace</h1>
+    <div class="left-content">
+      <!-- Back to home -->
+      <a class="back-link" routerLink="/">
+        <i class="ph ph-arrow-left" aria-hidden="true"></i>
+        Accueil
+      </a>
+
+      <div class="brand-section">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <i class="ph ph-buildings" aria-hidden="true"></i>
+          </div>
+          <h1>LocaSpace</h1>
+        </div>
+        <p class="tagline">Trouvez votre espace idéal, simplement.</p>
       </div>
-      <p>Louez ou proposez vos espaces facilement, en toute confiance.</p>
+
+      <!-- Feature bullets -->
+      <div class="features-list">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          </div>
+          <div class="feature-text">
+            <strong>Recherche intelligente</strong>
+            <span>Des milliers d'espaces à portée de clic</span>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="ph ph-shield-check" aria-hidden="true"></i>
+          </div>
+          <div class="feature-text">
+            <strong>Réservation sécurisée</strong>
+            <span>Paiement protégé et annulation flexible</span>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="ph ph-star-fill" aria-hidden="true"></i>
+          </div>
+          <div class="feature-text">
+            <strong>Avis vérifiés</strong>
+            <span>Une communauté de confiance</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rotating testimonial -->
+      <div class="testimonial-block" *ngIf="testimonials.length > 0">
+        <div class="testimonial-quote">
+          <i class="ph ph-quotes quote-icon" aria-hidden="true"></i>
+          <p>{{ testimonials[currentTestimonialIndex].quote }}</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">{{ testimonials[currentTestimonialIndex].initials }}</div>
+          <div class="author-info">
+            <span class="author-name">{{ testimonials[currentTestimonialIndex].name }}</span>
+            <span class="author-role">{{ testimonials[currentTestimonialIndex].role }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Right form side -->
+  <!-- Right Form Panel -->
   <div class="login-right">
     <div class="form-card">
       <div class="form-header">
-        <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
         <h2>Connexion</h2>
+        <p>Connectez-vous à votre compte</p>
       </div>
-      
+
       <div class="error-message" *ngIf="errorMessage">
-        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        <i class="ph ph-warning-circle" aria-hidden="true"></i>
         {{ errorMessage }}
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
 
-        <!-- Email input -->
-        <div>
-          <div class="input-group" [class.ng-invalid]="email.invalid" [class.ng-touched]="email.touched">
-            <i class="fas fa-envelope" aria-hidden="true"></i>
-            <input type="email" placeholder="Adresse email" formControlName="email" />
+        <!-- Email -->
+        <div class="form-group">
+          <label for="login-email">Adresse email</label>
+          <div class="input-wrapper" [class.error]="email.invalid && email.touched" [class.focused]="emailFocused">
+            <i class="ph ph-envelope input-icon" aria-hidden="true"></i>
+            <input 
+              id="login-email"
+              type="email" 
+              placeholder="nom@exemple.com" 
+              formControlName="email"
+              (focus)="emailFocused = true"
+              (blur)="emailFocused = false"
+              aria-label="Adresse email"
+            />
           </div>
-          <div class="error" *ngIf="email.invalid && (email.dirty || email.touched)">
+          <div class="field-error" *ngIf="email.invalid && (email.dirty || email.touched)">
             <small *ngIf="email.errors?.['required']">L'email est requis.</small>
             <small *ngIf="email.errors?.['email']">Format d'email invalide.</small>
           </div>
         </div>
 
-        <!-- Password input -->
-        <div>
-          <div class="input-group password-input-group" [class.ng-invalid]="password.invalid" [class.ng-touched]="password.touched">
-            <i class="fas fa-lock" aria-hidden="true"></i>
+        <!-- Password -->
+        <div class="form-group">
+          <label for="login-password">Mot de passe</label>
+          <div class="input-wrapper" [class.error]="password.invalid && password.touched" [class.focused]="passwordFocused">
+            <i class="ph ph-lock input-icon" aria-hidden="true"></i>
             <input 
+              id="login-password"
               [type]="showPassword ? 'text' : 'password'" 
-              placeholder="Mot de passe" 
-              formControlName="password" 
+              placeholder="Votre mot de passe" 
+              formControlName="password"
+              (focus)="passwordFocused = true"
+              (blur)="passwordFocused = false"
+              aria-label="Mot de passe"
             />
-            <i 
-              [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" 
-              class="password-toggle-icon"
+            <button 
+              type="button"
+              class="password-toggle" 
               (click)="togglePasswordVisibility()"
-              [title]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
-              aria-hidden="true"
-            ></i>
+              [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+            >
+              <i [class]="showPassword ? 'ph ph-eye-slash' : 'ph ph-eye'" aria-hidden="true"></i>
+            </button>
           </div>
-          <div class="error" *ngIf="password.invalid && (password.dirty || password.touched)">
+          <div class="field-error" *ngIf="password.invalid && (password.dirty || password.touched)">
             <small *ngIf="password.errors?.['required']">Le mot de passe est requis.</small>
           </div>
         </div>
 
-        <!-- Remember Me checkbox -->
-        <div class="remember-me-container">
-          <label class="remember-me-label">
-            <input type="checkbox" formControlName="rememberMe" class="remember-me-checkbox">
+        <!-- Remember me + Forgot password -->
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" formControlName="rememberMe">
             <span class="checkmark"></span>
             Se souvenir de moi
           </label>
+          <a class="forgot-link" routerLink="/forgot-password">Mot de passe oublié ?</a>
         </div>
 
-        <button type="submit" [disabled]="loginForm.invalid || isLoading">
-          <i class="fas fa-sign-in-alt" *ngIf="!isLoading" aria-hidden="true"></i>
-          <i class="fas fa-spinner fa-spin" *ngIf="isLoading" aria-hidden="true"></i>
-          {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+        <!-- Submit -->
+        <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || isLoading">
+          <span *ngIf="!isLoading">Se connecter</span>
+          <span *ngIf="isLoading" class="loading-state">
+            <i class="ph ph-spinner ph-spin" aria-hidden="true"></i>
+            Connexion...
+          </span>
         </button>
       </form>
 
-      <p class="register-redirect">Pas encore de compte ? <a routerLink="/register">Inscrivez-vous</a></p>
+      <!-- Divider -->
+      <div class="divider">
+        <span>ou continuer avec</span>
+      </div>
+
+      <!-- Social Login -->
+      <div class="social-buttons">
+        <button type="button" class="social-btn google" aria-label="Se connecter avec Google">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Google
+        </button>
+        <button type="button" class="social-btn apple" aria-label="Se connecter avec Apple">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+          </svg>
+          Apple
+        </button>
+      </div>
+
+      <!-- Register link -->
+      <p class="redirect-link">
+        Pas encore de compte ? <a routerLink="/register">Créer un compte</a>
+      </p>
     </div>
   </div>
 </div>

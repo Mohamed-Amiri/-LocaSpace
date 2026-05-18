@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LieuService } from '../lieu.service';
 import { Lieu } from '../lieu.model';
@@ -7,6 +7,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { FavoritesService } from '../../shared/favorites/favorites.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PlaceCardComponent, PlaceCardData } from '../../shared/components/place-card/place-card.component';
+import { SkeletonComponent } from '../../shared/components/skeleton/skeleton.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 
 // @ts-ignore markercluster plugin
 import 'leaflet.markercluster';
@@ -14,7 +17,7 @@ import 'leaflet.markercluster';
 @Component({
   selector: 'app-lieu-search',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, PlaceCardComponent, SkeletonComponent, EmptyStateComponent],
   templateUrl: './lieu-search.component.html',
   styleUrls: ['./lieu-search.component.scss']
 })
@@ -366,5 +369,20 @@ export class LieuSearchComponent implements OnInit, OnDestroy, AfterViewInit {
     if (control) {
       control.setValue(!control.value);
     }
+  }
+
+  mapToPlaceCardData(lieu: Lieu): PlaceCardData {
+    return {
+      id: lieu.id,
+      name: lieu.titre,
+      location: lieu.ville,
+      price: lieu.prix,
+      rating: lieu.note,
+      image: lieu.photos && lieu.photos.length > 0 ? lieu.photos[0] : 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
+      capacity: lieu.capacity || 0,
+      type: lieu.type,
+      badges: lieu.note >= 4.8 ? ['Populaire'] : [],
+      isFavorite: this.isFav(lieu.id)
+    };
   }
 }

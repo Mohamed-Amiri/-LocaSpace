@@ -1,13 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from '../../material.module';
 import { LocatairesService, Review } from '../../locataire/services/locataires.service';
 
 @Component({
   selector: 'app-review',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MaterialModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './review.component.html',
   styleUrls: ['./review.component.scss']
 })

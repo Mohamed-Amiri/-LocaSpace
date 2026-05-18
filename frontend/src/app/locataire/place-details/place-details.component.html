@@ -316,3 +316,5 @@
   <p>Chargement des détails...</p>
 </div>
 }
+<!-- Inline Review Modal -->
+<app-add-review-dialog *ngIf="showReviewModal && bookingToReview" [booking]="bookingToReview" [place]="place!" (submitted)="onReviewSubmitted($event)" (cancelled)="closeReviewModal()"></app-add-review-dialog>

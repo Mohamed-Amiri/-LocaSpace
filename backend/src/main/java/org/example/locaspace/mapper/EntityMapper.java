@@ -9,72 +9,79 @@ import org.example.locaspace.model.Avis;
 import org.example.locaspace.model.Lieu;
 import org.example.locaspace.model.Reservation;
 import org.example.locaspace.model.User;
+import org.example.locaspace.model.enums.LieuType;
 import org.example.locaspace.repository.AvisRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Component
 public class EntityMapper {
-    
+
+    private static final Logger log = LoggerFactory.getLogger(EntityMapper.class);
+
     @Autowired
     private AvisRepository avisRepository;
-    
-    // User mappings
+
     public UserSummaryResponse toUserSummaryResponse(User user) {
-        if (user == null) return null;
-        
+        if (user == null) {
+            return null;
+        }
+
         return new UserSummaryResponse(
             user.getId(),
             user.getNom(),
             user.getEmail(),
-            user.getRole()
+            user.getRole() != null ? user.getRole().name() : null
         );
     }
-    
+
     public UserResponse toUserResponse(User user) {
-        if (user == null) return null;
-        
+        if (user == null) {
+            return null;
+        }
+
         Long totalReservations = user.getReservations() != null ? (long) user.getReservations().size() : 0L;
         Long totalReviews = user.getAvis() != null ? (long) user.getAvis().size() : 0L;
-        
-        // Calculate average rating for user's reviews
+
         Double averageRating = null;
         if (user.getAvis() != null && !user.getAvis().isEmpty()) {
             averageRating = user.getAvis().stream()
-                .mapToInt(avis -> avis.getNote())
+                .mapToInt(Avis::getNote)
                 .average()
                 .orElse(0.0);
         }
-        
+
         return new UserResponse(
             user.getId(),
             user.getNom(),
             user.getEmail(),
-            user.getRole(),
-            null, // createdAt - would need to add this field to User entity
+            user.getRole() != null ? user.getRole().name() : null,
+            null,
             totalReservations,
             totalReviews,
             averageRating
         );
     }
-    
-    // Lieu mappings
+
     public LieuResponse toLieuResponse(Lieu lieu) {
-        if (lieu == null) return null;
-        
+        if (lieu == null) {
+            return null;
+        }
+
         UserSummaryResponse owner = toUserSummaryResponse(lieu.getOwner());
-        
-        // Calculate average rating and review count
         Double averageRating = avisRepository.findAverageNoteByLieu(lieu);
         Long reviewCount = avisRepository.countByLieu(lieu);
-        
+
         return new LieuResponse(
             lieu.getId(),
             lieu.getTitre(),
             lieu.getDescription(),
-            lieu.getType(),
+            formatLieuType(lieu.getType()),
             lieu.getPrix(),
             lieu.getAdresse(),
             lieu.isValide(),
@@ -84,163 +91,138 @@ public class EntityMapper {
             reviewCount
         );
     }
-    
-    // Reservation mappings
+
     public ReservationResponse toReservationResponse(Reservation reservation) {
-        if (reservation == null) return null;
-        
+        if (reservation == null) {
+            return null;
+        }
+
         try {
-            System.out.println("Mapping reservation with ID: " + reservation.getId());
-            
             UserSummaryResponse locataire = null;
             if (reservation.getLocataire() != null) {
-                System.out.println("Mapping locataire: " + reservation.getLocataire().getId());
-                try {
-                    String nom = safeGetString(reservation.getLocataire()::getNom, "User " + reservation.getLocataire().getId());
-                    String email = safeGetString(reservation.getLocataire()::getEmail, "");
-                    String role = safeGetString(reservation.getLocataire()::getRole, "LOCATAIRE");
-                    
-                    locataire = new UserSummaryResponse(
-                        reservation.getLocataire().getId(),
-                        nom,
-                        email,
-                        role
-                    );
-                } catch (Exception e) {
-                    System.err.println("Error mapping locataire: " + e.getMessage());
-                    // Create minimal response if full mapping fails
-                    locataire = new UserSummaryResponse(
-                        reservation.getLocataire().getId(),
-                        "User " + reservation.getLocataire().getId(),
-                        "",
-                        "LOCATAIRE"
-                    );
-                }
+                String fallbackName = "User " + reservation.getLocataire().getId();
+                locataire = new UserSummaryResponse(
+                    reservation.getLocataire().getId(),
+                    safeString(reservation.getLocataire().getNom(), fallbackName),
+                    safeString(reservation.getLocataire().getEmail(), ""),
+                    reservation.getLocataire().getRole() != null ? reservation.getLocataire().getRole().name() : "LOCATAIRE"
+                );
             }
-            
+
             LieuResponse lieu = null;
             if (reservation.getLieu() != null) {
-                System.out.println("Mapping lieu: " + reservation.getLieu().getId());
-                try {
-                    String titre = safeGetString(reservation.getLieu()::getTitre, "Lieu " + reservation.getLieu().getId());
-                    String description = safeGetString(reservation.getLieu()::getDescription, "");
-                    String type = safeGetString(reservation.getLieu()::getType, "");
-                    String adresse = safeGetString(reservation.getLieu()::getAdresse, "");
-                    
-                    lieu = new LieuResponse(
-                        reservation.getLieu().getId(),
-                        titre,
-                        description,
-                        type,
-                        reservation.getLieu().getPrix(),
-                        adresse,
-                        reservation.getLieu().isValide(),
-                        safeGetList(reservation.getLieu()::getPhotos),
-                        null, // Skip owner to avoid lazy loading issues
-                        null, // Skip rating
-                        null  // Skip review count
-                    );
-                } catch (Exception e) {
-                    System.err.println("Error mapping lieu: " + e.getMessage());
-                    e.printStackTrace();
-                    // Create minimal response if full mapping fails
-                    lieu = new LieuResponse(
-                        reservation.getLieu().getId(),
-                        "Lieu " + reservation.getLieu().getId(),
-                        "",
-                        "",
-                        reservation.getLieu().getPrix(),
-                        "",
-                        true,
-                        null,
-                        null,
-                        null,
-                        null
-                    );
-                }
+                String fallbackTitle = "Lieu " + reservation.getLieu().getId();
+                lieu = new LieuResponse(
+                    reservation.getLieu().getId(),
+                    safeString(reservation.getLieu().getTitre(), fallbackTitle),
+                    safeString(reservation.getLieu().getDescription(), ""),
+                    formatLieuType(reservation.getLieu().getType()),
+                    reservation.getLieu().getPrix(),
+                    safeString(reservation.getLieu().getAdresse(), ""),
+                    reservation.getLieu().isValide(),
+                    safeList(reservation.getLieu().getPhotos()),
+                    null,
+                    null,
+                    null
+                );
             }
-            
-            // Calculate total nights and price
+
             Long totalNights = null;
             Double totalPrice = null;
-            
+
             if (reservation.getDateDebut() != null && reservation.getDateFin() != null) {
                 totalNights = ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin());
                 if (reservation.getLieu() != null && reservation.getLieu().getPrix() != null) {
                     totalPrice = reservation.getLieu().getPrix().doubleValue() * totalNights;
                 }
             }
-            
-            System.out.println("Creating ReservationResponse...");
+
             return new ReservationResponse(
                 reservation.getId(),
                 reservation.getDateDebut(),
                 reservation.getDateFin(),
-                reservation.getStatut(),
+                reservation.getStatut() != null ? reservation.getStatut().name() : null,
                 locataire,
                 lieu,
                 totalNights,
                 totalPrice
             );
         } catch (Exception e) {
-            System.err.println("Error mapping reservation to response: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error mapping reservation to response", e);
             throw new RuntimeException("Failed to map reservation", e);
         }
     }
-    
-    // Helper methods for safe property access
-    private String safeGetString(java.util.function.Supplier<String> supplier, String defaultValue) {
-        try {
-            String value = supplier.get();
-            return value != null ? value : defaultValue;
-        } catch (Exception e) {
-            System.err.println("Error accessing string property: " + e.getMessage());
-            return defaultValue;
-        }
-    }
-    
-    private java.util.List<String> safeGetList(java.util.function.Supplier<java.util.List<String>> supplier) {
-        try {
-            return supplier.get();
-        } catch (Exception e) {
-            System.err.println("Error accessing list property: " + e.getMessage());
+
+    public LieuResponse toLieuSummaryResponse(Lieu lieu) {
+        if (lieu == null) {
             return null;
         }
-    }
-    
-    // Simplified lieu response for reservation (to avoid circular references)
-    public LieuResponse toLieuSummaryResponse(Lieu lieu) {
-        if (lieu == null) return null;
-        
+
         return new LieuResponse(
             lieu.getId(),
             lieu.getTitre(),
             lieu.getDescription(),
-            lieu.getType(),
+            formatLieuType(lieu.getType()),
             lieu.getPrix(),
             lieu.getAdresse(),
             lieu.isValide(),
             lieu.getPhotos(),
-            null, // No owner details in summary
-            null, // No rating in summary
-            null  // No review count in summary
+            null,
+            null,
+            null
         );
     }
-    
-    // Avis mappings
+
     public AvisResponse toAvisResponse(Avis avis) {
-        if (avis == null) return null;
-        
+        if (avis == null) {
+            return null;
+        }
+
         return AvisResponse.builder()
             .id(avis.getId())
             .note(avis.getNote())
             .commentaire(avis.getCommentaire())
-            .dateCreation(null) // Would need to add createdAt field to Avis entity
+            .dateCreation(null)
             .auteurId(avis.getAuteur() != null ? avis.getAuteur().getId() : null)
             .auteurNom(avis.getAuteur() != null ? avis.getAuteur().getNom() : null)
             .lieuId(avis.getLieu() != null ? avis.getLieu().getId() : null)
             .lieuTitre(avis.getLieu() != null ? avis.getLieu().getTitre() : null)
             .build();
+    }
+
+    private String safeString(String value, String defaultValue) {
+        return value != null ? value : defaultValue;
+    }
+
+    private List<String> safeList(List<String> value) {
+        return value;
+    }
+
+    private String formatLieuType(LieuType type) {
+        if (type == null) {
+            return null;
+        }
+
+        switch (type) {
+            case APPARTEMENT:
+            case APARTMENT:
+                return "Appartement";
+            case MAISON:
+                return "Maison";
+            case VILLA:
+                return "Villa";
+            case STUDIO:
+                return "Studio";
+            case LOFT:
+                return "Loft";
+            case CHAMBRE:
+                return "Chambre";
+            case OFFICE:
+                return "Bureau";
+            case EVENT_SPACE:
+                return "Salle_Evenement";
+            default:
+                return type.name();
+        }
     }
 }

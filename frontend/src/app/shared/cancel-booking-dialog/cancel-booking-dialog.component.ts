@@ -1,28 +1,25 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MaterialModule } from '../../material.module';
 import { Booking } from '../../locataire/services/locataires.service';
 
 @Component({
   selector: 'app-cancel-booking-dialog',
   standalone: true,
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule],
   templateUrl: './cancel-booking-dialog.component.html',
   styleUrls: ['./cancel-booking-dialog.component.scss']
 })
 export class CancelBookingDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<CancelBookingDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { booking: Booking }
-  ) {}
+  @Input() booking!: Booking;
+  @Output() confirmed = new EventEmitter<boolean>();
+  @Output() cancelled = new EventEmitter<void>();
 
   onCancel(): void {
-    this.dialogRef.close(false);
+    this.cancelled.emit();
   }
 
   onConfirm(): void {
-    this.dialogRef.close(true);
+    this.confirmed.emit(true);
   }
 
   formatDate(date: Date): string {
@@ -35,8 +32,8 @@ export class CancelBookingDialogComponent {
   }
 
   getDuration(): number {
-    const start = new Date(this.data.booking.startDate);
-    const end = new Date(this.data.booking.endDate);
+    const start = new Date(this.booking.startDate);
+    const end = new Date(this.booking.endDate);
     const timeDiff = end.getTime() - start.getTime();
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }

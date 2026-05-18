@@ -1,11 +1,11 @@
-/* PREMIUM MANAGE PROPERTIES DESIGN */
+﻿/* PREMIUM MANAGE PROPERTIES DESIGN */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :host {
   display: block;
   min-height: 100vh;
   background: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .premium-container {
@@ -21,7 +21,7 @@
 .premium-header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -46,7 +46,7 @@
         justify-content: center;
         box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
       
-        mat-icon {
+        i.fas {
           color: white;
           font-size: 24px;
           width: 24px;
@@ -91,7 +91,7 @@
           box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
         }
 
-        mat-icon {
+        i.fas {
           margin-right: 8px;
           font-size: 18px;
         }
@@ -112,7 +112,7 @@
           box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
         }
 
-        mat-icon {
+        i.fas {
           margin-right: 8px;
           font-size: 18px;
         }
@@ -152,7 +152,7 @@
       align-items: center;
       justify-content: center;
 
-      mat-icon {
+      i.fas {
         color: white;
         font-size: 24px;
       }
@@ -296,13 +296,13 @@
       width: 80px;
       height: 80px;
       background: linear-gradient(135deg, #6C63FF, #5A4FCF);
-      border-radius: 20px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 20px auto;
 
-      mat-icon {
+      i.fas {
         color: white;
         font-size: 40px;
         width: 40px;
@@ -334,7 +334,7 @@
         box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
       }
 
-      mat-icon {
+      i.fas {
         margin-right: 8px;
       }
     }
@@ -350,7 +350,7 @@
   .property-card {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
@@ -406,7 +406,7 @@
 
         .status-badge {
           background: rgba(255, 255, 255, 0.9);
-          border-radius: 20px;
+          border-radius: 12px;
           padding: 6px 12px;
           display: flex;
           align-items: center;
@@ -422,7 +422,7 @@
             color: #dc2626;
           }
 
-          mat-icon {
+          i.fas {
             font-size: 16px;
             width: 16px;
             height: 16px;
@@ -444,7 +444,7 @@
               color: white;
             }
 
-            mat-icon {
+            i.fas {
               font-size: 18px;
             }
           }
@@ -479,7 +479,7 @@
           font-size: 0.75rem;
           color: #555555;
 
-          mat-icon {
+          i.fas {
             font-size: 16px;
             width: 16px;
             height: 16px;
@@ -495,7 +495,7 @@
         font-size: 0.875rem;
         margin-bottom: 16px;
 
-        mat-icon {
+        i.fas {
           font-size: 16px;
           width: 16px;
           height: 16px;
@@ -514,7 +514,7 @@
           font-size: 0.875rem;
           color: #555555;
 
-          mat-icon {
+          i.fas {
             font-size: 16px;
             width: 16px;
             height: 16px;
@@ -530,7 +530,7 @@
 
         .amenity-chip {
           background: #eff6ff;
-          color: #2563eb;
+          color: #0A2540;
           padding: 4px 8px;
           border-radius: 12px;
           font-size: 0.75rem;
@@ -578,7 +578,7 @@
           font-weight: 500;
           font-size: 0.875rem;
 
-          mat-icon {
+          i.fas {
             font-size: 16px;
             margin-right: 4px;
           }
@@ -659,7 +659,7 @@
             color: #555555;
             margin: 0;
 
-            mat-icon {
+            i.fas {
               font-size: 14px;
               width: 14px;
               height: 14px;
@@ -675,7 +675,7 @@
         font-size: 0.875rem;
         color: #333333;
 
-        mat-icon {
+        i.fas {
           font-size: 16px;
           width: 16px;
           height: 16px;
@@ -693,7 +693,7 @@
           font-size: 0.75rem;
           color: #555555;
 
-          mat-icon {
+          i.fas {
             font-size: 14px;
             width: 14px;
             height: 14px;
@@ -728,7 +728,7 @@
             background: rgba(108, 99, 255, 0.1);
           }
 
-          mat-icon {
+          i.fas {
             font-size: 16px;
           }
         }
@@ -747,7 +747,7 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 
   .no-results-content {
-    mat-icon {
+    i.fas {
       font-size: 48px;
       width: 48px;
       height: 48px;
@@ -770,7 +770,7 @@
       color: #6C63FF;
       font-weight: 500;
 
-      mat-icon {
+      i.fas {
         margin-right: 8px;
         font-size: 18px;
       }
@@ -802,7 +802,7 @@
 
   &.mat-focused .mat-form-field-flex {
     background: #ffffff;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 2px rgba(10, 37, 64, 0.2);
   }
 
   .mat-form-field-outline {
@@ -813,7 +813,7 @@
   }
 
   &.mat-focused .mat-form-field-outline-thick {
-    border-color: #667eea;
+    border-color: #0A2540;
     border-width: 2px;
   }
 
@@ -824,7 +824,7 @@
   }
 
   &.mat-focused .mat-form-field-label {
-    color: #667eea;
+    color: #0A2540;
   }
 
   .mat-form-field-infix {
@@ -839,7 +839,7 @@
     line-height: 1.5;
   }
 
-  .mat-icon {
+  .i.fas {
     color: #9ca3af;
     font-size: 1.25rem;
     width: 1.25rem;

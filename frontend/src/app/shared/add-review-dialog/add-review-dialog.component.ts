@@ -1,44 +1,38 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MaterialModule } from '../../material.module';
 import { Booking, Place } from '../../locataire/services/locataires.service';
 
 @Component({
   selector: 'app-add-review-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, MaterialModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './add-review-dialog.component.html',
   styleUrls: ['./add-review-dialog.component.scss']
 })
 export class AddReviewDialogComponent {
+  @Input() booking!: Booking;
+  @Input() place?: Place;
+  @Output() submitted = new EventEmitter<{ rating: number; comment: string; placeId: number; bookingId: number }>();
+  @Output() cancelled = new EventEmitter<void>();
+
   rating = 0;
   comment = '';
   hoverRating = 0;
 
-  constructor(
-    public dialogRef: MatDialogRef<AddReviewDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { booking: Booking; place?: Place }
-  ) {}
-
   onCancel(): void {
-    this.dialogRef.close(null);
+    this.cancelled.emit();
   }
 
   onSubmit(): void {
-    if (this.rating === 0) {
-      return; // Don't submit without rating
-    }
+    if (this.rating === 0) return;
 
-    const review = {
+    this.submitted.emit({
       rating: this.rating,
       comment: this.comment.trim(),
-      placeId: this.data.booking.placeId,
-      bookingId: this.data.booking.id
-    };
-
-    this.dialogRef.close(review);
+      placeId: this.booking.placeId,
+      bookingId: this.booking.id
+    });
   }
 
   setRating(rating: number): void {

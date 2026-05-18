@@ -44,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         
         public static UserPrincipal create(User user) {
             Collection<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + (user.getRole() != null ? user.getRole() : "USER"))
+                new SimpleGrantedAuthority("ROLE_" + (user.getRole() != null ? user.getRole().name() : "LOCATAIRE"))
             );
             
             return new UserPrincipal(

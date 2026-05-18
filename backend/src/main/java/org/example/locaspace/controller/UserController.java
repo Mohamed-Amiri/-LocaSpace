@@ -1,83 +1,84 @@
 package org.example.locaspace.controller;
 
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import org.example.locaspace.dto.reservation.ReservationResponse;
+import org.example.locaspace.dto.user.UserResponse;
+import org.example.locaspace.mapper.EntityMapper;
+import org.example.locaspace.model.Reservation;
 import org.example.locaspace.model.User;
+import org.example.locaspace.security.UserDetailsServiceImpl;
+import org.example.locaspace.service.ReservationService;
 import org.example.locaspace.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     private final UserService userService;
+    private final ReservationService reservationService;
+    private final EntityMapper entityMapper;
 
-    @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          ReservationService reservationService,
+                          EntityMapper entityMapper) {
         this.userService = userService;
+        this.reservationService = reservationService;
+        this.entityMapper = entityMapper;
     }
 
-    // Create (Registration)
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> registerUser(@RequestBody User user) {
         User createdUser = userService.registerUser(user);
-        return ResponseEntity.ok(createdUser);
+        return ResponseEntity.ok(entityMapper.toUserResponse(createdUser));
     }
 
-    // Read (Profile)
     @GetMapping("/me")
-    public ResponseEntity<User> getProfile() {
-        // For demo: get user with id 1 (replace with authentication logic)
-        User user = userService.getUserById(1L);
-        if (user == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(user);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponse> getProfile(Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        return ResponseEntity.ok(entityMapper.toUserResponse(user));
     }
 
-    // Update (Profile)
     @PutMapping("/me")
-    public ResponseEntity<User> updateProfile(@RequestBody User updatedUser) {
-        // For demo: update user with id 1 (replace with authentication logic)
-        User user = userService.updateUser(1L, updatedUser);
-        if (user == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(user);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponse> updateProfile(@RequestBody User updatedUser, Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+
+        // Prevent privilege escalation in self-service profile updates.
+        updatedUser.setRole(null);
+
+        User user = userService.updateUser(currentUser.getId(), updatedUser);
+        return ResponseEntity.ok(entityMapper.toUserResponse(user));
     }
 
-    // Delete (Self-delete)
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteProfile() {
-        // For demo: delete user with id 1 (replace with authentication logic)
-        userService.deleteUser(1L);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteProfile(Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+        userService.deleteUser(currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 
-    // Admin: List all users
-    @GetMapping
-    public ResponseEntity<List<User>> listUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    // Admin: Block/Delete user
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // Get own reservations
     @GetMapping("/me/reservations")
-    public List<?> getMyReservations() { return null; }
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ReservationResponse>> getMyReservations(Authentication authentication) {
+        User currentUser = getCurrentUser(authentication);
+        List<Reservation> reservations = reservationService.getReservationsByTenant(currentUser);
+        List<ReservationResponse> responses = reservations.stream()
+            .map(entityMapper::toReservationResponse)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
 
-
-
-    // Admin: Change user role
-    @PutMapping("/{id}/role")
-    public void changeUserRole(@PathVariable Long id) {}
-
-    // Admin: Block/Unblock user
-    @PutMapping("/{id}/block")
-    public void blockUser(@PathVariable Long id) {}
-
-    // Admin: Delete user review
-    @DeleteMapping("/avis/{id}")
-    public void deleteAvis(@PathVariable Long id) {}
+    private User getCurrentUser(Authentication authentication) {
+        UserDetailsServiceImpl.UserPrincipal principal = (UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
+        return userService.getUserById(principal.getId());
+    }
 }

@@ -25,18 +25,18 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    
+
     @Autowired
     private UserDetailsService userDetailsService;
-    
+
     @Autowired
     private JwtAuthEntryPoint unauthorizedHandler;
-    
+
     @Bean
     public JwtFilter authenticationJwtTokenFilter() {
         return new JwtFilter();
     }
-    
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -44,30 +44,33 @@ public class SecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:4200",
+            "http://localhost:4000"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -75,32 +78,20 @@ public class SecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/health/**").permitAll()
                 .requestMatchers("/api/lieux", "/api/lieux/{id}", "/api/lieux/search").permitAll()
                 .requestMatchers("/api/lieux/{id}/avis").permitAll()
-                .requestMatchers("/uploads/**").permitAll() // Allow public access to uploaded files
-                
-                // User endpoints
-                .requestMatchers("/api/users/register").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/api/users/me/**").authenticated()
-                
-                // Owner endpoints
                 .requestMatchers("/api/lieux/{id}/reservations").hasAnyRole("PROPRIETAIRE", "ADMIN")
                 .requestMatchers("/api/reservations/owner").hasAnyRole("PROPRIETAIRE", "ADMIN")
-                
-                // Admin endpoints
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/users/{id}/**").hasRole("ADMIN")
-                .requestMatchers("/api/lieux/{id}/validate").hasRole("ADMIN")
-                
-                // All other requests require authentication
                 .anyRequest().authenticated()
             );
-        
+
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-        
+
         return http.build();
     }
 }

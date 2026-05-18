@@ -1,51 +1,19 @@
 <div class="booking-requests-container">
-  <!-- Premium Header with Enhanced Glassmorphism -->
-  <div class="premium-header">
-    <div class="header-background">
-      <div class="gradient-overlay"></div>
-      <div class="floating-elements">
-        <div class="element element-1"></div>
-        <div class="element element-2"></div>
-        <div class="element element-3"></div>
-        <div class="element element-4"></div>
-        <div class="element element-5"></div>
-      </div>
-      <div class="geometric-patterns">
-        <div class="pattern pattern-1"></div>
-        <div class="pattern pattern-2"></div>
-        <div class="pattern pattern-3"></div>
-      </div>
-    </div>
+  <!-- Mediterranean Header -->
+  <div class="page-header">
     <div class="header-content">
       <div class="header-left">
-        <div class="icon-wrapper">
-          <div class="icon-glow"></div>
-          <mat-icon class="header-icon">notifications_active</mat-icon>
-        </div>
         <div class="header-text">
           <h1 class="page-title">Demandes de Réservation</h1>
           <p class="page-subtitle">Gérez vos demandes de réservation en temps réel</p>
-          <div class="header-stats">
-            <div class="stat-item">
-              <span class="stat-number">{{ pendingRequests.length }}</span>
-              <span class="stat-label">En attente</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-              <span class="stat-number">{{ allRequests.length }}</span>
-              <span class="stat-label">Total</span>
-            </div>
-          </div>
         </div>
       </div>
       <div class="header-actions">
-        <button mat-raised-button class="premium-button" (click)="loadBookingRequests()">
-          <mat-icon>refresh</mat-icon>
-          Actualiser
+        <button class="btn btn-primary" (click)="loadBookingRequests()">
+          <i class="ph ph-arrows-clockwise"></i> Actualiser
         </button>
-        <button mat-stroked-button class="back-button" routerLink="/proprietaires/dashboard">
-          <mat-icon>arrow_back</mat-icon>
-          Retour
+        <button class="btn btn-outline" routerLink="/proprietaires/dashboard">
+          <i class="ph ph-arrow-left"></i> Retour
         </button>
       </div>
     </div>
@@ -56,7 +24,7 @@
     <div class="loading-content">
       <div class="loading-animation">
         <div class="spinner-wrapper">
-          <mat-spinner diameter="60" color="primary"></mat-spinner>
+          <div class="spinner-large"></div>
           <div class="loading-pulse"></div>
         </div>
       </div>
@@ -74,7 +42,7 @@
       <div class="stats-grid">
         <div class="stat-card pending">
           <div class="stat-icon">
-            <mat-icon>pending_actions</mat-icon>
+            <i class="ph ph-clock"></i>
           </div>
           <div class="stat-content">
             <h3>{{ pendingRequests.length }}</h3>
@@ -84,7 +52,7 @@
         </div>
         <div class="stat-card approved">
           <div class="stat-icon">
-            <mat-icon>check_circle</mat-icon>
+            <i class="ph ph-check-circle"></i>
           </div>
           <div class="stat-content">
             <h3>{{ approvedRequests.length }}</h3>
@@ -94,7 +62,7 @@
         </div>
         <div class="stat-card rejected">
           <div class="stat-icon">
-            <mat-icon>cancel</mat-icon>
+            <i class="ph ph-x-circle"></i>
           </div>
           <div class="stat-content">
             <h3>{{ rejectedRequests.length }}</h3>
@@ -104,7 +72,7 @@
         </div>
         <div class="stat-card total">
           <div class="stat-icon">
-            <mat-icon>assessment</mat-icon>
+            <i class="ph ph-chart-bar"></i>
           </div>
           <div class="stat-content">
             <h3>{{ allRequests.length }}</h3>
@@ -116,35 +84,46 @@
     </div>
 
     <!-- Premium Tabbed Interface -->
-    <mat-tab-group class="premium-tabs" animationDuration="500ms" dynamicHeight>
-      <!-- Pending Requests Tab with Enhanced Design -->
-      <mat-tab>
-        <ng-template mat-tab-label>
+    <div class="custom-tabs">
+      <div class="tab-header">
+        <div class="tab-button" [class.active]="activeTab === 0" (click)="setTab(0)">
           <div class="tab-label-content">
-            <div class="tab-icon pending">
-              <mat-icon>pending_actions</mat-icon>
-            </div>
+            <div class="tab-icon pending"><i class="ph ph-clock"></i></div>
             <span class="tab-text">En attente</span>
-            <div *ngIf="pendingRequests.length > 0" class="tab-badge pending">
-              {{ pendingRequests.length }}
-            </div>
+            <div *ngIf="pendingRequests.length > 0" class="tab-badge pending">{{ pendingRequests.length }}</div>
           </div>
-        </ng-template>
-        
-        <div class="tab-content">
+        </div>
+        <div class="tab-button" [class.active]="activeTab === 1" (click)="setTab(1)">
+          <div class="tab-label-content">
+            <div class="tab-icon approved"><i class="ph ph-check-circle"></i></div>
+            <span class="tab-text">Approuvées</span>
+            <div *ngIf="approvedRequests.length > 0" class="tab-badge approved">{{ approvedRequests.length }}</div>
+          </div>
+        </div>
+        <div class="tab-button" [class.active]="activeTab === 2" (click)="setTab(2)">
+          <div class="tab-label-content">
+            <div class="tab-icon rejected"><i class="ph ph-x-circle"></i></div>
+            <span class="tab-text">Rejetées</span>
+            <div *ngIf="rejectedRequests.length > 0" class="tab-badge rejected">{{ rejectedRequests.length }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-body">
+        <!-- Pending Requests Tab -->
+        <div class="tab-content" *ngIf="activeTab === 0">
           <div *ngIf="pendingRequests.length === 0" class="enhanced-empty-state">
             <div class="empty-illustration">
               <div class="empty-icon-wrapper">
-                <mat-icon class="empty-icon">pending_actions</mat-icon>
+                <i class="ph ph-clipboard-list empty-icon"></i>
                 <div class="icon-glow"></div>
               </div>
             </div>
             <div class="empty-content">
               <h3>Aucune demande en attente</h3>
               <p>Toutes vos demandes ont été traitées avec succès</p>
-              <button mat-raised-button color="primary" (click)="loadBookingRequests()">
-                <mat-icon>refresh</mat-icon>
-                Actualiser
+              <button class="btn btn-primary" (click)="loadBookingRequests()">
+                <i class="ph ph-arrows-clockwise"></i> Actualiser
               </button>
             </div>
           </div>
@@ -159,12 +138,12 @@
                   <div class="request-header">
                     <div class="property-info">
                       <div class="property-icon">
-                        <mat-icon>home</mat-icon>
+                        <i class="ph ph-house"></i>
                       </div>
                       <div class="property-details">
                         <h3 class="property-title">{{ request.propertyTitle }}</h3>
                         <div class="status-badge pending">
-                          <mat-icon>{{ getStatusIcon(request.status) }}</mat-icon>
+                          <i class="ph ph-{{ getStatusIcon(request.status) }}"></i>
                           <span>{{ getStatusText(request.status) }}</span>
                         </div>
                       </div>
@@ -180,7 +159,7 @@
                 <div class="request-details">
                   <div class="guest-info">
                     <div class="info-item">
-                      <mat-icon>person</mat-icon>
+                      <i class="ph ph-user text-primary"></i>
                       <div>
                         <strong>{{ request.tenantName }}</strong>
                         <span class="email">{{ request.tenantEmail }}</span>
@@ -190,28 +169,28 @@
 
                   <div class="booking-info">
                     <div class="info-item">
-                      <mat-icon>date_range</mat-icon>
+                      <i class="ph ph-calendar-blank text-primary"></i>
                       <div>
                         <strong>{{ formatDate(request.checkIn) }} - {{ formatDate(request.checkOut) }}</strong>
                       </div>
                     </div>
 
                     <div class="info-item">
-                      <mat-icon>hotel</mat-icon>
+                      <i class="ph ph-moon text-primary"></i>
                       <div>
                         <strong>{{ calculateNights(request.checkIn, request.checkOut) }} nuit(s)</strong>
                       </div>
                     </div>
 
                     <div class="info-item">
-                      <mat-icon>people</mat-icon>
+                      <i class="ph ph-users-three text-primary"></i>
                       <div>
                         <strong>{{ request.guests }} invité(s)</strong>
                       </div>
                     </div>
 
                     <div class="info-item">
-                      <mat-icon>euro</mat-icon>
+                      <i class="ph ph-currency-eur text-primary"></i>
                       <div>
                         <strong>{{ request.totalPrice }}€</strong>
                         <span class="total-label">Total</span>
@@ -222,7 +201,7 @@
 
                   <div *ngIf="request.message" class="message-section">
                     <div class="message-header">
-                      <mat-icon>chat_bubble_outline</mat-icon>
+                      <i class="ph ph-chat-dots"></i>
                       <span>Message du locataire</span>
                     </div>
                     <div class="message-content">
@@ -234,17 +213,17 @@
 
               <div class="card-actions">
                 <div class="action-buttons">
-                  <button mat-raised-button class="approve-btn" (click)="approveRequest(request)">
+                  <button class="btn btn-success approve-btn" (click)="approveRequest(request)">
                     <div class="btn-content">
-                      <mat-icon>check_circle</mat-icon>
-                      <span>Accepter</span>
+                      <i class="ph ph-check-circle"></i>
+                      <span> Accepter</span>
                     </div>
                     <div class="btn-glow"></div>
                   </button>
-                  <button mat-stroked-button class="reject-btn" (click)="rejectRequest(request)">
+                  <button class="btn btn-outline-danger reject-btn" (click)="rejectRequest(request)">
                     <div class="btn-content">
-                      <mat-icon>cancel</mat-icon>
-                      <span>Refuser</span>
+                      <i class="ph ph-x-circle"></i>
+                      <span> Refuser</span>
                     </div>
                   </button>
                 </div>
@@ -252,27 +231,13 @@
             </div>
           </div>
         </div>
-      </mat-tab>
 
-      <!-- Approved Requests Tab with Enhanced Design -->
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="tab-label-content">
-            <div class="tab-icon approved">
-              <mat-icon>check_circle</mat-icon>
-            </div>
-            <span class="tab-text">Approuvées</span>
-            <div *ngIf="approvedRequests.length > 0" class="tab-badge approved">
-              {{ approvedRequests.length }}
-            </div>
-          </div>
-        </ng-template>
-        
-        <div class="tab-content">
+        <!-- Approved Requests Tab -->
+        <div class="tab-content" *ngIf="activeTab === 1">
           <div *ngIf="approvedRequests.length === 0" class="enhanced-empty-state">
             <div class="empty-illustration">
               <div class="empty-icon-wrapper">
-                <mat-icon class="empty-icon">check_circle_outline</mat-icon>
+                <i class="ph ph-check-circle empty-icon text-success"></i>
                 <div class="icon-glow approved"></div>
               </div>
             </div>
@@ -292,12 +257,12 @@
                   <div class="request-header">
                     <div class="property-info">
                       <div class="property-icon">
-                        <mat-icon>home</mat-icon>
+                        <i class="ph ph-house"></i>
                       </div>
                       <div class="property-details">
                         <h3 class="property-title">{{ request.propertyTitle }}</h3>
                         <div class="status-badge approved">
-                          <mat-icon>{{ getStatusIcon(request.status) }}</mat-icon>
+                          <i class="ph ph-{{ getStatusIcon(request.status) }}"></i>
                           <span>{{ getStatusText(request.status) }}</span>
                         </div>
                       </div>
@@ -313,7 +278,7 @@
                   <div class="request-details">
                     <div class="guest-info">
                       <div class="info-item">
-                        <mat-icon>person</mat-icon>
+                        <i class="ph ph-user text-primary"></i>
                         <div>
                           <strong>{{ request.tenantName }}</strong>
                           <span class="email">{{ request.tenantEmail }}</span>
@@ -323,7 +288,7 @@
 
                     <div class="booking-info">
                       <div class="info-item">
-                        <mat-icon>date_range</mat-icon>
+                        <i class="ph ph-calendar-blank text-primary"></i>
                         <div>
                           <strong>{{ formatDate(request.checkIn) }} - {{ formatDate(request.checkOut) }}</strong>
                           <span class="nights">{{ calculateNights(request.checkIn, request.checkOut) }} nuit(s)</span>
@@ -331,14 +296,14 @@
                       </div>
 
                       <div class="info-item">
-                        <mat-icon>people</mat-icon>
+                        <i class="ph ph-users-three text-primary"></i>
                         <div>
                           <strong>{{ request.guests }} invité(s)</strong>
                         </div>
                       </div>
 
                       <div class="info-item">
-                        <mat-icon>euro</mat-icon>
+                        <i class="ph ph-currency-eur text-primary"></i>
                         <div>
                           <strong>{{ request.totalPrice }}€</strong>
                           <span class="total-label">Total</span>
@@ -351,27 +316,13 @@
             </div>
           </div>
         </div>
-      </mat-tab>
 
-      <!-- Rejected Requests Tab with Enhanced Design -->
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="tab-label-content">
-            <div class="tab-icon rejected">
-              <mat-icon>cancel</mat-icon>
-            </div>
-            <span class="tab-text">Rejetées</span>
-            <div *ngIf="rejectedRequests.length > 0" class="tab-badge rejected">
-              {{ rejectedRequests.length }}
-            </div>
-          </div>
-        </ng-template>
-        
-        <div class="tab-content">
+        <!-- Rejected Requests Tab -->
+        <div class="tab-content" *ngIf="activeTab === 2">
           <div *ngIf="rejectedRequests.length === 0" class="enhanced-empty-state">
             <div class="empty-illustration">
               <div class="empty-icon-wrapper">
-                <mat-icon class="empty-icon">cancel</mat-icon>
+                <i class="ph ph-x-circle empty-icon text-danger"></i>
                 <div class="icon-glow rejected"></div>
               </div>
             </div>
@@ -391,12 +342,12 @@
                   <div class="request-header">
                     <div class="property-info">
                       <div class="property-icon">
-                        <mat-icon>home</mat-icon>
+                        <i class="ph ph-house"></i>
                       </div>
                       <div class="property-details">
                         <h3 class="property-title">{{ request.propertyTitle }}</h3>
                         <div class="status-badge rejected">
-                          <mat-icon>{{ getStatusIcon(request.status) }}</mat-icon>
+                          <i class="ph ph-{{ getStatusIcon(request.status) }}"></i>
                           <span>{{ getStatusText(request.status) }}</span>
                         </div>
                       </div>
@@ -412,7 +363,7 @@
                   <div class="request-details">
                     <div class="guest-info">
                       <div class="info-item">
-                        <mat-icon>person</mat-icon>
+                        <i class="ph ph-user text-primary"></i>
                         <div>
                           <strong>{{ request.tenantName }}</strong>
                           <span class="email">{{ request.tenantEmail }}</span>
@@ -422,7 +373,7 @@
 
                     <div class="booking-info">
                       <div class="info-item">
-                        <mat-icon>date_range</mat-icon>
+                        <i class="ph ph-calendar-blank text-primary"></i>
                         <div>
                           <strong>{{ formatDate(request.checkIn) }} - {{ formatDate(request.checkOut) }}</strong>
                           <span class="nights">{{ calculateNights(request.checkIn, request.checkOut) }} nuit(s)</span>
@@ -430,14 +381,14 @@
                       </div>
 
                       <div class="info-item">
-                        <mat-icon>people</mat-icon>
+                        <i class="ph ph-users-three text-primary"></i>
                         <div>
                           <strong>{{ request.guests }} invité(s)</strong>
                         </div>
                       </div>
 
                       <div class="info-item">
-                        <mat-icon>euro</mat-icon>
+                        <i class="ph ph-currency-eur text-primary"></i>
                         <div>
                           <strong>{{ request.totalPrice }}€</strong>
                           <span class="total-label">Total</span>
@@ -448,7 +399,7 @@
 
                   <div *ngIf="request.message" class="message-section rejection-reason">
                     <div class="message-header">
-                      <mat-icon>info</mat-icon>
+                      <i class="ph ph-info"></i>
                       <span>Raison du refus</span>
                     </div>
                     <div class="message-content">
@@ -460,7 +411,7 @@
             </div>
           </div>
         </div>
-      </mat-tab>
-    </mat-tab-group>
+      </div>
+    </div>
   </div>
 </div>

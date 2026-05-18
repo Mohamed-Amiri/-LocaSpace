@@ -94,7 +94,7 @@ body.dark-mode {
   .stepper .step {
     border-color: $neutral-700;
     &.active {
-      background: $primary-gradient-dark;
+      background: $primary-gradient-hover;
     }
   }
 }

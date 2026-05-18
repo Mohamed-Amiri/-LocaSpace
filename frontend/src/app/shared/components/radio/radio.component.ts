@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 
 export interface RadioOption {
   value: any;
@@ -44,7 +43,7 @@ export interface RadioOption {
 
           <label [for]="id + '-' + i" class="radio-label">
             <div class="radio-label-content">
-              <mat-icon *ngIf="option.icon" class="radio-icon">{{ option.icon }}</mat-icon>
+              <i *ngIf="option.icon" class="fas radio-icon" [ngClass]="'fa-' + option.icon"></i>
               <div class="radio-text">
                 <div class="radio-label-text">{{ option.label }}</div>
                 <div *ngIf="option.description" class="radio-description">
@@ -67,7 +66,7 @@ export interface RadioOption {
   `,
   styleUrls: ['./radio.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

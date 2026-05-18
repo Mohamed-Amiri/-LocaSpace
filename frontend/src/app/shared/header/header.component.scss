@@ -1,14 +1,15 @@
+﻿@use 'sass:color';
 @use 'variables' as *;
 
 .modern-header {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   padding: 1rem 2rem;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.2);
+  border-bottom: $border-default;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: $shadow-nav;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   .header-content {
@@ -27,11 +28,11 @@
       text-decoration: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       padding: 0.5rem;
-      border-radius: $border-radius-lg;
+      border-radius: $radius-lg;
 
       &:hover {
         transform: scale(1.02);
-        background: rgba(102, 126, 234, 0.05);
+        background: rgba(10, 37, 64, 0.03);
       }
 
       .logo-icon {
@@ -39,7 +40,7 @@
         transition: transform 0.3s ease;
         
         svg {
-          filter: drop-shadow(0 2px 4px rgba(37, 99, 235, 0.2));
+          filter: drop-shadow(0 2px 4px rgba(10, 37, 64, 0.2));
         }
       }
 
@@ -53,10 +54,10 @@
         gap: 0.125rem;
         
         .logo-text {
-          font-family: $font-headers;
+          font-family: $font-display;
           font-size: 1.5rem;
           font-weight: 700;
-          color: #667eea;
+          color: $color-navy;
           letter-spacing: -0.02em;
           line-height: 1.2;
         }
@@ -64,7 +65,7 @@
         .logo-tagline {
           font-family: $font-body;
           font-size: 0.75rem;
-          color: $neutral-600;
+          color: $color-text-muted;
           font-weight: 500;
           letter-spacing: 0.01em;
           opacity: 0.8;
@@ -85,12 +86,13 @@
 
     .nav-link {
       text-decoration: none;
-      color: $neutral-600;
+      color: $color-text-body;
       font-weight: 500;
       font-size: 0.95rem;
+      font-family: $font-body;
       position: relative;
       padding: 0.75rem 1.25rem;
-      border-radius: $border-radius-xl;
+      border-radius: $radius-md;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       background: transparent;
       border: 1px solid transparent;
@@ -107,18 +109,18 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
-        border-radius: $border-radius-xl;
+        background: rgba(10, 37, 64, 0.05);
+        border-radius: $radius-md;
         opacity: 0;
         transform: scale(0.9);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       &:hover {
-        color: #667eea;
+        color: $color-navy;
         transform: translateY(-2px);
-        border-color: rgba(102, 126, 234, 0.2);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        border-color: rgba(10, 37, 64, 0.1);
+        box-shadow: 0 4px 12px rgba(10, 37, 64, 0.1);
         
         &::before {
           opacity: 1;
@@ -127,11 +129,24 @@
       }
 
       &.active {
-        color: #667eea;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-        border-color: rgba(102, 126, 234, 0.2);
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        color: $color-navy;
+        background: rgba(10, 37, 64, 0.06);
+        border-color: rgba(10, 37, 64, 0.1);
+        box-shadow: 0 2px 8px rgba(10, 37, 64, 0.08);
         
+        // Gold underline accent on active tab
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60%;
+          height: 2px;
+          background: $color-gold;
+          border-radius: 1px;
+        }
+
         &::before {
           opacity: 1;
           transform: scale(1);
@@ -139,10 +154,10 @@
       }
       
       &.nav-link--primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: $color-navy;
         color: white;
         font-weight: 600;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba(10, 37, 64, 0.3);
         
         &::before {
           display: none;
@@ -151,15 +166,19 @@
         &:hover {
           color: white;
           transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-          filter: brightness(1.05);
+          background: $color-navy-mid;
+          box-shadow: 0 8px 25px rgba(10, 37, 64, 0.4);
           border-color: transparent;
         }
         
         &.active {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: $color-navy;
           color: white;
           border-color: transparent;
+
+          &::after {
+            display: none;
+          }
         }
       }
     }
@@ -176,29 +195,29 @@
     align-items: center;
     gap: 1rem;
     padding: 0.5rem 1rem;
-    background: rgba(248, 250, 252, 0.8);
-    border-radius: $border-radius-xl;
-    border: 1px solid rgba(226, 232, 240, 0.5);
+    background: $color-sand;
+    border-radius: $radius-lg;
+    border: $border-default;
     transition: all 0.3s ease;
 
     &:hover {
-      background: rgba(248, 250, 252, 1);
-      border-color: rgba(37, 99, 235, 0.2);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      background: $color-cream;
+      border-color: rgba(201, 168, 76, 0.3);
+      box-shadow: $shadow-card;
     }
 
     .user-avatar {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: $primary-gradient;
+      background: $color-navy;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: 600;
       font-size: 0.9rem;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 2px 8px rgba(10, 37, 64, 0.3);
     }
 
     .user-info {
@@ -207,15 +226,30 @@
       gap: 0.25rem;
 
       .user-name {
-        color: $neutral-700;
+        color: $color-navy;
         font-weight: 600;
         font-size: 0.9rem;
+        font-family: $font-body;
+      }
+
+      .user-link {
+        font-size: 0.8rem;
+        color: $color-text-muted;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: $color-gold;
+        }
       }
 
       .logout-btn {
         background: none;
         border: none;
-        color: $neutral-500;
+        color: $color-text-muted;
         font-size: 0.8rem;
         cursor: pointer;
         display: flex;
@@ -225,7 +259,7 @@
         transition: color 0.2s ease;
 
         &:hover {
-          color: $neutral-700;
+          color: $color-navy;
         }
 
         svg {
@@ -242,19 +276,19 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem;
-    border-radius: $border-radius-lg;
-    background: rgba(37, 99, 235, 0.05);
+    border-radius: $radius-lg;
+    background: $color-sand;
 
     span {
-      color: $neutral-700;
+      color: $color-navy;
       font-weight: $font-weight-medium;
     }
   }
 
-  // --- Modern Header Button System ---
+  // --- Header Button System — Mediterranean ---
   .header-btn {
     padding: 0.75rem 1.5rem;
-    border-radius: $border-radius-xl;
+    border-radius: $radius-md;
     border: none;
     cursor: pointer;
     font-weight: 600;
@@ -292,13 +326,13 @@
     }
 
     &--primary {
-      background: $primary-gradient;
+      background: $color-navy;
       color: white;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 4px 12px rgba(10, 37, 64, 0.3);
       
       &:hover {
-        filter: brightness(1.05);
-        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        background: $color-navy-mid;
+        box-shadow: 0 8px 25px rgba(10, 37, 64, 0.4);
       }
 
       svg {
@@ -312,23 +346,23 @@
 
     &--ghost {
       background: transparent;
-      color: $neutral-600;
-      border: 2px solid rgba(100, 116, 139, 0.3);
+      color: $color-text-body;
+      border: $border-strong;
       
       &:hover {
-        background: rgba(37, 99, 235, 0.05);
-        color: $primary-color-start;
-        border-color: rgba(37, 99, 235, 0.4);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        background: $color-sand;
+        color: $color-navy;
+        border-color: rgba(10, 37, 64, 0.3);
+        box-shadow: $shadow-card;
       }
     }
   }
 
-  // --- Modern Theme Toggle ---
+  // --- Theme Toggle ---
   .theme-toggle {
-    background: rgba(248, 250, 252, 0.8);
-    border: 1px solid rgba(226, 232, 240, 0.5);
-    color: $neutral-600;
+    background: $color-sand;
+    border: $border-default;
+    color: $color-text-muted;
     padding: 0.75rem;
     border-radius: $border-radius-full;
     cursor: pointer;
@@ -339,11 +373,11 @@
     backdrop-filter: blur(10px);
 
     &:hover {
-      background: rgba(248, 250, 252, 1);
-      color: $primary-color-start;
+      background: $color-cream;
+      color: $color-navy;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
-      border-color: rgba(37, 99, 235, 0.2);
+      box-shadow: $shadow-card;
+      border-color: rgba(201, 168, 76, 0.3);
     }
 
     .theme-icon {
@@ -362,21 +396,21 @@
     }
   }
 
-  // --- Modern Hamburger Menu ---
+  // --- Hamburger Menu ---
   .menu-toggle {
     display: none;
     cursor: pointer;
-    background: $neutral-100;
-    border: 1px solid $neutral-200;
-    border-radius: $border-radius-lg;
+    background: $color-sand;
+    border: $border-default;
+    border-radius: $radius-lg;
     padding: 0.75rem;
     z-index: 1001;
     transition: all 0.2s ease;
 
     &:hover {
-      background: $neutral-200;
+      background: color.adjust($color-sand, $lightness: -5%);
       transform: translateY(-1px);
-      box-shadow: $shadow-md;
+      box-shadow: $shadow-card;
     }
 
     .menu-icon {
@@ -390,7 +424,7 @@
     .bar {
       width: 100%;
       height: 2px;
-      background-color: $neutral-700;
+      background-color: $color-navy;
       border-radius: 1px;
       transition: all 0.3s ease;
       transform-origin: center;
@@ -411,7 +445,7 @@
   }
 }
 
-// --- Modern Mobile Navigation Panel ---
+// --- Mobile Navigation Panel ---
 .mobile-nav-panel {
   position: fixed;
   top: 0;
@@ -435,17 +469,18 @@
 
   a {
     font-size: 1.25rem;
-    color: $neutral-700;
+    color: $color-navy;
     text-decoration: none;
     padding: 1rem 2rem;
-    border-radius: $border-radius-xl;
+    border-radius: $radius-md;
     transition: all 0.2s ease;
     text-align: center;
     min-width: 200px;
+    font-family: $font-body;
 
     &:hover {
-      background: rgba(37, 99, 235, 0.08);
-      color: $primary-color-start;
+      background: $color-sand;
+      color: $color-navy;
       transform: translateY(-2px);
     }
 
@@ -454,22 +489,32 @@
       justify-content: center;
       
       &.btn-primary {
-        background: $primary-gradient;
+        background: $color-navy;
         color: white;
-        box-shadow: $shadow-lg;
+        box-shadow: $shadow-hover;
         
         &:hover {
           transform: translateY(-2px);
-          box-shadow: $shadow-xl;
+          background: $color-navy-mid;
+          box-shadow: $shadow-modal;
+        }
+      }
+
+      &.btn-secondary {
+        background: $color-gold;
+        color: $color-navy;
+
+        &:hover {
+          background: $color-gold-bright;
         }
       }
       
       &.btn-ghost {
-        border: 2px solid $neutral-300;
+        border: $border-strong;
         
         &:hover {
-          border-color: $primary-color-start;
-          background: rgba(37, 99, 235, 0.05);
+          border-color: $color-navy;
+          background: $color-sand;
         }
       }
     }
@@ -478,113 +523,110 @@
 
 // --- Responsive Design ---
 @media (max-width: $breakpoint-tablet) {
-  .main-header {
+  .modern-header {
     padding: 1rem 4vw;
     
     .main-nav, 
-    .header-actions .btn {
+    .header-actions .header-btn {
       display: none;
     }
     
     .menu-toggle {
       display: flex;
     }
-    
-    .theme-toggle-btn {
+
+    .theme-toggle {
       display: flex;
     }
   }
 }
 
 @media (max-width: $breakpoint-mobile) {
-  .main-header {
+  .modern-header {
     padding: 0.75rem 4vw;
     
-    .logo .logo-text {
+    .logo .logo-link .logo-content .logo-text {
       font-size: 1.25rem;
     }
   }
 }
 
-// --- Enhanced Dark Mode ---
+// --- Dark Mode ---
 body.dark-mode {
-  .main-header {
-    background: rgba(15, 23, 42, 0.95);
-    border-bottom-color: rgba(51, 65, 85, 0.3);
+  .modern-header {
+    background: rgba($color-navy, 0.95);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
     
-    .logo .logo-text {
-      background: linear-gradient(90deg, #60A5FA 0%, #A78BFA 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .logo .logo-link .logo-content .logo-text {
+      color: $color-cream;
     }
     
-    .main-nav a {
-      color: $neutral-300;
+    .main-nav .nav-link {
+      color: rgba(255, 255, 255, 0.7);
       
       &::before {
-        background: rgba(96, 165, 250, 0.1);
+        background: rgba(201, 168, 76, 0.1);
       }
       
       &:hover, &.active {
-        color: #60A5FA;
-        background: rgba(96, 165, 250, 0.1);
+        color: $color-gold;
+        background: rgba(201, 168, 76, 0.1);
       }
     }
     
-    .btn-ghost {
-      color: $neutral-300;
-      border-color: $neutral-600;
+    .header-btn--ghost {
+      color: rgba(255, 255, 255, 0.7);
+      border-color: rgba(255, 255, 255, 0.2);
       
       &:hover {
-        background: $neutral-800;
-        color: $neutral-100;
-        border-color: $neutral-500;
+        background: $color-navy-mid;
+        color: $color-cream;
+        border-color: rgba(255, 255, 255, 0.3);
       }
     }
     
-    .theme-toggle-btn {
-      background: $neutral-800;
-      border-color: $neutral-600;
-      color: $neutral-300;
+    .theme-toggle {
+      background: $color-navy-mid;
+      border-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
       
       &:hover {
-        background: $neutral-700;
-        color: $neutral-100;
+        background: $color-navy-light;
+        color: $color-cream;
       }
     }
     
     .menu-toggle {
-      background: $neutral-800;
-      border-color: $neutral-600;
+      background: $color-navy-mid;
+      border-color: rgba(255, 255, 255, 0.1);
       
       &:hover {
-        background: $neutral-700;
+        background: $color-navy-light;
       }
       
       .bar {
-        background-color: $neutral-200;
+        background-color: $color-cream;
       }
     }
   }
 
   .mobile-nav-panel {
-    background: rgba(15, 23, 42, 0.98);
+    background: rgba($color-navy, 0.98);
     
     a {
-      color: $neutral-200;
+      color: $color-cream;
       
       &:hover {
-        background: rgba(96, 165, 250, 0.1);
-        color: #60A5FA;
+        background: rgba(201, 168, 76, 0.1);
+        color: $color-gold;
       }
       
       &.btn-ghost {
-        border-color: $neutral-600;
+        border-color: rgba(255, 255, 255, 0.2);
         
         &:hover {
-          border-color: #60A5FA;
-          background: rgba(96, 165, 250, 0.1);
+          border-color: $color-gold;
+          background: rgba(201, 168, 76, 0.1);
         }
       }
     }

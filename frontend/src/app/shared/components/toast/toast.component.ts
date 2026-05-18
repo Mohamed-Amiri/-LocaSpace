@@ -1,13 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { fadeInAnimation, slideInOutAnimation } from '../../animations/fade.animation';
-
-export interface Toast {
-  id: number;
-  message: string;
-  type: 'success' | 'error' | 'info' | 'warning';
-  duration?: number;
-}
+import { ToastService, Toast } from './toast.service';
 
 @Component({
   selector: 'app-toast',
@@ -173,43 +168,25 @@ export interface Toast {
 })
 export class ToastComponent implements OnInit, OnDestroy {
   toasts: Toast[] = [];
-  private timeouts: Map<number, number> = new Map();
+  private subscription?: Subscription;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private toastService: ToastService
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.subscription = this.toastService.toasts$.subscribe(toasts => {
+      this.toasts = toasts;
+      this.cdr.detectChanges();
+    });
+  }
 
   ngOnDestroy() {
-    this.timeouts.forEach(timeout => window.clearTimeout(timeout));
+    this.subscription?.unsubscribe();
   }
 
-  show(toast: Omit<Toast, 'id'>) {
-    const id = Date.now();
-    const newToast: Toast = { ...toast, id };
-    
-    // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
-    setTimeout(() => {
-      this.toasts = [newToast, ...this.toasts];
-      this.cdr.detectChanges();
-    });
-
-    const timeout = window.setTimeout(() => {
-      this.removeToast(id);
-    }, toast.duration || 5000);
-
-    this.timeouts.set(id, timeout);
-  }
-
-  removeToast(id: number) {
-    setTimeout(() => {
-      this.toasts = this.toasts.filter(t => t.id !== id);
-      this.cdr.detectChanges();
-    });
-    
-    const timeout = this.timeouts.get(id);
-    if (timeout) {
-      window.clearTimeout(timeout);
-      this.timeouts.delete(id);
-    }
+  removeToast(id: string) {
+    this.toastService.removeToast(id);
   }
 }

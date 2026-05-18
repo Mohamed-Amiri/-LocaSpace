@@ -1,4 +1,4 @@
-@use '../../../styles/variables' as *;
+﻿@use '../../../styles/variables' as *;
 
 // --- Modern Detail Container ---
 .detail-container {
@@ -966,11 +966,11 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 4px 12px rgba(10, 37, 64, 0.2);
       
       &:hover:not(:disabled) {
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        box-shadow: 0 6px 16px rgba(10, 37, 64, 0.3);
       }
       
       &:disabled {
@@ -1198,7 +1198,7 @@ body.dark-mode {
       color: $neutral-300;
       
       &:hover {
-        color: #60A5FA;
+        color: #C9A84C;
       }
     }
   }
@@ -1253,7 +1253,7 @@ body.dark-mode {
       .feature {
         .feature-icon {
           background: $neutral-800;
-          color: #60A5FA;
+          color: #C9A84C;
         }
         
         .feature-text {
@@ -1280,7 +1280,7 @@ body.dark-mode {
       }
       
       .btn-text {
-        color: #60A5FA;
+        color: #C9A84C;
       }
     }
   }
@@ -1374,7 +1374,7 @@ body.dark-mode {
           background: $neutral-700;
           
           .rating-bar {
-            background: #60A5FA;
+            background: #C9A84C;
           }
         }
       }
@@ -1519,8 +1519,8 @@ body.dark-mode {
                   color: $neutral-300;
                   
                   &:hover:not(:disabled) {
-                    border-color: #60A5FA;
-                    color: #60A5FA;
+                    border-color: #C9A84C;
+                    color: #C9A84C;
                   }
                 }
                 
@@ -1532,7 +1532,7 @@ body.dark-mode {
             
             .guests-dropdown-footer {
               .btn-text {
-                color: #60A5FA;
+                color: #C9A84C;
               }
             }
           }
@@ -1540,7 +1540,7 @@ body.dark-mode {
       }
       
       .btn-primary {
-        background: linear-gradient(135deg, #60A5FA, #A78BFA);
+        background: linear-gradient(135deg, #C9A84C, #E8C46A);
       }
       
       .booking-note {
@@ -1574,10 +1574,10 @@ body.dark-mode {
   
   .custom-map-marker {
     .marker-content {
-      background: #60A5FA;
+      background: #C9A84C;
       
       &::after {
-        border-top-color: #60A5FA;
+        border-top-color: #C9A84C;
       }
     }
   }

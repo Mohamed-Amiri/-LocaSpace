@@ -5,13 +5,21 @@ import lombok.*;
 import org.example.locaspace.model.Avis;
 import org.example.locaspace.model.Lieu;
 import org.example.locaspace.model.Reservation;
+import org.example.locaspace.model.enums.Role;
+
+import java.util.List;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 
 @Entity @Table(name = "users")
-//@Getter @Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor @Builder
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
 public class User {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +29,11 @@ public class User {
     private String email;
     private String motDePasse;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Builder.Default
+    private boolean deleted = false;
 
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -32,69 +44,7 @@ public class User {
 
     @OneToMany(mappedBy = "auteur", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Avis> avis;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMotDePasse() {
-        return motDePasse;
-    }
-
-    public void setMotDePasse(String motDePasse) {
-        this.motDePasse = motDePasse;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public List<Lieu> getLieux() {
-        return lieux;
-    }
-
-    public void setLieux(List<Lieu> lieux) {
-        this.lieux = lieux;
-    }
-
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
-
-    public void setReservations(List<Reservation> reservations) {
-        this.reservations = reservations;
-    }
-
-    public List<Avis> getAvis() {
-        return avis;
-    }
-
-    public void setAvis(List<Avis> avis) {
-        this.avis = avis;
-    }
 }
+
+/* DELETED OLD GETTERS AND SETTERS */
 

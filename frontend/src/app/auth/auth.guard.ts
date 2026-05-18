@@ -39,7 +39,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanMatch {
     return this.authService.currentUser$.pipe(
       take(1),
       map(user => {
-        const requiredRoles = route.data?.['roles'] as ('tenant' | 'owner' | 'admin')[];
+        const requiredRoles = route.data?.['roles'] as ('tenant' | 'owner')[];
 
         // If not authenticated, redirect to login
         if (!user) {
@@ -103,14 +103,10 @@ export class NoAuthGuard implements CanActivate, CanActivateChild, CanMatch {
     return this.authService.currentUser$.pipe(
       take(1),
       map(user => {
-        console.log('NoAuthGuard - Current user:', user);
         if (user) {
-          // If user is already authenticated, redirect to home
-          console.log('NoAuthGuard - User is authenticated, redirecting to home');
           this.router.navigate(['/']);
           return false;
         }
-        console.log('NoAuthGuard - No user, allowing access to auth page');
         return true;
       })
     );

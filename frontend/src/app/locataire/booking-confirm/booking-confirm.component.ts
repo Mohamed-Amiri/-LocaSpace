@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MaterialModule } from '../../material.module';
 import { Place } from '../services/locataires.service';
 import { ReservationService } from '../services/reservation.service';
 import { AuthService } from '../../auth/auth.service';
@@ -10,7 +9,7 @@ import { AuthService } from '../../auth/auth.service';
 @Component({
     selector: 'app-booking-confirm',
     standalone: true,
-    imports: [CommonModule, FormsModule, MaterialModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './booking-confirm.component.html',
     styleUrls: ['./booking-confirm.component.scss']
 })

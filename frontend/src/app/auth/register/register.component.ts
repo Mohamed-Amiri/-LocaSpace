@@ -1,8 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../auth.service';
+
+interface Testimonial {
+  quote: string;
+  name: string;
+  role: string;
+  initials: string;
+}
 
 @Component({
   selector: 'app-register',
@@ -11,13 +18,42 @@ import { AuthService } from '../auth.service';
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   standalone: true
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
 
   registerForm!: FormGroup;
   isLoading = false;
   errorMessage = '';
   showPassword = false;
   showConfirmPassword = false;
+
+  // Password strength
+  passwordStrengthPercent = 0;
+  passwordStrengthLabel = '';
+  passwordStrengthClass = '';
+
+  // Testimonials (shared with login)
+  testimonials: Testimonial[] = [
+    {
+      quote: "Grâce à LocaSpace, j'ai trouvé le lieu parfait pour mon événement en quelques clics. Service au top !",
+      name: 'Amina Karzazi',
+      role: 'Organisatrice d\'événements',
+      initials: 'AK'
+    },
+    {
+      quote: "La plateforme est intuitive et la variété des espaces proposés est incroyable. Je recommande vivement.",
+      name: 'Youssef Lahmidi',
+      role: 'Entrepreneur',
+      initials: 'YL'
+    },
+    {
+      quote: "Louer mon bureau inoccupé sur LocaSpace a été une excellente source de revenus. Simple et efficace.",
+      name: 'Fatima Zahra',
+      role: 'Propriétaire',
+      initials: 'FZ'
+    }
+  ];
+  currentTestimonialIndex = 0;
+  private testimonialInterval: any;
 
   constructor(
     private fb: FormBuilder,
@@ -37,6 +73,22 @@ export class RegisterComponent implements OnInit {
       confirmPassword: ['', Validators.required],
       role: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
+
+    // Watch password changes for strength indicator
+    this.registerForm.get('password')?.valueChanges.subscribe(value => {
+      this.calculatePasswordStrength(value || '');
+    });
+
+    // Start testimonial rotation
+    this.testimonialInterval = setInterval(() => {
+      this.currentTestimonialIndex = (this.currentTestimonialIndex + 1) % this.testimonials.length;
+    }, 5000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.testimonialInterval) {
+      clearInterval(this.testimonialInterval);
+    }
   }
 
   passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
@@ -55,6 +107,37 @@ export class RegisterComponent implements OnInit {
         }
       }
       return null;
+    }
+  }
+
+  calculatePasswordStrength(password: string): void {
+    if (!password) {
+      this.passwordStrengthPercent = 0;
+      this.passwordStrengthLabel = '';
+      this.passwordStrengthClass = '';
+      return;
+    }
+
+    let score = 0;
+    if (password.length >= 8) score += 25;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 25;
+    if (/\d/.test(password)) score += 25;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 25;
+
+    this.passwordStrengthPercent = score;
+
+    if (score <= 25) {
+      this.passwordStrengthLabel = 'Faible';
+      this.passwordStrengthClass = 'weak';
+    } else if (score <= 50) {
+      this.passwordStrengthLabel = 'Moyen';
+      this.passwordStrengthClass = 'medium';
+    } else if (score <= 75) {
+      this.passwordStrengthLabel = 'Bon';
+      this.passwordStrengthClass = 'good';
+    } else {
+      this.passwordStrengthLabel = 'Fort';
+      this.passwordStrengthClass = 'strong';
     }
   }
 

@@ -3,22 +3,7 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatTableModule } from '@angular/material/table';
+import { ToastService } from '../../shared/components/toast/toast.service';
 import { ProprietairesService, Property } from '../services/proprietaires.service';
 
 @Component({
@@ -27,23 +12,7 @@ import { ProprietairesService, Property } from '../services/proprietaires.servic
   imports: [
     CommonModule,
     RouterModule,
-    FormsModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatMenuModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule,
-    MatSlideToggleModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonToggleModule,
-    MatCheckboxModule,
-    MatTableModule
+    FormsModule
   ],
   templateUrl: './manage-properties.component.html',
   styleUrls: ['./manage-properties.component.scss']
@@ -70,8 +39,7 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
 
   constructor(
     private proprietairesService: ProprietairesService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -109,7 +77,7 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
       error: (error) => {
         console.error('Error loading properties:', error);
         this.loading = false;
-        this.snackBar.open('Erreur lors du chargement des propriétés', 'Fermer', { duration: 3000 });
+        this.toastService.error('Erreur lors du chargement des propriétés');
         this.cdr.detectChanges();
       }
     });
@@ -127,11 +95,11 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
         this.applyFilters(); // Refresh filtered properties
         
         const status = updated.isActive ? 'activée' : 'désactivée';
-        this.snackBar.open(`Propriété ${status} avec succès`, 'Fermer', { duration: 3000 });
+        this.toastService.success(`Propriété ${status} avec succès`);
       },
       error: (error) => {
         console.error('Error updating property status:', error);
-        this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
+        this.toastService.error('Erreur lors de la mise à jour');
       }
     });
   }
@@ -142,11 +110,11 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
         next: () => {
           this.properties = this.properties.filter(p => p.id !== property.id);
           this.applyFilters(); // Refresh filtered properties
-          this.snackBar.open('Propriété supprimée avec succès', 'Fermer', { duration: 3000 });
+          this.toastService.success('Propriété supprimée avec succès');
         },
         error: (error) => {
           console.error('Error deleting property:', error);
-          this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+          this.toastService.error('Erreur lors de la suppression');
         }
       });
     }
@@ -265,10 +233,10 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
       });
       this.applyFilters();
       this.selectedProperties = [];
-      this.snackBar.open('Propriétés activées avec succès', 'Fermer', { duration: 3000 });
+      this.toastService.success('Propriétés activées avec succès');
     }).catch(error => {
       console.error('Error activating properties:', error);
-      this.snackBar.open('Erreur lors de l\'activation', 'Fermer', { duration: 3000 });
+      this.toastService.error("Erreur lors de l'activation");
     });
   }
 
@@ -287,10 +255,10 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
       });
       this.applyFilters();
       this.selectedProperties = [];
-      this.snackBar.open('Propriétés désactivées avec succès', 'Fermer', { duration: 3000 });
+      this.toastService.success('Propriétés désactivées avec succès');
     }).catch(error => {
       console.error('Error deactivating properties:', error);
-      this.snackBar.open('Erreur lors de la désactivation', 'Fermer', { duration: 3000 });
+      this.toastService.error('Erreur lors de la désactivation');
     });
   }
 
@@ -304,10 +272,10 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
         this.properties = this.properties.filter(p => !this.selectedProperties.includes(p.id!));
         this.applyFilters();
         this.selectedProperties = [];
-        this.snackBar.open('Propriétés supprimées avec succès', 'Fermer', { duration: 3000 });
+        this.toastService.success('Propriétés supprimées avec succès');
       }).catch(error => {
         console.error('Error deleting properties:', error);
-        this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+        this.toastService.error('Erreur lors de la suppression');
       });
     }
   }
@@ -324,18 +292,18 @@ export class ManagePropertiesComponent implements OnInit, AfterViewInit, OnDestr
       next: (created) => {
         this.properties.push(created);
         this.applyFilters();
-        this.snackBar.open('Propriété dupliquée avec succès', 'Fermer', { duration: 3000 });
+        this.toastService.success('Propriété dupliquée avec succès');
       },
       error: (error) => {
         console.error('Error duplicating property:', error);
-        this.snackBar.open('Erreur lors de la duplication', 'Fermer', { duration: 3000 });
+        this.toastService.error('Erreur lors de la duplication');
       }
     });
   }
 
   viewAnalytics(property: Property): void {
     // TODO: Implement analytics view
-    this.snackBar.open('Fonctionnalité des statistiques à venir', 'Fermer', { duration: 3000 });
+    this.toastService.success('Fonctionnalité des statistiques à venir');
   }
 
   private updatePropertiesState(): void {

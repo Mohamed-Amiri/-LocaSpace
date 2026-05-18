@@ -1,9 +1,17 @@
+﻿@use '../../../styles/variables' as *;
+
+$primary: $color-navy;
+$gold: $color-gold;
+$bg-page: $color-bg-page;
+$text-muted: $color-text-muted;
+$border-default: 1px solid rgba(10,37,64,0.1);
+
 /* MODERN PREMIUM PROPERTY FORM DESIGN */
 :host {
   display: block;
   min-height: 100vh;
   background: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .modern-container {
@@ -17,79 +25,48 @@
 }
 
 /* MODERN HEADER */
-.modern-header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
+.modern-header { 
+  background: white; 
+  padding: 2rem; 
+  border-bottom: 1px solid rgba(10,37,64,0.1); 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  .header-content {
-      display: flex;
-    justify-content: space-between;
-      align-items: center;
-
-    .title-section {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-
-      .icon-container {
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, #6C63FF, #5A4FCF);
-        border-radius: 12px;
-      display: flex;
-      align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
-      
-      mat-icon {
-          color: white;
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-        }
-      }
-
-      .title-text {
-        h1 {
-          font-size: 1.75rem;
-          font-weight: 700;
-          margin: 0 0 4px 0;
-          color: #000000;
-        }
-
-        p {
-          color: #555555;
-          font-size: 0.875rem;
-          margin: 0;
-          font-weight: 500;
-        }
-      }
+  .title-text {
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      color: #0A2540;
     }
 
-    .back-btn {
-      background: rgba(108, 99, 255, 0.1);
-      color: #6C63FF;
-      border: 2px solid rgba(108, 99, 255, 0.2);
-        border-radius: 12px;
-      padding: 12px 24px;
-      font-weight: 600;
-        transition: all 0.3s ease;
-        
-        &:hover {
-        background: #6C63FF;
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(108, 99, 255, 0.3);
-      }
+    p {
+      color: #6B7C93;
+      font-size: 0.875rem;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
 
-      mat-icon {
-        margin-right: 8px;
-      }
+  .back-btn {
+    background: rgba(10,37,64, 0.05);
+    color: #0A2540;
+    border: 1px solid rgba(10,37,64, 0.1);
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+      
+    &:hover {
+      background: #0A2540;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(10,37,64, 0.15);
+    }
+
+    i.fas, i.ph {
+      margin-right: 8px;
     }
   }
 }
@@ -98,7 +75,7 @@
 .progress-container {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 16px 20px;
   margin-bottom: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -128,25 +105,10 @@
       &.active {
         opacity: 1;
 
-        .step-number {
-          background: linear-gradient(135deg, #6C63FF, #5A4FCF);
-        color: white;
-          box-shadow: 0 4px 16px rgba(108, 99, 255, 0.4);
-        }
+        .step-number { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: $bg-page; color: $text-muted; font-family: 'DM Mono', monospace; font-weight: 600; }
       }
 
-      .step-number {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        font-weight: 700;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-      }
+      .step-number { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: $bg-page; color: $text-muted; font-family: 'DM Mono', monospace; font-weight: 600; }
 
       span {
         font-size: 0.875rem;
@@ -156,13 +118,7 @@
       }
     }
 
-    .step-line {
-      flex: 1;
-      height: 2px;
-      background: #e5e7eb;
-      margin: 0 16px;
-      max-width: 80px;
-    }
+    .step-line { flex: 1; height: 2px; background: $border-default; margin: 0 16px; }
   }
 }
 
@@ -170,7 +126,7 @@
 .form-container {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -200,22 +156,22 @@
       
       &:hover {
       background: #f9fafb;
-      border-color: #667eea;
+      border-color: #0A2540;
     }
 
     &.active {
-      background: rgba(102, 126, 234, 0.1);
-      border-color: #667eea;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      background: rgba(10, 37, 64, 0.1);
+      border-color: #0A2540;
+      box-shadow: 0 4px 12px rgba(10, 37, 64, 0.15);
 
       .step-icon {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        background: none;
+      color: $text-muted;
+        box-shadow: none;
       }
       
       span {
-        color: #667eea;
+        color: #0A2540;
         font-weight: 700;
       }
     }
@@ -224,8 +180,8 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #e5e7eb;
-      color: #6b7280;
+      background: none;
+      color: $text-muted;
       display: flex;
   align-items: center;
       justify-content: center;
@@ -368,7 +324,7 @@
 
   &.mat-focused .mat-form-field-flex {
     background: #ffffff;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 2px rgba(10, 37, 64, 0.2);
   }
 
   .mat-form-field-outline {
@@ -379,7 +335,7 @@
 }
 
   &.mat-focused .mat-form-field-outline-thick {
-    border-color: #667eea;
+    border-color: #0A2540;
     border-width: 2px;
   }
 
@@ -390,7 +346,7 @@
   }
 
   &.mat-focused .mat-form-field-label {
-    color: #667eea;
+    color: #0A2540;
   }
 
   .mat-form-field-infix {
@@ -405,7 +361,7 @@
     line-height: 1.5;
   }
 
-  .mat-icon {
+  .i.fas {
     color: #9ca3af;
     font-size: 1.25rem;
     width: 1.25rem;
@@ -456,8 +412,8 @@
       margin: 0;
 
   &:hover {
-        border-color: #667eea;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        border-color: #0A2540;
+        box-shadow: 0 2px 8px rgba(10, 37, 64, 0.1);
       }
 
       .mat-checkbox-inner-container {
@@ -474,11 +430,11 @@
     }
 
     &.mat-checkbox-checked .mat-checkbox-layout {
-      background: rgba(102, 126, 234, 0.05);
-      border-color: #667eea;
+      background: rgba(10, 37, 64, 0.05);
+      border-color: #0A2540;
       
       .mat-checkbox-label {
-        color: #667eea;
+        color: #0A2540;
         font-weight: 600;
       }
     }
@@ -497,8 +453,8 @@
   background: #ffffff;
 
   &:hover {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.02);
+    border-color: #0A2540;
+    background: rgba(10, 37, 64, 0.02);
     }
 
     .upload-icon {
@@ -552,7 +508,7 @@
   height: 32px;
       min-width: 32px;
 
-  mat-icon {
+  i.fas {
         font-size: 16px;
         width: 16px;
         height: 16px;
@@ -578,11 +534,11 @@
     transition: all 0.3s ease;
 
     &.mat-raised-button {
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 4px 12px rgba(10, 37, 64, 0.3);
 
   &:hover {
     transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 24px rgba(10, 37, 64, 0.4);
       }
     }
 
@@ -594,7 +550,7 @@
       }
     }
 
-    mat-icon {
+    i.fas {
       margin-left: 8px;
       margin-right: 8px;
     }
@@ -620,9 +576,7 @@
         flex-direction: column;
         gap: 16px;
 
-        .title-text h1 {
-          font-size: 2rem;
-        }
+        .title-text h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; font-weight: 600; color: $primary; margin: 0; }
       }
     }
   }

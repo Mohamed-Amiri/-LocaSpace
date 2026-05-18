@@ -1,64 +1,31 @@
 package org.example.locaspace.dto.reservation;
 
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.locaspace.validation.ValidDateRange;
 
 import java.time.LocalDate;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ValidDateRange
 public class ReservationRequest {
-    
+
     @NotNull(message = "Lieu ID is required")
-    private Long lieuId;
-    
+    private Long placeId;
+
     @NotNull(message = "Start date is required")
-    @Future(message = "Start date must be in the future")
-    private LocalDate dateDebut;
-    
+    @FutureOrPresent(message = "Start date must be in the present or future")
+    private LocalDate startDate;
+
     @NotNull(message = "End date is required")
     @Future(message = "End date must be in the future")
-    private LocalDate dateFin;
-    
-    // Constructors
-    public ReservationRequest() {}
-    
-    public ReservationRequest(Long lieuId, LocalDate dateDebut, LocalDate dateFin) {
-        this.lieuId = lieuId;
-        this.dateDebut = dateDebut;
-        this.dateFin = dateFin;
-    }
-    
-    // Custom validation method
-    public boolean isValidDateRange() {
-        if (dateDebut == null || dateFin == null) {
-            return false;
-        }
-        return dateDebut.isBefore(dateFin);
-    }
-    
-    // Getters and Setters
-    public Long getLieuId() {
-        return lieuId;
-    }
-    
-    public void setLieuId(Long lieuId) {
-        this.lieuId = lieuId;
-    }
-    
-    public LocalDate getDateDebut() {
-        return dateDebut;
-    }
-    
-    public void setDateDebut(LocalDate dateDebut) {
-        this.dateDebut = dateDebut;
-    }
-    
-    public LocalDate getDateFin() {
-        return dateFin;
-    }
-    
-    public void setDateFin(LocalDate dateFin) {
-        this.dateFin = dateFin;
-    }
+    private LocalDate endDate;
 }

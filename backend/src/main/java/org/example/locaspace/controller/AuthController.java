@@ -5,12 +5,11 @@ import org.example.locaspace.dto.auth.JwtResponse;
 import org.example.locaspace.dto.auth.LoginRequest;
 import org.example.locaspace.dto.auth.RegisterRequest;
 import org.example.locaspace.exception.BadRequestException;
-
-
 import org.example.locaspace.model.User;
+import org.example.locaspace.model.enums.Role;
 import org.example.locaspace.repository.UserRepository;
 import org.example.locaspace.security.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.locaspace.security.UserDetailsServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,176 +24,183 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthController {
-    
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    
-    @Autowired
-    private UserRepository userRepository;
-    
-    @Autowired
-    private PasswordEncoder encoder;
-    
-    @Autowired
-    private JwtUtils jwtUtils;
-    
+
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
+    private final JwtUtils jwtUtils;
+
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserRepository userRepository,
+                          PasswordEncoder encoder,
+                          JwtUtils jwtUtils) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+        this.jwtUtils = jwtUtils;
+    }
+
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        
+
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
-        
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-        
-        org.example.locaspace.security.UserDetailsServiceImpl.UserPrincipal userDetails = 
-            (org.example.locaspace.security.UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
-        
+
+        UserDetailsServiceImpl.UserPrincipal userDetails =
+            (UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
+
         List<String> roles = userDetails.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.toList());
-        
-        // Get user details from database
+
         User user = userRepository.findByEmail(userDetails.getUsername())
             .orElseThrow(() -> new BadRequestException("User not found"));
-        
-        // Map backend role to frontend role for routing
+
         String frontendRole = mapBackendRoleToFrontend(user.getRole());
-        
-        JwtResponse response = new JwtResponse(jwt,
-                                             userDetails.getId(),
-                                             userDetails.getUsername(),
-                                             user.getNom(),
-                                             roles);
+
+        JwtResponse response = new JwtResponse(
+            jwt,
+            userDetails.getId(),
+            userDetails.getUsername(),
+            user.getNom(),
+            roles
+        );
         response.setFrontendRole(frontendRole);
-        
+
         return ResponseEntity.ok(response);
     }
-    
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterRequest signUpRequest) {
-        
+
         if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
             throw new BadRequestException("Error: Email is already in use!");
         }
-        
-        // Map frontend roles to backend roles
-        String backendRole = mapFrontendRoleToBackend(signUpRequest.getRole());
-        
-        // Create new user's account
+
+        Role backendRole = mapFrontendRoleToBackend(signUpRequest.getRole());
+
         User user = User.builder()
             .nom(signUpRequest.getNom())
             .email(signUpRequest.getEmail())
             .motDePasse(encoder.encode(signUpRequest.getPassword()))
             .role(backendRole)
             .build();
-        
+
         userRepository.save(user);
-        
+
         return ResponseEntity.ok("User registered successfully!");
     }
-    
-    private String mapFrontendRoleToBackend(String frontendRole) {
+
+    private Role mapFrontendRoleToBackend(String frontendRole) {
+        if (frontendRole == null) {
+            return Role.LOCATAIRE;
+        }
+
         switch (frontendRole.toUpperCase()) {
             case "TENANT":
-                return "LOCATAIRE";
+                return Role.LOCATAIRE;
             case "OWNER":
-                return "PROPRIETAIRE";
+                return Role.PROPRIETAIRE;
             case "ADMIN":
-                return "ADMIN";
+                return Role.ADMIN;
             default:
-                return "LOCATAIRE"; // Default fallback
+                return Role.LOCATAIRE;
         }
     }
-    
-    private String mapBackendRoleToFrontend(String backendRole) {
-        switch (backendRole.toUpperCase()) {
-            case "LOCATAIRE":
+
+    private String mapBackendRoleToFrontend(Role backendRole) {
+        if (backendRole == null) {
+            return "tenant";
+        }
+
+        switch (backendRole) {
+            case LOCATAIRE:
                 return "tenant";
-            case "PROPRIETAIRE":
+            case PROPRIETAIRE:
+            case ADMIN:
                 return "owner";
-            case "ADMIN":
-                return "admin";
             default:
-                return "tenant"; // Default fallback
+                return "tenant";
         }
     }
-    
+
     @PostMapping("/logout")
     public ResponseEntity<String> logoutUser() {
-        // In a stateless JWT setup, logout is typically handled client-side
-        // by removing the token. However, you could implement token blacklisting here.
         return ResponseEntity.ok("User logged out successfully!");
     }
-    
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String token) {
         try {
             if (token.startsWith("Bearer ")) {
                 token = token.substring(7);
             }
-            
+
             if (jwtUtils.validateJwtToken(token)) {
                 String email = jwtUtils.getUserNameFromJwtToken(token);
                 User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new BadRequestException("User not found"));
-                
-                // Create new authentication for token generation
-                UsernamePasswordAuthenticationToken authentication = 
-                    new UsernamePasswordAuthenticationToken(email, null, null);
-                
+
+                List<org.springframework.security.core.authority.SimpleGrantedAuthority> authorities = List.of(
+                    new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                );
+
+                UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(email, null, authorities);
+
                 String newJwt = jwtUtils.generateJwtToken(authentication);
-                
+
                 return ResponseEntity.ok(new JwtRefreshResponse(newJwt));
-            } else {
-                return ResponseEntity.badRequest().body("Token is invalid");
             }
+
+            return ResponseEntity.badRequest().body("Token is invalid");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Token refresh failed");
         }
     }
-    
+
     @GetMapping("/validate")
     public ResponseEntity<String> validateToken(@RequestHeader("Authorization") String token) {
         try {
             if (token.startsWith("Bearer ")) {
                 token = token.substring(7);
             }
-            
+
             if (jwtUtils.validateJwtToken(token)) {
                 return ResponseEntity.ok("Token is valid");
-            } else {
-                return ResponseEntity.badRequest().body("Token is invalid");
             }
+
+            return ResponseEntity.badRequest().body("Token is invalid");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Token validation failed");
         }
     }
-    
-    // Inner class for refresh response
+
     public static class JwtRefreshResponse {
         private String accessToken;
         private String tokenType = "Bearer";
-        
+
         public JwtRefreshResponse(String accessToken) {
             this.accessToken = accessToken;
         }
-        
+
         public String getAccessToken() {
             return accessToken;
         }
-        
+
         public void setAccessToken(String accessToken) {
             this.accessToken = accessToken;
         }
-        
+
         public String getTokenType() {
             return tokenType;
         }
-        
+
         public void setTokenType(String tokenType) {
             this.tokenType = tokenType;
         }

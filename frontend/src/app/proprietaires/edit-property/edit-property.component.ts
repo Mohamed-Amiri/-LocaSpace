@@ -1,20 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { RouterModule } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { ToastService } from '../../shared/components/toast/toast.service';
 import { ProprietairesService, Property } from '../services/proprietaires.service';
 
 @Component({
@@ -23,19 +11,7 @@ import { ProprietairesService, Property } from '../services/proprietaires.servic
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    RouterModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCheckboxModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatDividerModule,
-    MatTooltipModule,
-    MatSlideToggleModule
+    RouterModule
   ],
   templateUrl: './edit-property.component.html',
   styleUrls: ['./edit-property.component.scss']
@@ -71,7 +47,7 @@ export class EditPropertyComponent implements OnInit {
     private proprietairesService: ProprietairesService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {
     this.propertyId = +this.route.snapshot.params['id'];
@@ -108,7 +84,7 @@ export class EditPropertyComponent implements OnInit {
       error: (error) => {
         console.error('Error loading property:', error);
         this.loading = false;
-        this.snackBar.open('Erreur lors du chargement de la propriété', 'Fermer', { duration: 3000 });
+        this.toastService.error('Erreur lors du chargement de la propriété');
         this.router.navigate(['/proprietaires/manage-properties']);
         this.cdr.detectChanges();
       }
@@ -128,10 +104,8 @@ export class EditPropertyComponent implements OnInit {
       isActive: property.isActive
     });
 
-    // Set current photos
     this.currentPhotos = [...property.photos];
 
-    // Set amenities
     const amenitiesArray = this.amenitiesFormArray;
     amenitiesArray.clear();
     property.amenities.forEach(amenity => {
@@ -163,18 +137,17 @@ export class EditPropertyComponent implements OnInit {
   onFilesSelected(event: any): void {
     const files = Array.from(event.target.files) as File[];
     
-    // Validate file types and sizes
     const validFiles = files.filter(file => {
       const isValidType = file.type.startsWith('image/');
-      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
+      const isValidSize = file.size <= 5 * 1024 * 1024;
       
       if (!isValidType) {
-        this.snackBar.open('Seuls les fichiers image sont acceptés', 'Fermer', { duration: 3000 });
+        this.toastService.error('Seuls les fichiers image sont acceptés');
         return false;
       }
       
       if (!isValidSize) {
-        this.snackBar.open('La taille du fichier ne doit pas dépasser 5MB', 'Fermer', { duration: 3000 });
+        this.toastService.error('La taille du fichier ne doit pas dépasser 5MB');
         return false;
       }
       
@@ -183,7 +156,6 @@ export class EditPropertyComponent implements OnInit {
 
     this.selectedFiles = [...this.selectedFiles, ...validFiles];
     
-    // Generate preview URLs
     validFiles.forEach(file => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -207,7 +179,7 @@ export class EditPropertyComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error deleting photo:', error);
-        this.snackBar.open('Erreur lors de la suppression de la photo', 'Fermer', { duration: 3000 });
+        this.toastService.error('Erreur lors de la suppression de la photo');
       }
     });
   }
@@ -223,12 +195,10 @@ export class EditPropertyComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error reordering photos:', error);
-        this.snackBar.open('Erreur lors du réordonnancement des photos', 'Fermer', { duration: 3000 });
+        this.toastService.error('Erreur lors du réordonnancement des photos');
       }
     });
   }
-
-
 
   private markFormGroupTouched(): void {
     Object.keys(this.propertyForm.controls).forEach(key => {
@@ -241,7 +211,6 @@ export class EditPropertyComponent implements OnInit {
     this.router.navigate(['/proprietaires/manage-properties']);
   }
 
-  // New methods for the premium template
   toggleAmenity(amenity: string): void {
     const isSelected = this.isAmenitySelected(amenity);
     this.onAmenityChange(amenity, !isSelected);
@@ -250,25 +219,25 @@ export class EditPropertyComponent implements OnInit {
   getAmenityIcon(amenity: string): string {
     const iconMap: { [key: string]: string } = {
       'WiFi': 'wifi',
-      'Climatisation': 'ac_unit',
-      'Chauffage': 'local_fire_department',
-      'Cuisine équipée': 'kitchen',
-      'Lave-vaisselle': 'dishwasher',
-      'Lave-linge': 'local_laundry_service',
-      'Sèche-linge': 'dry',
+      'Climatisation': 'snowflake',
+      'Chauffage': 'fire',
+      'Cuisine équipée': 'utensils',
+      'Lave-vaisselle': 'sink',
+      'Lave-linge': 'tshirt',
+      'Sèche-linge': 'wind',
       'Télévision': 'tv',
-      'Parking': 'local_parking',
-      'Balcon': 'balcony',
-      'Terrasse': 'deck',
-      'Jardin': 'grass',
-      'Piscine': 'pool',
-      'Jacuzzi': 'hot_tub',
-      'Salle de sport': 'fitness_center',
+      'Parking': 'parking',
+      'Balcon': 'door-open',
+      'Terrasse': 'umbrella-beach',
+      'Jardin': 'leaf',
+      'Piscine': 'swimming-pool',
+      'Jacuzzi': 'hot-tub',
+      'Salle de sport': 'dumbbell',
       'Ascenseur': 'elevator',
-      'Animaux acceptés': 'pets',
-      'Non-fumeur': 'smoke_free'
+      'Animaux acceptés': 'paw',
+      'Non-fumeur': 'smoking-ban'
     };
-    return iconMap[amenity] || 'check_circle';
+    return iconMap[amenity] || 'check-circle';
   }
 
   removeCurrentPhoto(index: number): void {
@@ -280,10 +249,9 @@ export class EditPropertyComponent implements OnInit {
     this.previewUrls.splice(index, 1);
   }
 
-  // Update the onSubmit method to include isActive
   onSubmit(): void {
     if (this.propertyForm.valid) {
-      this.loading = true;
+      this.saving = true;
       
       const formValue = this.propertyForm.value;
       const updatedProperty: Partial<Property> = {
@@ -297,40 +265,40 @@ export class EditPropertyComponent implements OnInit {
         price: formValue.price,
         amenities: formValue.amenities,
         isActive: formValue.isActive,
-        photos: this.currentPhotos // Update with current photos
+        photos: this.currentPhotos
       };
 
       this.proprietairesService.updateProperty(this.propertyId, updatedProperty).subscribe({
-        next: (updated) => {
-          // Upload new photos if any
+        next: () => {
           if (this.selectedFiles.length > 0) {
             this.proprietairesService.uploadPropertyPhotos(this.propertyId, this.selectedFiles).subscribe({
-              next: (photoUrls) => {
-                this.loading = false;
-                this.snackBar.open('Propriété mise à jour avec succès!', 'Fermer', { duration: 3000 });
+              next: () => {
+                this.saving = false;
+                this.toastService.success('Propriété mise à jour avec succès!');
                 this.router.navigate(['/proprietaires/manage-properties']);
               },
               error: (error) => {
                 console.error('Error uploading photos:', error);
-                this.loading = false;
-                this.snackBar.open('Propriété mise à jour mais erreur lors du téléchargement des photos', 'Fermer', { duration: 5000 });
+                this.saving = false;
+                this.toastService.error('Propriété mise à jour mais erreur lors du téléchargement des photos');
                 this.router.navigate(['/proprietaires/manage-properties']);
               }
             });
           } else {
-            this.loading = false;
-            this.snackBar.open('Propriété mise à jour avec succès!', 'Fermer', { duration: 3000 });
+            this.saving = false;
+            this.toastService.success('Propriété mise à jour avec succès!');
             this.router.navigate(['/proprietaires/manage-properties']);
           }
         },
         error: (error) => {
           console.error('Error updating property:', error);
-          this.loading = false;
-          this.snackBar.open('Erreur lors de la mise à jour de la propriété', 'Fermer', { duration: 3000 });
+          this.saving = false;
+          this.toastService.error('Erreur lors de la mise à jour de la propriété');
         }
       });
     } else {
       this.markFormGroupTouched();
+      this.toastService.error('Veuillez corriger les erreurs du formulaire');
     }
   }
 }

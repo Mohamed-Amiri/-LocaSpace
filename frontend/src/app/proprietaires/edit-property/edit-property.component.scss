@@ -1,11 +1,11 @@
-/* PREMIUM EDIT PROPERTY DESIGN */
+﻿/* PREMIUM EDIT PROPERTY DESIGN */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :host {
   display: block;
   min-height: 100vh;
   background: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .premium-container {
@@ -21,7 +21,7 @@
 .premium-header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -46,7 +46,7 @@
         justify-content: center;
         box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
       
-        mat-icon {
+        i.fas {
           color: white;
           font-size: 24px;
           width: 24px;
@@ -91,7 +91,7 @@
           box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
         }
 
-        mat-icon {
+        i.fas {
           margin-right: 8px;
           font-size: 18px;
         }
@@ -117,12 +117,12 @@
           cursor: not-allowed;
         }
 
-        mat-icon {
+        i.fas {
           margin-right: 8px;
           font-size: 18px;
         }
 
-        mat-spinner {
+        .spinner {
           margin-right: 8px;
         }
       }
@@ -157,7 +157,7 @@
 .form-container {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 30px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -188,7 +188,7 @@
       align-items: center;
       justify-content: center;
 
-      mat-icon {
+      i.fas {
         color: white;
         font-size: 20px;
       }
@@ -328,7 +328,7 @@
     margin-left: 8px;
   }
 
-  .mat-icon {
+  .i.fas {
     color: #9ca3af;
     font-size: 1.25rem;
     width: 1.25rem;
@@ -450,7 +450,7 @@
       justify-content: center;
       transition: all 0.3s ease;
 
-      mat-icon {
+      i.fas {
         font-size: 20px;
         color: #6b7280;
       }
@@ -523,7 +523,7 @@
         width: 36px;
         height: 36px;
 
-        mat-icon {
+        i.fas {
           font-size: 18px;
         }
       }

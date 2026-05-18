@@ -10,7 +10,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: 'tenant' | 'owner' | 'admin';
+  role: 'tenant' | 'owner';
 }
 
 export interface LoginCredentials {
@@ -24,7 +24,7 @@ export interface RegisterData {
   lastName: string;
   email: string;
   password: string;
-  role: 'tenant' | 'owner' | 'admin';
+  role: 'tenant' | 'owner';
 }
 
 export interface LoginResponse {
@@ -52,7 +52,6 @@ export class AuthService {
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {
-    // Check for saved user in both localStorage and sessionStorage
     const savedUser = this.getFromStorage('currentUser');
     const savedToken = this.getFromStorage('authToken');
     if (savedUser) {
@@ -77,16 +76,14 @@ export class AuthService {
   login(credentials: LoginCredentials): Observable<User> {
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials).pipe(
       tap(response => {
-        // Extract user info from response
         const user: User = {
           id: response.id.toString(),
           firstName: response.nom.split(' ')[0] || '',
           lastName: response.nom.split(' ').slice(1).join(' ') || '',
           email: response.email,
-          role: response.frontendRole as 'tenant' | 'owner' | 'admin'
+          role: response.frontendRole as 'tenant' | 'owner'
         };
 
-        // Store user and token based on rememberMe preference
         this.currentUserSubject.next(user);
         this.isAuthenticatedSubject.next(true);
         this.tokenSubject.next(response.accessToken);
@@ -95,32 +92,26 @@ export class AuthService {
         storage.setItem('currentUser', JSON.stringify(user));
         storage.setItem('authToken', response.accessToken);
 
-        // Store remember preference
         if (credentials.rememberMe !== undefined) {
           localStorage.setItem('rememberMe', credentials.rememberMe.toString());
         }
       }),
-      // Map response to User interface
-      switchMap(response => {
-        return of(this.currentUserSubject.value!);
-      }),
+      switchMap(() => of(this.currentUserSubject.value!)),
       catchError(this.handleError)
     );
   }
 
   register(data: RegisterData): Observable<User> {
-    // Map frontend role to backend expected format
     const backendData = {
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
       password: data.password,
-      role: data.role.toUpperCase() // Backend expects uppercase
+      role: data.role.toUpperCase()
     };
 
     return this.http.post(`${this.API_URL}/register`, backendData, { responseType: 'text' }).pipe(
-      switchMap((response: string) => {
-        // Return a user object for consistency
+      switchMap(() => {
         return of({
           id: 'temp',
           firstName: data.firstName,
@@ -138,19 +129,26 @@ export class AuthService {
     this.isAuthenticatedSubject.next(false);
     this.tokenSubject.next(null);
 
-    // Clear from both storages
     localStorage.removeItem('currentUser');
     localStorage.removeItem('authToken');
     localStorage.removeItem('rememberMe');
     sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('authToken');
 
-    // Automatically redirect to home page
     this.router.navigate(['/']);
   }
 
   refreshToken(): Observable<string> {
-    return this.http.post<{ accessToken: string }>(`${this.API_URL}/refresh`, {}).pipe(
+    const token = this.getFromStorage('authToken');
+    if (!token) {
+      return throwError(() => new Error('No token available for refresh'));
+    }
+
+    return this.http.post<{ accessToken: string }>(
+      `${this.API_URL}/refresh`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    ).pipe(
       tap(response => {
         this.tokenSubject.next(response.accessToken);
         const storage = this.getStorage();
@@ -162,12 +160,10 @@ export class AuthService {
   }
 
   forgotPassword(email: string): Observable<void> {
-    // Simulate API call
     return of(void 0).pipe(delay(1000));
   }
 
   resetPassword(token: string, newPassword: string): Observable<void> {
-    // Simulate API call
     return of(void 0).pipe(delay(1000));
   }
 
@@ -178,11 +174,10 @@ export class AuthService {
     }
 
     return this.http.get<any>(`${this.API_URL}/validate`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     }).pipe(
       switchMap(() => of(true)),
       catchError(() => {
-        // Token is invalid, clear authentication
         this.logout();
         return of(false);
       })
@@ -191,7 +186,6 @@ export class AuthService {
 
   private getStorage(rememberMe?: boolean): Storage {
     if (rememberMe === undefined) {
-      // Check stored preference
       const storedRememberMe = localStorage.getItem('rememberMe');
       rememberMe = storedRememberMe === 'true';
     }
@@ -199,24 +193,23 @@ export class AuthService {
   }
 
   private getFromStorage(key: string): string | null {
-    // Check localStorage first, then sessionStorage
     return localStorage.getItem(key) || sessionStorage.getItem(key);
   }
 
   private translateError(message: string): string {
     const translations: { [key: string]: string } = {
-      'Email is already in use!': 'Cet email est d√©j√† utilis√©',
-      'Error: Email is already in use!': 'Cet email est d√©j√† utilis√©',
+      'Email is already in use!': 'Cet email est dÈj‡ utilisÈ',
+      'Error: Email is already in use!': 'Cet email est dÈj‡ utilisÈ',
       'Invalid credentials': 'Email ou mot de passe incorrect',
-      'User not found': 'Utilisateur non trouv√©',
-      'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character': 'Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caract√®re sp√©cial',
-      'Password must be between 8 and 100 characters': 'Le mot de passe doit contenir entre 8 et 100 caract√®res',
+      'User not found': 'Utilisateur non trouvÈ',
+      'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character': 'Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un caractËre spÈcial',
+      'Password must be between 8 and 100 characters': 'Le mot de passe doit contenir entre 8 et 100 caractËres',
       'Email should be valid': 'Format d\'email invalide',
-      'First name is required': 'Le pr√©nom est requis',
+      'First name is required': 'Le prÈnom est requis',
       'Last name is required': 'Le nom est requis',
       'Email is required': 'L\'email est requis',
       'Password is required': 'Le mot de passe est requis',
-      'Role must be either TENANT, OWNER, or ADMIN': 'Le r√¥le doit √™tre Locataire, Propri√©taire ou Admin'
+      'Role must be either TENANT, OWNER, or ADMIN': 'Le rÙle doit Ítre Locataire, PropriÈtaire ou Admin'
     };
     return translations[message] || message;
   }
@@ -225,25 +218,22 @@ export class AuthService {
     let errorMessage = 'Une erreur est survenue';
 
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error
       if (error.status === 401) {
         errorMessage = 'Email ou mot de passe incorrect';
       } else if (error.status === 400) {
-        // Handle validation errors
         if (error.error?.message) {
           errorMessage = this.translateError(error.error.message);
         } else if (typeof error.error === 'string') {
           errorMessage = this.translateError(error.error);
         } else {
-          errorMessage = 'Donn√©es invalides - V√©rifiez le format de vos donn√©es';
+          errorMessage = 'DonnÈes invalides - VÈrifiez le format de vos donnÈes';
         }
       } else if (error.status === 409) {
-        errorMessage = 'Cet email est d√©j√† utilis√©';
+        errorMessage = 'Cet email est dÈj‡ utilisÈ';
       } else if (error.status === 0) {
-        errorMessage = 'Impossible de se connecter au serveur. V√©rifiez que le backend est d√©marr√©.';
+        errorMessage = 'Impossible de se connecter au serveur. VÈrifiez que le backend est dÈmarrÈ.';
       } else {
         const serverMessage = error.error?.message || error.message;
         errorMessage = `Erreur ${error.status}: ${this.translateError(serverMessage)}`;

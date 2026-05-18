@@ -10,9 +10,9 @@ INSERT INTO users (nom, email, mot_de_passe, role) VALUES
 
 -- Insert sample lieux
 INSERT INTO lieux (titre, description, type, prix, adresse, valide, owner_id) VALUES 
-('Villa Spacieuse avec Piscine', 'Une magnifique villa offrant une vue imprenable sur la mer. Profitez de la tranquillité et du luxe avec une piscine privée, un grand jardin et un intérieur moderne.', 'Villa', 350.00, 'Nice, France', true, 2),
-('Appartement Moderne Centre-Ville', 'Un appartement chic et moderne au cœur de Paris. À quelques pas des principales attractions, des boutiques et des restaurants. Parfait pour un séjour en ville.', 'Appartement', 120.00, 'Paris, France', true, 2),
-('Maison de Campagne Charmante', 'Évadez-vous dans cette charmante maison de campagne entourée de vignobles. Un havre de paix avec tout le confort moderne. Idéal pour les amateurs de vin et de nature.', 'Maison', 210.00, 'Bordeaux, France', false, 2);
+('Villa Spacieuse avec Piscine', 'Une magnifique villa offrant une vue imprenable sur la mer. Profitez de la tranquillité et du luxe avec une piscine privée, un grand jardin et un intérieur moderne.', 'VILLA', 350.00, 'Nice, France', true, 2),
+('Appartement Moderne Centre-Ville', 'Un appartement chic et moderne au cœur de Paris. À quelques pas des principales attractions, des boutiques et des restaurants. Parfait pour un séjour en ville.', 'APPARTEMENT', 120.00, 'Paris, France', true, 2),
+('Maison de Campagne Charmante', 'Évadez-vous dans cette charmante maison de campagne entourée de vignobles. Un havre de paix avec tout le confort moderne. Idéal pour les amateurs de vin et de nature.', 'MAISON', 210.00, 'Bordeaux, France', false, 2);
 
 -- Insert sample photos
 INSERT INTO lieu_photos (lieu_id, photo_url) VALUES 

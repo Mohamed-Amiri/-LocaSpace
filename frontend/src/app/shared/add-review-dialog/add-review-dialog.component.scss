@@ -1,4 +1,4 @@
-// Modern Add Review Dialog Styles
+﻿// Modern Add Review Dialog Styles
 .review-dialog {
   max-width: 500px;
   width: 100%;
@@ -13,7 +13,7 @@
 .review-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #fbbf24, #C9A84C);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -178,8 +178,8 @@ h2 {
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #0A2540;
+    box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.1);
     background: white;
   }
 
@@ -248,12 +248,12 @@ h2 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+  background: linear-gradient(135deg, #fbbf24, #C9A84C) !important;
   color: white !important;
   font-weight: 600;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    background: linear-gradient(135deg, #C9A84C, #d97706) !important;
   }
 
   &:disabled {

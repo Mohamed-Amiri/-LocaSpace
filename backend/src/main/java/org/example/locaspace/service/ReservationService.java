@@ -1,8 +1,12 @@
 package org.example.locaspace.service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.example.locaspace.model.Lieu;
 import org.example.locaspace.model.Reservation;
 import org.example.locaspace.model.User;
+import org.example.locaspace.model.enums.ReservationStatus;
+import org.example.locaspace.model.enums.Role;
 import org.example.locaspace.repository.ReservationRepository;
 import org.example.locaspace.repository.LieuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +23,23 @@ public class ReservationService {
     
     private final ReservationRepository reservationRepository;
     private final LieuRepository lieuRepository;
+    private final NotificationService notificationService;
     
+    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
+
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository, LieuRepository lieuRepository) {
+    public ReservationService(ReservationRepository reservationRepository, 
+                              LieuRepository lieuRepository,
+                              NotificationService notificationService) {
         this.reservationRepository = reservationRepository;
         this.lieuRepository = lieuRepository;
+        this.notificationService = notificationService;
     }
     
     // Create new reservation
     public Reservation createReservation(Reservation reservation) {
         try {
-            System.out.println("ReservationService: Creating reservation for lieu ID: " + reservation.getLieu().getId());
+            log.debug("ReservationService: Creating reservation for lieu ID: {}", reservation.getLieu().getId());
             
             // Check if lieu exists and load it properly
             Optional<Lieu> lieuOpt = lieuRepository.findById(reservation.getLieu().getId());
@@ -39,7 +49,7 @@ public class ReservationService {
             Lieu lieu = lieuOpt.get();
             reservation.setLieu(lieu);
             
-            System.out.println("ReservationService: Checking for conflicts...");
+            log.debug("ReservationService: Checking for conflicts...");
             // Check for date conflicts
             List<Reservation> conflicts = reservationRepository.findConflictingReservations(
                 lieu,
@@ -57,17 +67,24 @@ public class ReservationService {
                 throw new IllegalArgumentException("Invalid reservation dates");
             }
             
-            reservation.setStatut("EN_ATTENTE"); // Default status
-            System.out.println("ReservationService: Saving reservation...");
+            reservation.setStatut(ReservationStatus.EN_ATTENTE); // Default status
+            log.debug("ReservationService: Saving reservation...");
             Reservation saved = reservationRepository.save(reservation);
-            System.out.println("ReservationService: Reservation saved with ID: " + saved.getId());
+            log.debug("ReservationService: Reservation saved with ID: {}", saved.getId());
+            
+            // Notify Owner
+            notificationService.createNotification(
+                lieu.getOwner(),
+                "Nouvelle demande de réservation",
+                "Vous avez reçu une nouvelle demande pour " + lieu.getTitre(),
+                org.example.locaspace.model.Notification.NotificationType.RESERVATION_NEW
+            );
             
             // Force refresh to load all relationships
             reservationRepository.flush();
             return reservationRepository.findByIdWithDetails(saved.getId()).orElse(saved);
         } catch (Exception e) {
-            System.err.println("ReservationService: Error creating reservation: " + e.getMessage());
-            e.printStackTrace();
+            log.error("ReservationService: Error creating reservation: {}", e.getMessage());
             throw e;
         }
     }
@@ -93,18 +110,35 @@ public class ReservationService {
     }
     
     // Get reservations by status
-    public List<Reservation> getReservationsByStatus(String statut) {
+    public List<Reservation> getReservationsByStatus(ReservationStatus statut) {
         return reservationRepository.findByStatut(statut);
     }
     
     // Update reservation status (owner or admin)
-    public Reservation updateReservationStatus(Long id, String newStatus) {
+    public Reservation updateReservationStatus(Long id, ReservationStatus newStatus) {
         return reservationRepository.findById(id)
             .map(reservation -> {
                 // Simplified server-side status update; validation can be expanded
-                if (isValidStatusTransition(reservation.getStatut(), newStatus, true, false, true)) {
+                ReservationStatus oldStatus = reservation.getStatut();
+                if (isValidStatusTransition(oldStatus, newStatus, true, false)) {
                     reservation.setStatut(newStatus);
-                    return reservationRepository.save(reservation);
+                    Reservation saved = reservationRepository.save(reservation);
+                    
+                    // Notify Tenant
+                    String title = "Mise à jour de votre réservation";
+                    String message = "Votre réservation pour " + reservation.getLieu().getTitre() + " est maintenant : " + newStatus;
+                    org.example.locaspace.model.Notification.NotificationType type = org.example.locaspace.model.Notification.NotificationType.SYSTEM;
+                    
+                    if (newStatus == ReservationStatus.CONFIRMEE) {
+                        type = org.example.locaspace.model.Notification.NotificationType.RESERVATION_CONFIRMED;
+                        message = "Bonne nouvelle ! Votre réservation pour " + reservation.getLieu().getTitre() + " a été confirmée.";
+                    } else if (newStatus == ReservationStatus.REFUSEE) {
+                        message = "Malheureusement, votre demande pour " + reservation.getLieu().getTitre() + " a été refusée.";
+                    }
+                    
+                    notificationService.createNotification(reservation.getLocataire(), title, message, type);
+                    
+                    return saved;
                 } else {
                     throw new IllegalArgumentException("Invalid status transition");
                 }
@@ -126,21 +160,30 @@ public class ReservationService {
                     throw new IllegalStateException("Cannot cancel reservation less than 24 hours before start date");
                 }
                 
-                reservation.setStatut("ANNULEE");
+                reservation.setStatut(ReservationStatus.ANNULEE);
                 reservationRepository.save(reservation);
+                
+                // Notify Owner
+                notificationService.createNotification(
+                    reservation.getLieu().getOwner(),
+                    "Réservation annulée",
+                    "Le locataire a annulé sa réservation pour " + reservation.getLieu().getTitre(),
+                    org.example.locaspace.model.Notification.NotificationType.RESERVATION_CANCELLED
+                );
+                
                 return true;
             })
             .orElse(false);
     }
     
-    // Delete reservation (admin only)
-    public boolean deleteReservation(Long id, User admin) {
-        if (!"ADMIN".equals(admin.getRole())) {
-            return false;
-        }
-        
+    // Delete reservation (Owner only)
+    public boolean deleteReservation(Long id, User user) {
         return reservationRepository.findById(id)
             .map(reservation -> {
+                // Only owner of the place can delete a reservation record
+                if (!reservation.getLieu().getOwner().getId().equals(user.getId())) {
+                    return false;
+                }
                 reservationRepository.delete(reservation);
                 return true;
             })
@@ -179,7 +222,7 @@ public class ReservationService {
         while (!current.isAfter(endDate)) {
             final LocalDate checkDate = current;
             boolean isAvailable = reservations.stream()
-                .filter(r -> "CONFIRMEE".equals(r.getStatut()) || "EN_ATTENTE".equals(r.getStatut()))
+                .filter(r -> ReservationStatus.CONFIRMEE.equals(r.getStatut()) || ReservationStatus.EN_ATTENTE.equals(r.getStatut()))
                 .noneMatch(r -> !checkDate.isBefore(r.getDateDebut()) && !checkDate.isAfter(r.getDateFin()));
             
             if (isAvailable) {
@@ -193,17 +236,17 @@ public class ReservationService {
     
     // Get reservation statistics
     public ReservationStats getReservationStats(User user) {
-        if ("PROPRIETAIRE".equals(user.getRole()) || "ADMIN".equals(user.getRole())) {
-            // Owner/Admin stats
+        if (Role.PROPRIETAIRE.equals(user.getRole())) {
+            // Owner stats
             Long totalReservations = reservationRepository.countByLieuOwner(user);
             List<Reservation> ownerReservations = reservationRepository.findByLieuOwner(user);
             
             long confirmedCount = ownerReservations.stream()
-                .filter(r -> "CONFIRMEE".equals(r.getStatut()))
+                .filter(r -> ReservationStatus.CONFIRMEE.equals(r.getStatut()))
                 .count();
             
             long pendingCount = ownerReservations.stream()
-                .filter(r -> "EN_ATTENTE".equals(r.getStatut()))
+                .filter(r -> ReservationStatus.EN_ATTENTE.equals(r.getStatut()))
                 .count();
             
             return new ReservationStats(totalReservations, confirmedCount, pendingCount);
@@ -213,11 +256,11 @@ public class ReservationService {
             List<Reservation> tenantReservations = reservationRepository.findByLocataire(user);
             
             long confirmedCount = tenantReservations.stream()
-                .filter(r -> "CONFIRMEE".equals(r.getStatut()))
+                .filter(r -> ReservationStatus.CONFIRMEE.equals(r.getStatut()))
                 .count();
             
             long pendingCount = tenantReservations.stream()
-                .filter(r -> "EN_ATTENTE".equals(r.getStatut()))
+                .filter(r -> ReservationStatus.EN_ATTENTE.equals(r.getStatut()))
                 .count();
             
             return new ReservationStats(totalReservations, confirmedCount, pendingCount);
@@ -225,35 +268,35 @@ public class ReservationService {
     }
     
     // Validate status transitions
-    private boolean isValidStatusTransition(String currentStatus, String newStatus, boolean isOwner, boolean isTenant, boolean isAdmin) {
+    private boolean isValidStatusTransition(ReservationStatus currentStatus, ReservationStatus newStatus, boolean isOwner, boolean isTenant) {
         switch (currentStatus) {
-            case "EN_ATTENTE":
-                if (isOwner || isAdmin) {
-                    return "CONFIRMEE".equals(newStatus) || "REFUSEE".equals(newStatus);
+            case EN_ATTENTE:
+                if (isOwner) {
+                    return ReservationStatus.CONFIRMEE.equals(newStatus) || ReservationStatus.REFUSEE.equals(newStatus);
                 }
                 if (isTenant) {
-                    return "ANNULEE".equals(newStatus);
+                    return ReservationStatus.ANNULEE.equals(newStatus);
                 }
                 break;
-            case "CONFIRMEE":
-                if (isOwner || isAdmin) {
-                    return "TERMINEE".equals(newStatus) || "ANNULEE".equals(newStatus);
+            case CONFIRMEE:
+                if (isOwner) {
+                    return ReservationStatus.TERMINEE.equals(newStatus) || ReservationStatus.ANNULEE.equals(newStatus);
                 }
                 if (isTenant) {
-                    return "ANNULEE".equals(newStatus);
+                    return ReservationStatus.ANNULEE.equals(newStatus);
                 }
                 break;
-            case "REFUSEE":
-            case "ANNULEE":
-            case "TERMINEE":
-                return isAdmin; // Only admin can change final states
+            case REFUSEE:
+            case ANNULEE:
+            case TERMINEE:
+                return false; 
         }
         return false;
     }
     
     // Get past reservations for reviews
     public List<Reservation> getPastReservationsForReview(User tenant) {
-        return reservationRepository.findByLocataireAndStatut(tenant, "TERMINEE");
+        return reservationRepository.findByLocataireAndStatut(tenant, ReservationStatus.TERMINEE);
     }
     
     // Statistics class

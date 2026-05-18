@@ -1,6 +1,9 @@
 package org.example.locaspace.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.example.locaspace.dto.reservation.ReservationResponse;
+import org.example.locaspace.dto.reservation.ReservationRequest;
 import org.example.locaspace.dto.lieu.LieuResponse;
 import org.example.locaspace.dto.user.UserSummaryResponse;
 import org.example.locaspace.exception.ResourceNotFoundException;
@@ -8,6 +11,9 @@ import org.example.locaspace.mapper.EntityMapper;
 import org.example.locaspace.model.Reservation;
 import org.example.locaspace.model.User;
 import org.example.locaspace.model.Lieu;
+import org.example.locaspace.model.enums.LieuType;
+import org.example.locaspace.model.enums.ReservationStatus;
+import org.example.locaspace.model.enums.Role;
 import org.example.locaspace.security.UserDetailsServiceImpl;
 import org.example.locaspace.service.ReservationService;
 import org.example.locaspace.service.LieuService;
@@ -18,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,17 +32,28 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reservations")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class ReservationController {
 
-    @Autowired private ReservationService reservationService;
-    @Autowired private UserService userService;
-    @Autowired private LieuService lieuService;
-    @Autowired private EntityMapper entityMapper;
+    private static final Logger log = LoggerFactory.getLogger(ReservationController.class);
+
+    private final ReservationService reservationService;
+    private final UserService userService;
+    private final LieuService lieuService;
+    private final EntityMapper entityMapper;
+
+    public ReservationController(ReservationService reservationService, 
+                                 UserService userService, 
+                                 LieuService lieuService, 
+                                 EntityMapper entityMapper) {
+        this.reservationService = reservationService;
+        this.userService = userService;
+        this.lieuService = lieuService;
+        this.entityMapper = entityMapper;
+    }
 
     // Owner: Get reservations for their spaces
     @GetMapping("/owner")
-    @PreAuthorize("hasRole('PROPRIETAIRE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROPRIETAIRE')")
     public ResponseEntity<List<ReservationResponse>> getReservationsForOwner(Authentication authentication) {
         UserDetailsServiceImpl.UserPrincipal principal = (UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
         User owner = userService.getUserById(principal.getId());
@@ -59,119 +77,49 @@ public class ReservationController {
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     @Transactional
-    public ResponseEntity<ReservationResponse> createReservation(@RequestBody java.util.Map<String, Object> body,
+    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request,
                                                                  Authentication authentication) {
         User tenant = null;
         try {
             UserDetailsServiceImpl.UserPrincipal principal = (UserDetailsServiceImpl.UserPrincipal) authentication.getPrincipal();
-            System.out.println("Principal ID: " + principal.getId());
-            
             tenant = userService.getUserById(principal.getId());
-            if (tenant == null) {
-                System.err.println("User not found with ID: " + principal.getId());
-                return ResponseEntity.status(401).build();
-            }
-
-            System.out.println("Creating reservation for user: " + tenant.getId() + " (" + tenant.getNom() + ")");
-            System.out.println("Request body: " + body);
-
-            Object placeIdObj = body.get("placeId");
-            Object startObj = body.get("startDate");
-            Object endObj = body.get("endDate");
-
-            if (placeIdObj == null || startObj == null || endObj == null) {
-                System.out.println("Missing required fields. PlaceId: " + placeIdObj + ", StartDate: " + startObj + ", EndDate: " + endObj);
-                return ResponseEntity.badRequest().build();
-            }
-
-            Long lieuId;
-            try {
-                lieuId = Long.valueOf(placeIdObj.toString());
-                System.out.println("Parsed lieuId: " + lieuId);
-            } catch (NumberFormatException e) {
-                System.err.println("Invalid placeId format: " + placeIdObj);
-                return ResponseEntity.badRequest().build();
-            }
             
-            String startStr = startObj.toString();
-            String endStr = endObj.toString();
-            
-            System.out.println("Parsing dates - Start: " + startStr + ", End: " + endStr);
-            
-            java.time.LocalDate start;
-            java.time.LocalDate end;
-            
-            try {
-                // Handle different date formats
-                if (startStr.length() >= 10) {
-                    start = java.time.LocalDate.parse(startStr.substring(0, 10));
-                } else {
-                    start = java.time.LocalDate.parse(startStr);
-                }
-                
-                if (endStr.length() >= 10) {
-                    end = java.time.LocalDate.parse(endStr.substring(0, 10));
-                } else {
-                    end = java.time.LocalDate.parse(endStr);
-                }
-                
-                System.out.println("Parsed dates - Start: " + start + ", End: " + end);
-            } catch (java.time.format.DateTimeParseException e) {
-                System.err.println("Invalid date format. Start: " + startStr + ", End: " + endStr);
-                System.err.println("Date parse error: " + e.getMessage());
-                return ResponseEntity.badRequest().build();
-            }
-            System.out.println("Looking for lieu with ID: " + lieuId);
+            log.debug("Creating reservation for user: {} ({})", tenant.getId(), tenant.getNom());
+            log.debug("Request DTO: {}", request);
 
-            Optional<Lieu> lieuOpt = lieuService.getLieuById(lieuId);
+            Optional<Lieu> lieuOpt = lieuService.getLieuById(request.getPlaceId());
             if (lieuOpt.isEmpty()) {
-                System.err.println("Lieu not found with ID: " + lieuId);
+                log.error("Lieu not found with ID: {}", request.getPlaceId());
                 return ResponseEntity.notFound().build();
             }
             
             Lieu lieu = lieuOpt.get();
-            System.out.println("Found lieu: " + lieu.getTitre());
+            log.debug("Found lieu: {}", lieu.getTitre());
 
             Reservation reservation = Reservation.builder()
                     .lieu(lieu)
                     .locataire(tenant)
-                    .dateDebut(start)
-                    .dateFin(end)
+                    .dateDebut(request.getStartDate())
+                    .dateFin(request.getEndDate())
                     .build();
 
-            System.out.println("Creating reservation...");
-            try {
-                Reservation saved = reservationService.createReservation(reservation);
-                System.out.println("Reservation created with ID: " + saved.getId());
-                
-                System.out.println("Mapping to response...");
-                ReservationResponse response = createSimpleReservationResponse(saved);
-                System.out.println("Returning response: " + response.getId());
-                
-                return ResponseEntity.ok(response);
-            } catch (Exception serviceException) {
-                System.err.println("Error in reservation service: " + serviceException.getClass().getSimpleName() + " - " + serviceException.getMessage());
-                serviceException.printStackTrace();
-                throw serviceException; // Re-throw to be caught by outer catch
-            }
+            log.debug("Creating reservation...");
+            Reservation saved = reservationService.createReservation(reservation);
+            log.debug("Reservation created with ID: {}", saved.getId());
+            
+            ReservationResponse response = createSimpleReservationResponse(saved);
+            return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException e) {
-            System.err.println("Resource not found: " + e.getMessage());
+            log.error("Resource not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            System.err.println("Invalid argument: " + e.getMessage());
+            log.error("Invalid argument: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (IllegalStateException e) {
-            System.err.println("Illegal state: " + e.getMessage());
+            log.error("Illegal state: {}", e.getMessage());
             return ResponseEntity.status(409).build(); // Conflict
-        } catch (org.hibernate.LazyInitializationException e) {
-            System.err.println("Lazy initialization error: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
         } catch (Exception e) {
-            System.err.println("Error creating reservation: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-            System.err.println("Request body was: " + body);
-            System.err.println("User ID: " + (tenant != null ? tenant.getId() : "null"));
-            e.printStackTrace();
+            log.error("Error creating reservation: {} - {}. User ID: {}", e.getClass().getSimpleName(), e.getMessage(), (tenant != null ? tenant.getId() : "null"), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -188,10 +136,11 @@ public class ReservationController {
 
     // Owner: Accept/Reject reservation
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('PROPRIETAIRE') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROPRIETAIRE')")
     public ResponseEntity<ReservationResponse> updateReservationStatus(@PathVariable Long id,
                                                                        @RequestBody java.util.Map<String, String> body) {
-        String status = body.get("status");
+        String statusStr = body.get("status");
+        ReservationStatus status = ReservationStatus.valueOf(statusStr.toUpperCase());
         Reservation updated = reservationService.updateReservationStatus(id, status);
         return ResponseEntity.ok(entityMapper.toReservationResponse(updated));
     }
@@ -206,7 +155,7 @@ public class ReservationController {
                     reservation.getLocataire().getId(),
                     reservation.getLocataire().getNom() != null ? reservation.getLocataire().getNom() : "User " + reservation.getLocataire().getId(),
                     reservation.getLocataire().getEmail() != null ? reservation.getLocataire().getEmail() : "",
-                    reservation.getLocataire().getRole() != null ? reservation.getLocataire().getRole() : "LOCATAIRE"
+                    reservation.getLocataire().getRole() != null ? reservation.getLocataire().getRole().name() : "LOCATAIRE"
                 );
             }
             
@@ -217,7 +166,7 @@ public class ReservationController {
                     reservation.getLieu().getId(),
                     reservation.getLieu().getTitre() != null ? reservation.getLieu().getTitre() : "Lieu " + reservation.getLieu().getId(),
                     reservation.getLieu().getDescription(),
-                    reservation.getLieu().getType(),
+                    reservation.getLieu().getType() != null ? reservation.getLieu().getType().name() : null,
                     reservation.getLieu().getPrix(),
                     reservation.getLieu().getAdresse(),
                     reservation.getLieu().isValide(),
@@ -242,15 +191,14 @@ public class ReservationController {
                 reservation.getId(),
                 reservation.getDateDebut(),
                 reservation.getDateFin(),
-                reservation.getStatut(),
+                reservation.getStatut() != null ? reservation.getStatut().name() : null,
                 locataire,
                 lieu,
                 totalNights,
                 totalPrice
             );
         } catch (Exception e) {
-            System.err.println("Error creating simple reservation response: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error creating simple reservation response: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to create reservation response", e);
         }
     }

@@ -3,6 +3,7 @@ package org.example.locaspace.service;
 import org.example.locaspace.exception.BadRequestException;
 import org.example.locaspace.exception.ResourceNotFoundException;
 import org.example.locaspace.model.User;
+import org.example.locaspace.model.enums.Role;
 import org.example.locaspace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,8 +30,8 @@ public class UserService {
         user.setMotDePasse(passwordEncoder.encode(user.getMotDePasse()));
         
         // Set default role if not provided
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("LOCATAIRE");
+        if (user.getRole() == null) {
+            user.setRole(Role.LOCATAIRE);
         }
         
         return userRepository.save(user);

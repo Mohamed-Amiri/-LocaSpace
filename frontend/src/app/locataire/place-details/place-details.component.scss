@@ -1,8 +1,8 @@
-/* Premium Executive Place Details Interface */
+﻿/* Premium Executive Place Details Interface */
 .place-details-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   color: #1e293b;
   position: relative;
   overflow-x: hidden;
@@ -14,7 +14,7 @@
     left: 0;
     right: 0;
     height: 200px;
-    background: linear-gradient(135deg, rgba(108, 99, 255, 0.05) 0%, rgba(102, 126, 234, 0.03) 100%);
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.05) 0%, rgba(10, 37, 64, 0.03) 100%);
     z-index: -1;
   }
 }
@@ -38,7 +38,7 @@
   background: rgba(108, 99, 255, 0.05);
   border: 1px solid rgba(108, 99, 255, 0.2);
   color: #6C63FF;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1rem 2rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -94,7 +94,7 @@
 .main-image {
   position: relative;
   height: 600px;
-  border-radius: 24px;
+  border-radius: 12px;
   overflow: hidden;
   margin-bottom: 1.5rem;
   box-shadow: 
@@ -224,7 +224,7 @@
   width: 140px;
   height: 100px;
   border: 3px solid transparent;
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -239,10 +239,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(102, 126, 234, 0.05));
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(10, 37, 64, 0.05));
     opacity: 0;
     transition: opacity 0.3s ease;
-    border-radius: 13px;
+    border-radius: 12px;
   }
 
   &:hover {
@@ -299,7 +299,7 @@
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
+  border-radius: 12px;
   padding: 3rem;
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.08),
@@ -335,7 +335,7 @@
     left: 0;
     width: 60px;
     height: 3px;
-    background: linear-gradient(135deg, #6C63FF, #8B5CF6);
+    background: linear-gradient(135deg, #6C63FF, #C9A84C);
     border-radius: 2px;
   }
 }
@@ -452,7 +452,7 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: linear-gradient(135deg, #6C63FF, #8B5CF6);
+      background: linear-gradient(135deg, #6C63FF, #C9A84C);
       border-radius: 1px;
       transform: scaleX(0);
       transform-origin: left;
@@ -493,7 +493,7 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: linear-gradient(135deg, #6C63FF, #8B5CF6);
+      background: linear-gradient(135deg, #6C63FF, #C9A84C);
       border-radius: 1px;
       transform: scaleX(0);
       transform-origin: left;
@@ -520,7 +520,7 @@
   padding: 1.5rem;
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.6));
   border: 1px solid rgba(226, 232, 240, 0.3);
-  border-radius: 16px;
+  border-radius: 12px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -570,7 +570,7 @@
   background: linear-gradient(135deg, rgba(108, 99, 255, 0.05), rgba(139, 92, 246, 0.03));
   border: 1px solid rgba(108, 99, 255, 0.2);
   color: #6C63FF;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1rem 2rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -620,7 +620,7 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: linear-gradient(135deg, #6C63FF, #8B5CF6);
+      background: linear-gradient(135deg, #6C63FF, #C9A84C);
       border-radius: 1px;
       transform: scaleX(0);
       transform-origin: left;
@@ -643,7 +643,7 @@
   padding: 2rem;
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.6));
   border: 1px solid rgba(226, 232, 240, 0.3);
-  border-radius: 20px;
+  border-radius: 12px;
 }
 
 .reviews-title-section {
@@ -665,10 +665,10 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: linear-gradient(135deg, #6C63FF, #8B5CF6);
+  background: linear-gradient(135deg, #6C63FF, #C9A84C);
   color: white;
   border: none;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1rem 2rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -690,7 +690,7 @@
   }
 
   &:hover {
-    background: linear-gradient(135deg, #5A4FCF, #7C3AED);
+    background: linear-gradient(135deg, #5A4FCF, #C9A84C);
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 12px 30px rgba(108, 99, 255, 0.4);
 
@@ -720,7 +720,7 @@
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
   color: #059669;
   border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1rem 2rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -751,7 +751,7 @@
   gap: 1rem;
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
   padding: 1rem 2rem;
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid rgba(251, 191, 36, 0.2);
   box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
   transition: all 0.3s ease;
@@ -786,7 +786,7 @@
 .review-item {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(248, 250, 252, 0.6));
   border: 1px solid rgba(226, 232, 240, 0.3);
-  border-radius: 20px;
+  border-radius: 12px;
   padding: 2rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -799,7 +799,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #6C63FF, #8B5CF6, #EC4899);
+    background: linear-gradient(90deg, #6C63FF, #C9A84C, #EC4899);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
@@ -832,7 +832,7 @@
 .reviewer-avatar {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #6C63FF, #8B5CF6);
+  background: linear-gradient(135deg, #6C63FF, #C9A84C);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -930,7 +930,7 @@
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
+  border-radius: 12px;
   padding: 2.5rem;
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.1),
@@ -947,7 +947,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #6C63FF, #8B5CF6, #EC4899);
+    background: linear-gradient(90deg, #6C63FF, #C9A84C, #EC4899);
   }
 
   &:hover {
@@ -976,7 +976,7 @@
   padding: 1.5rem;
   background: linear-gradient(135deg, rgba(108, 99, 255, 0.05), rgba(139, 92, 246, 0.03));
   border: 1px solid rgba(108, 99, 255, 0.1);
-  border-radius: 16px;
+  border-radius: 12px;
   transition: all 0.3s ease;
 
   &:hover {
@@ -1067,7 +1067,7 @@
 .guests-field {
   padding: 1rem 1.25rem;
   border: 1px solid rgba(226, 232, 240, 0.5);
-  border-radius: 16px;
+  border-radius: 12px;
   font-size: 1rem;
   color: #0f172a;
   background: rgba(248, 250, 252, 0.8);
@@ -1099,10 +1099,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  background: linear-gradient(135deg, #6C63FF, #8B5CF6);
+  background: linear-gradient(135deg, #6C63FF, #C9A84C);
   color: white;
   border: none;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1.25rem 2rem;
   font-size: 1rem;
   font-weight: 700;
@@ -1125,7 +1125,7 @@
   }
 
   &:hover {
-    background: linear-gradient(135deg, #5A4FCF, #7C3AED);
+    background: linear-gradient(135deg, #5A4FCF, #C9A84C);
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 15px 40px rgba(108, 99, 255, 0.4);
 
@@ -1187,7 +1187,7 @@
   padding: 2rem;
   background: linear-gradient(135deg, rgba(248, 250, 252, 0.8), rgba(241, 245, 249, 0.6));
   border: 1px solid rgba(226, 232, 240, 0.3);
-  border-radius: 20px;
+  border-radius: 12px;
   position: relative;
   overflow: hidden;
 
@@ -1198,7 +1198,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, #6C63FF, #8B5CF6);
+    background: linear-gradient(90deg, #6C63FF, #C9A84C);
   }
 }
 
@@ -1232,7 +1232,7 @@
   padding: 1.5rem;
   background: linear-gradient(135deg, rgba(108, 99, 255, 0.05), rgba(139, 92, 246, 0.03));
   border: 1px solid rgba(108, 99, 255, 0.1);
-  border-radius: 16px;
+  border-radius: 12px;
   font-weight: 700;
   color: #0f172a;
   font-size: 1.125rem;
@@ -1465,7 +1465,7 @@
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2.5rem;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -1515,7 +1515,7 @@
         color: #d97706;
         background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(245, 158, 11, 0.05));
         padding: 0.5rem 1rem;
-        border-radius: 20px;
+        border-radius: 12px;
         font-size: 0.75rem;
         border: 1px solid rgba(217, 119, 6, 0.2);
         font-weight: 600;
@@ -1525,7 +1525,7 @@
         color: #059669;
         background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
         padding: 0.5rem 1rem;
-        border-radius: 20px;
+        border-radius: 12px;
         font-size: 0.75rem;
         border: 1px solid rgba(16, 185, 129, 0.2);
         font-weight: 600;
@@ -1547,7 +1547,7 @@
   background: linear-gradient(135deg, #0ea5e9, #0284c7);
   color: white;
   border: none;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1.25rem 2rem;
   font-size: 1rem;
   font-weight: 700;
@@ -1594,7 +1594,7 @@
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(14, 165, 233, 0.2);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 1.5rem;
   font-size: 0.875rem;
   color: #475569;

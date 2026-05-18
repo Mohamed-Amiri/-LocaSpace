@@ -1,249 +1,120 @@
-<div class="premium-estate">
-  <!-- Executive Header -->
-  <header class="executive-header">
-    <div class="header-glass">
-      <div class="container">
-        <div class="brand-suite">
-          <div class="brand-emblem">
-            <div class="emblem-circle">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2"/>
-                <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2"/>
-              </svg>
-            </div>
-          </div>
-          <div class="brand-identity">
-            <h1 class="brand-name">LOCASPACE</h1>
-            <span class="brand-tagline">PROPERTY SEARCH</span>
-          </div>
+﻿<div class="search-container">
+  <!-- Modern Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Recherchez un logement</h1>
+      <p class="page-subtitle">Découvrez des milliers de logements disponibles pour les locataires</p>
+      
+      <!-- Modern Search Bar -->
+      <div class="search-bar">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.3639 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <input type="text" placeholder="Où souhaitez-vous séjourner ?" class="search-input" [(ngModel)]="searchTerm" (ngModelChange)="searchPlaces()">
         </div>
-        
-        <div class="executive-metrics">
-          <div class="metric-card">
-            <div class="metric-value">{{ totalProperties }}</div>
-            <div class="metric-label">Found</div>
-          </div>
-          <div class="metric-card active">
-            <div class="metric-value">{{ availableProperties }}</div>
-            <div class="metric-label">Available</div>
-          </div>
-          <div class="metric-card premium">
-            <div class="metric-value">{{ getAveragePrice() | currency:'EUR':'symbol':'1.0-0' }}</div>
-            <div class="metric-label">Avg Price</div>
-          </div>
-        </div>
+        <button class="btn btn-primary" (click)="searchPlaces()">
+          <i class="ph ph-magnifying-glass"></i>
+          Rechercher
+        </button>
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- Command Center -->
-  <section class="command-center">
-    <div class="container">
-      <div class="search-console">
-        <div class="search-frame">
-          <div class="search-input-group">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
-              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <input type="text" 
-                   class="search-field" 
-                   placeholder="Search available properties..."
-                   [(ngModel)]="searchTerm" (ngModelChange)="searchPlaces()">
-            <button class="search-submit">
-              <svg width="16" height="16" viewBox="0 0 24 24">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Modern Filters Section -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h3>Affinez votre recherche</h3>
+      <button class="btn btn-ghost reset-btn" (click)="resetFilters()">
+        <i class="ph ph-arrow-counter-clockwise"></i>
+        Réinitialiser
+      </button>
+    </div>
+    
+    <form [formGroup]="searchForm" class="filters-form">
+      <!-- Price Range Filter -->
+      <div class="filter-card">
+        <div class="filter-header">
+          <h4>Budget Maximum</h4>
+        </div>
+        <div class="price-filter">
+          <div class="price-input">
+            <span class="currency">€</span>
+            <input type="range" [min]="0" [max]="10000" formControlName="maxPrice" class="price-slider">
+          </div>
+          <div class="price-display">{{searchForm.get('maxPrice')?.value || 10000 | currency:'EUR':'symbol':'1.0-0'}}</div>
+        </div>
+      </div>
+
+      <!-- Rating Filter -->
+      <div class="filter-card">
+        <div class="filter-header">
+          <h4>Note minimum</h4>
+        </div>
+        <div class="rating-filter">
+          <ng-container *ngFor="let i of [1,2,3,4,5]">
+            <button 
+              type="button"
+              class="rating-btn"
+              [class.active]="searchForm.get('rating')?.value == i"
+              (click)="onRatingSelect(i); searchPlaces()">
+              <span class="rating-number">{{i}}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="currentColor"/>
               </svg>
             </button>
-          </div>
+          </ng-container>
         </div>
       </div>
       
-      <div class="control-suite">
-        <button class="control-button" [class.active]="showFilters" (click)="toggleFilters()">
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" stroke="currentColor" stroke-width="2" fill="none"/>
-          </svg>
-          <span>Filters</span>
-          <div class="filter-indicator" *ngIf="hasActiveFilters()">{{ getActiveFiltersCount() }}</div>
-        </button>
-        
-        <button class="control-button" [class.active]="viewMode === 'grid'" (click)="toggleView()">
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
-            <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
-            <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
-            <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/>
-          </svg>
-          <span>Grid</span>
-        </button>
-        
-        <button class="control-button" [class.active]="sortBy === 'price'" (click)="sortProperties('price')">
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <path d="M3 6H21L19 8H5L3 6ZM6 10H18L17 12H7L6 10ZM9 14H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>Price</span>
-        </button>
-        
-        <button class="control-button danger" *ngIf="hasActiveFilters()" (click)="resetFilters()">
-          <svg width="16" height="16" viewBox="0 0 24 24">
-            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span>Reset</span>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Advanced Filters -->
-  <section class="filter-suite" [class.expanded]="showFilters">
-    <div class="container">
-      <div class="filter-panel">
-        <div class="filter-grid">
-          <div class="filter-group">
-            <h3 class="filter-title">Price Range</h3>
-            <div class="price-inputs">
-              <div class="input-wrapper">
-                <label>Minimum</label>
-                <div class="currency-field">
-                  <span class="currency">€</span>
-                  <input type="number" placeholder="0" [(ngModel)]="priceMin" name="priceMin" (ngModelChange)="searchPlaces()">
-                </div>
-              </div>
-              <div class="separator"></div>
-              <div class="input-wrapper">
-                <label>Maximum</label>
-                <div class="currency-field">
-                  <span class="currency">€</span>
-                  <input type="number" placeholder="10000" [(ngModel)]="priceMax" name="priceMax" (ngModelChange)="searchPlaces()">
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="filter-group">
-            <h3 class="filter-title">Quality Rating</h3>
-            <div class="rating-selector">
-              <div class="rating-option" 
-                   *ngFor="let rating of [3, 4, 5]" 
-                   [class.selected]="minRating === rating"
-                   (click)="minRating = rating; searchPlaces()">
-                <div class="stars">
-                  <svg *ngFor="let star of createStarArray(rating)" width="14" height="14" viewBox="0 0 24 24">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/>
-                  </svg>
-                </div>
-                <span>{{ rating }}+ Stars</span>
-              </div>
-            </div>
-          </div>
+      <!-- Amenities Filter -->
+      <div class="filter-card">
+        <div class="filter-header">
+          <h4>Équipements</h4>
         </div>
-        
         <div class="amenities-grid">
-          <h3 class="filter-title">Premium Amenities</h3>
-          <div class="amenity-selector">
-            <div class="amenity-chip" 
-                 *ngFor="let amenity of availableAmenities" 
-                 [class.selected]="selectedAmenities.includes(amenity.id)"
-                 (click)="toggleAmenity(amenity.id)">
-              <span class="amenity-icon">{{ amenity.icon }}</span>
-              <span class="amenity-label">{{ amenity.name }}</span>
-              <div class="selection-mark"></div>
-            </div>
-          </div>
+          <ng-container *ngFor="let amenity of availableAmenities">
+            <button 
+              type="button"
+              class="amenity-btn"
+              [class.active]="selectedAmenities.includes(amenity.id)"
+              (click)="toggleAmenity(amenity.id)">
+              <span>{{amenity.icon}} {{amenity.name}}</span>
+            </button>
+          </ng-container>
         </div>
       </div>
-    </div>
-  </section>
+    </form>
+  </div>
 
-  <!-- Properties Gallery -->
-  <main class="gallery-section">
-    <div class="container">
-      <div *ngIf="isLoading" class="loading-suite">
-        <div class="spinner-luxury">
-          <div class="spinner-ring"></div>
-          <div class="spinner-ring"></div>
-          <div class="spinner-ring"></div>
-        </div>
-        <p class="loading-text">Finding perfect properties for you...</p>
-      </div>
-      
-      <div *ngIf="!isLoading && filteredPlaces.length > 0" class="properties-grid">
-        <article class="property-card" *ngFor="let place of filteredPlaces">
-          <div class="card-media">
-            <img [src]="place.images[0] || '/assets/placeholder-property.jpg'" [alt]="place.title" class="property-image">
-            <div class="media-overlay">
-              <div class="status-badge" [class]="place.availability ? 'available' : 'occupied'">
-                {{ place.availability ? 'Available' : 'Occupied' }}
-              </div>
-              <button class="favorite-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                  <path d="M20.84 4.61C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.61C2.1283 5.6417 1.5487 7.04097 1.5487 8.5C1.5487 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.5C22.4518 7.77752 22.3095 7.06211 22.0329 6.39467C21.7563 5.72723 21.351 5.1208 20.84 4.61V4.61Z" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-              </button>
-            </div>
-            <div class="price-tag">
-              <span class="price-amount">€{{ place.price }}</span>
-              <span class="price-period">/month</span>
-            </div>
-          </div>
-          
-          <div class="card-content">
-            <header class="content-header">
-              <h3 class="property-title">{{ place.title }}</h3>
-              <div class="premium-badge">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/>
-                </svg>
-                ELITE
-              </div>
-            </header>
-            
-            <div class="location-info">
-              <svg width="14" height="14" viewBox="0 0 24 24">
-                <path d="M21 10C21 17 12 23 12 23S3 17 3 10C3 5.02944 7.02944 1 12 1C16.9706 1 21 5.02944 21 10Z" stroke="currentColor" stroke-width="2" fill="none"/>
-                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
-              </svg>
-              <span>{{ place.location }}</span>
-            </div>
-            
-            <p class="property-description">
-              {{ place.description || 'Exquisite property featuring premium finishes and world-class amenities designed for discerning residents.' }}
-            </p>
-            
-            <div class="amenities-preview">
-              <div class="amenity-indicator" *ngFor="let i of [1,2,3,4]"></div>
-              <span class="more-amenities">+6 amenities</span>
-            </div>
-            
-            <div class="card-actions">
-              <button class="action-btn primary" (click)="viewPlaceDetails(place.id)">
-                <svg width="16" height="16" viewBox="0 0 24 24">
-                  <path d="M15 3H6C4.895 3 4 3.895 4 5V19C4 20.105 4.895 21 6 21H18C19.105 21 20 20.105 20 19V8L15 3Z" stroke="currentColor" stroke-width="2" fill="none"/>
-                  <path d="M14 3V9H20" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-                View Details
-              </button>
-            </div>
-          </div>
-        </article>
-      </div>
-      
-      <div *ngIf="!isLoading && filteredPlaces.length === 0" class="empty-estate">
-        <div class="empty-content">
-          <div class="empty-icon">
-            <svg width="96" height="96" viewBox="0 0 24 24">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="1.5" fill="none"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            </svg>
-          </div>
-          <h2 class="empty-title">No Properties Found</h2>
-          <p class="empty-description">
-            No properties match your current search criteria. Try adjusting your filters or search terms.
-          </p>
-        </div>
-      </div>
+  <!-- Results Section -->
+  <div class="results-section">
+    <div class="results-header">
+      <h2 class="results-title">{{filteredPlaces.length}} logements trouvés</h2>
     </div>
-  </main>
+
+    <!-- Loading State -->
+    <div class="places-grid" *ngIf="isLoading">
+      <app-skeleton *ngFor="let _ of [1,2,3,4,5,6]" type="rectangle" height="360px"></app-skeleton>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="places-grid" *ngIf="!isLoading">
+      <app-place-card 
+        *ngFor="let place of filteredPlaces" 
+        [place]="mapToPlaceCardData(place)"
+        (toggleFavorite)="toggleFavorite($event)">
+      </app-place-card>
+    </div>
+    
+    <!-- No Results Message -->
+    <app-empty-state *ngIf="!isLoading && filteredPlaces.length === 0"
+      icon="ph ph-magnifying-glass"
+      title="Aucun résultat trouvé"
+      description="Essayez de modifier vos filtres ou d'élargir votre recherche"
+      actionLabel="Réinitialiser les filtres"
+      (actionClick)="resetFilters()">
+    </app-empty-state>
+  </div>
 </div>

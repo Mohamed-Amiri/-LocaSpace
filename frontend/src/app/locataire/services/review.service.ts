@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Review } from './locataires.service';
+import { environment } from '../../../environments/environment';
 
 // Backend API interfaces
 interface AvisRequest {
@@ -25,7 +26,7 @@ interface AvisResponse {
   providedIn: 'root'
 })
 export class ReviewService {
-  private apiUrl = 'http://localhost:8082/api';
+  private apiUrl = environment.apiUrl;
   private reviewsSubject = new BehaviorSubject<Review[]>([]);
   public reviews$ = this.reviewsSubject.asObservable();
 

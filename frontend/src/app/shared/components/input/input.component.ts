@@ -1,9 +1,8 @@
-import { Component, Input, Self, Optional, OnInit, OnDestroy } from '@angular/core';
+﻿import { Component, Input, Self, Optional, OnInit, OnDestroy } from '@angular/core';
 import { NgControl, ControlValueAccessor, FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-input',
@@ -16,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 
       <div class="input-wrapper" [class.has-prefix]="!!prefix" [class.has-suffix]="!!suffix">
         <div *ngIf="prefix" class="input-prefix">
-          <mat-icon *ngIf="prefixIcon">{{ prefixIcon }}</mat-icon>
+          <i *ngIf="prefixIcon" class="fas" [ngClass]="'fa-' + prefixIcon"></i>
           <ng-container *ngTemplateOutlet="prefix"></ng-container>
         </div>
 
@@ -36,7 +35,7 @@ import { MatIconModule } from '@angular/material/icon';
         />
 
         <div *ngIf="suffix" class="input-suffix">
-          <mat-icon *ngIf="suffixIcon">{{ suffixIcon }}</mat-icon>
+          <i *ngIf="suffixIcon" class="fas" [ngClass]="'fa-' + suffixIcon"></i>
           <ng-container *ngTemplateOutlet="suffix"></ng-container>
         </div>
 
@@ -47,7 +46,7 @@ import { MatIconModule } from '@angular/material/icon';
           (click)="clearValue($event)"
           aria-label="Clear input"
         >
-          <mat-icon>close</mat-icon>
+          <i class="ph ph-x"></i>
         </button>
       </div>
 
@@ -69,7 +68,7 @@ import { MatIconModule } from '@angular/material/icon';
   `,
   styleUrls: ['./input.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule],
 })
 export class InputComponent implements ControlValueAccessor, OnInit, OnDestroy {
   @Input() id: string = `input-${Math.random().toString(36).substr(2, 9)}`;

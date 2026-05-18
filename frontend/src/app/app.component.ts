@@ -1,19 +1,20 @@
 import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, Event } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastService } from './shared/components/toast/toast.service';
 import { ThemeService } from './shared/theme/theme.service';
+import { ToastComponent } from './shared/components/toast/toast.component';
+import { HeaderComponent } from './shared/header/header.component';
 import { routeSlideAnimation } from './shared/animations/slide.animation';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, ToastComponent],
   template: `
-    <app-header></app-header>
+    <app-header *ngIf="showGlobalHeader"></app-header>
     <router-outlet></router-outlet>
-    <button class="chat-button">Chat Support</button>
-    <app-chat></app-chat>
     
     <!-- Toast Container -->
     <div class="toast-container">
@@ -59,8 +60,14 @@ export class AppComponent implements OnInit {
 
   constructor(
     private themeService: ThemeService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router: Router
   ) {}
+
+  get showGlobalHeader(): boolean {
+    const url = this.router.url.split('?')[0];
+    return !['/', '/login', '/register'].includes(url) && !url.startsWith('/locataire') && !url.startsWith('/proprietaires');
+  }
 
   ngOnInit() {
     // Subscribe to theme changes

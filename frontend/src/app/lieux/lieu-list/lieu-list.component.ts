@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -56,7 +56,7 @@ export class LieuListComponent implements OnInit {
           ville: 'Nice',
           prix: 350,
           type: 'Villa',
-          photo: 'https://images.unsplash.com/photo-1613977257363-31b5a15e3a2b?q=80&w=2070&auto=format&fit=crop',
+          photo: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
           lat: 43.7102,
           lng: 7.2620
         },
@@ -66,7 +66,7 @@ export class LieuListComponent implements OnInit {
           ville: 'Paris',
           prix: 120,
           type: 'Appartement',
-          photo: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=1980&auto=format&fit=crop',
+          photo: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
           lat: 48.8566,
           lng: 2.3522
         },
@@ -76,7 +76,7 @@ export class LieuListComponent implements OnInit {
           ville: 'Bordeaux',
           prix: 210,
           type: 'Maison',
-          photo: 'https://images.unsplash.com/photo-1559949339-724155133a83?q=80&w=1974&auto=format&fit=crop',
+          photo: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80',
           lat: 44.8378,
           lng: -0.5792
         }

@@ -3,9 +3,14 @@ package org.example.locaspace.service;
 
 import org.example.locaspace.model.Lieu;
 import org.example.locaspace.model.User;
+import org.example.locaspace.model.enums.LieuType;
 import org.example.locaspace.repository.LieuRepository;
 import org.example.locaspace.repository.AvisRepository;
+import org.example.locaspace.repository.LieuSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +33,13 @@ public class LieuService {
     
     // Create new lieu
     public Lieu createLieu(Lieu lieu) {
-        lieu.setValide(false); 
+        lieu.setValide(true); 
         return lieuRepository.save(lieu);
     }
     
     // Get all validated lieux (public)
-    public List<Lieu> getAllValidatedLieux() {
-        return lieuRepository.findByValideTrue();
+    public Page<Lieu> getAllValidatedLieux(Pageable pageable) {
+        return lieuRepository.findByValideTrue(pageable);
     }
     
     // Get lieu by ID
@@ -58,7 +63,7 @@ public class LieuService {
                 lieu.setPrix(updatedLieu.getPrix());
                 lieu.setAdresse(updatedLieu.getAdresse());
                 lieu.setPhotos(updatedLieu.getPhotos());
-                lieu.setValide(false); // Require re-validation after update
+                lieu.setValide(true); // Always validated now
                 return lieuRepository.save(lieu);
             })
             .orElse(null);
@@ -68,9 +73,8 @@ public class LieuService {
     public boolean deleteLieu(Long id, User currentUser) {
         return lieuRepository.findById(id)
             .map(lieu -> {
-                // Check if user is owner or admin
-                if (lieu.getOwner().getId().equals(currentUser.getId()) || 
-                    "ADMIN".equals(currentUser.getRole())) {
+                // Check if user is owner
+                if (lieu.getOwner().getId().equals(currentUser.getId())) {
                     lieuRepository.delete(lieu);
                     return true;
                 }
@@ -79,69 +83,37 @@ public class LieuService {
             .orElse(false);
     }
     
-    // Admin: Validate lieu
-    public boolean validateLieu(Long id) {
-        return lieuRepository.findById(id)
-            .map(lieu -> {
-                lieu.setValide(true);
-                lieuRepository.save(lieu);
-                return true;
-            })
-            .orElse(false);
-    }
-    
-    // Admin: Get unvalidated lieux
-    public List<Lieu> getUnvalidatedLieux() {
-        return lieuRepository.findByValideFalse();
-    }
+
     
     // Search functionality
-    public List<Lieu> searchLieux(String keyword) {
+    public Page<Lieu> searchLieux(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return getAllValidatedLieux();
+            return getAllValidatedLieux(pageable);
         }
-        return lieuRepository.searchByKeyword(keyword.trim());
+        return lieuRepository.searchByKeyword(keyword.trim(), pageable);
     }
     
     // Filter by type
-    public List<Lieu> getLieuxByType(String type) {
-        return lieuRepository.findByType(type);
+    public Page<Lieu> getLieuxByType(LieuType type, Pageable pageable) {
+        return lieuRepository.findByType(type, pageable);
     }
     
     // Filter by price range
-    public List<Lieu> getLieuxByPriceRange(BigDecimal minPrix, BigDecimal maxPrix) {
-        return lieuRepository.findByPrixBetween(minPrix, maxPrix);
+    public Page<Lieu> getLieuxByPriceRange(BigDecimal minPrix, BigDecimal maxPrix, Pageable pageable) {
+        return lieuRepository.findByPrixBetween(minPrix, maxPrix, pageable);
     }
     
     // Filter by city
-    public List<Lieu> getLieuxByCity(String ville) {
-        return lieuRepository.findByAdresseContainingIgnoreCase(ville);
+    public Page<Lieu> getLieuxByCity(String ville, Pageable pageable) {
+        return lieuRepository.findByAdresseContainingIgnoreCase(ville, pageable);
     }
     
     // Advanced search with multiple filters
-    public List<Lieu> searchLieuxWithFilters(String type, BigDecimal minPrix, BigDecimal maxPrix, String ville) {
-        List<Lieu> results = getAllValidatedLieux();
-        
-        if (type != null && !type.isEmpty()) {
-            results = results.stream()
-                .filter(lieu -> type.equals(lieu.getType()))
-                .toList();
-        }
-        
-        if (minPrix != null && maxPrix != null) {
-            results = results.stream()
-                .filter(lieu -> lieu.getPrix().compareTo(minPrix) >= 0 && 
-                               lieu.getPrix().compareTo(maxPrix) <= 0)
-                .toList();
-        }
-        
-        if (ville != null && !ville.isEmpty()) {
-            results = results.stream()
-                .filter(lieu -> lieu.getAdresse().toLowerCase().contains(ville.toLowerCase()))
-                .toList();
-        }
-        
-        return results;
+    public Page<Lieu> searchLieuxWithFilters(LieuType type, BigDecimal minPrix, BigDecimal maxPrix, String ville, Pageable pageable) {
+        return lieuRepository.findAll(
+            LieuSpecifications.withFilters(type, minPrix, maxPrix, ville), 
+            pageable
+        );
     }
     
     // Get lieu statistics

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+﻿import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -45,22 +45,22 @@ export class DashboardLayoutComponent implements OnInit {
     
     if (this.userRole === 'admin') {
       return [
-        { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-tachometer-alt' },
-        { label: 'Utilisateurs', route: '/admin/users', icon: 'fas fa-users' },
-        { label: 'Espaces', route: '/admin/spaces', icon: 'fas fa-home' },
-        { label: 'Réservations', route: '/admin/reservations', icon: 'fas fa-calendar-alt' },
-        { label: 'Revenus', route: '/admin/earnings', icon: 'fas fa-euro-sign' },
-        { label: 'Rapports', route: '/admin/reports', icon: 'fas fa-chart-bar' },
-        { label: 'Paramètres', route: '/admin/settings', icon: 'fas fa-cog' }
+        { label: 'Dashboard', route: '/admin/dashboard', icon: 'ph ph-gauge' },
+        { label: 'Utilisateurs', route: '/admin/users', icon: 'ph ph-users-three' },
+        { label: 'Espaces', route: '/admin/spaces', icon: 'ph ph-house' },
+        { label: 'Réservations', route: '/admin/reservations', icon: 'ph ph-calendar-blank' },
+        { label: 'Revenus', route: '/admin/earnings', icon: 'ph ph-currency-eur' },
+        { label: 'Rapports', route: '/admin/reports', icon: 'ph ph-chart-bar' },
+        { label: 'Paramètres', route: '/admin/settings', icon: 'ph ph-gear' }
       ];
 
     } else { // tenant
       return [
-        { label: 'Rechercher', route: '/locataire/search', icon: 'fas fa-search' },
-        { label: 'Mes Réservations', route: '/locataire/reservations', icon: 'fas fa-calendar-check' },
-        { label: 'Favoris', route: '/tenant/favorites', icon: 'fas fa-heart' },
-        { label: 'Messages', route: '/tenant/messages', icon: 'fas fa-envelope' },
-        { label: 'Profil', route: '/tenant/profile', icon: 'fas fa-user' }
+        { label: 'Rechercher', route: '/locataire/search', icon: 'ph ph-magnifying-glass' },
+        { label: 'Mes Réservations', route: '/locataire/reservations', icon: 'ph ph-calendar-check' },
+        { label: 'Favoris', route: '/tenant/favorites', icon: 'ph ph-heart' },
+        { label: 'Messages', route: '/tenant/messages', icon: 'ph ph-envelope' },
+        { label: 'Profil', route: '/tenant/profile', icon: 'ph ph-user' }
       ];
     }
   }

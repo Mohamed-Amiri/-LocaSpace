@@ -1,34 +1,34 @@
-<div class="reviews-container">
+﻿<div class="reviews-container">
   <!-- Reviews Summary -->
   <div class="reviews-summary">
     <div class="average-rating">
       <div class="rating-display">
         <span class="rating-number">{{averageRating | number:'1.1-1'}}</span>
         <div class="stars">
-          <mat-icon *ngFor="let filled of getStarArray(averageRating)" 
-                   [class.filled]="filled">
-            star
-          </mat-icon>
+          <i *ngFor="let filled of getStarArray(averageRating)" 
+             class="ph ph-star-fill"
+             [class.filled]="filled">
+          </i>
         </div>
       </div>
       <p>{{reviews.length}} avis</p>
     </div>
     
-    <button mat-raised-button color="primary" 
+    <button class="btn btn-primary" 
             (click)="toggleAddReview()"
             *ngIf="!showAddReview">
-      <mat-icon>rate_review</mat-icon>
+      <i class="ph ph-chat-dots"></i>
       Laisser un avis
     </button>
   </div>
 
   <!-- Add Review Form -->
-  <mat-card *ngIf="showAddReview" class="add-review-card">
-    <mat-card-header>
-      <mat-card-title>Votre avis</mat-card-title>
-    </mat-card-header>
+  <div *ngIf="showAddReview" class="add-review-card card">
+    <div class="card-header">
+      <h3 class="card-title">Votre avis</h3>
+    </div>
     
-    <mat-card-content>
+    <div class="card-content">
       <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
         <!-- Rating Selection -->
         <div class="rating-section">
@@ -36,45 +36,44 @@
           <div class="rating-input">
             <button *ngFor="let star of [1,2,3,4,5]; let i = index"
                     type="button"
-                    mat-icon-button
+                    class="btn-icon"
                     [class.selected]="reviewForm.get('rating')?.value >= star"
                     (click)="reviewForm.patchValue({rating: star})">
-              <mat-icon>star</mat-icon>
+              <i class="ph ph-star-fill"></i>
             </button>
           </div>
         </div>
 
         <!-- Comment -->
-        <mat-form-field appearance="outline" class="comment-field">
-          <mat-label>Votre commentaire</mat-label>
-          <textarea matInput 
-                    formControlName="comment"
+        <div class="form-control comment-field">
+          <label>Votre commentaire</label>
+          <textarea formControlName="comment"
                     rows="4"
                     placeholder="Partagez votre expérience..."></textarea>
-          <mat-error *ngIf="reviewForm.get('comment')?.hasError('required')">
+          <div class="error-msg" *ngIf="reviewForm.get('comment')?.hasError('required') && reviewForm.get('comment')?.touched">
             Le commentaire est requis
-          </mat-error>
-          <mat-error *ngIf="reviewForm.get('comment')?.hasError('minlength')">
+          </div>
+          <div class="error-msg" *ngIf="reviewForm.get('comment')?.hasError('minlength') && reviewForm.get('comment')?.touched">
             Le commentaire doit contenir au moins 10 caractères
-          </mat-error>
-        </mat-form-field>
+          </div>
+        </div>
 
         <!-- Actions -->
-        <div class="form-actions">
-          <button mat-button type="button" (click)="toggleAddReview()">
+        <div class="form-actions mt-3">
+          <button class="btn btn-outline mr-2" type="button" (click)="toggleAddReview()">
             Annuler
           </button>
-          <button mat-raised-button color="primary" 
+          <button class="btn btn-primary" 
                   type="submit" 
                   [disabled]="!reviewForm.valid || loading">
-            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <i *ngIf="loading" class="ph ph-spinner ph-spin"></i>
             <span *ngIf="!loading">Publier l'avis</span>
             <span *ngIf="loading">Publication...</span>
           </button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 
   <!-- Reviews List -->
   <div class="reviews-list">
@@ -91,10 +90,10 @@
         </div>
         
         <div class="review-rating">
-          <mat-icon *ngFor="let filled of getStarArray(review.rating)" 
-                   [class.filled]="filled">
-            star
-          </mat-icon>
+          <i *ngFor="let filled of getStarArray(review.rating)" 
+             class="ph ph-star-fill"
+             [class.filled]="filled">
+          </i>
         </div>
       </div>
       
@@ -105,7 +104,7 @@
 
     <!-- No Reviews -->
     <div *ngIf="reviews.length === 0" class="no-reviews">
-      <mat-icon>rate_review</mat-icon>
+      <i class="ph ph-chat-slash"></i>
       <h4>Aucun avis pour le moment</h4>
       <p>Soyez le premier à laisser un avis sur ce logement</p>
     </div>

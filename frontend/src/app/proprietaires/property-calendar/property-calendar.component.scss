@@ -1,11 +1,11 @@
-/* PREMIUM CALENDAR DESIGN */
+﻿/* PREMIUM CALENDAR DESIGN */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :host {
   display: block;
   min-height: 100vh;
   background: #ffffff;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .premium-container {
@@ -21,7 +21,7 @@
 .premium-header {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -279,9 +279,9 @@
     display: flex;
     gap: 24px;
     padding: 16px;
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba(10, 37, 64, 0.05);
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #0A2540;
 
     .info-item {
       display: flex;
@@ -291,7 +291,7 @@
       color: #374151;
 
       mat-icon {
-              color: #667eea;
+              color: #0A2540;
         font-size: 20px;
       }
     }
@@ -338,8 +338,8 @@
       transition: all 0.3s ease;
 
       &:hover {
-        border-color: #667eea;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        border-color: #0A2540;
+        box-shadow: 0 4px 12px rgba(10, 37, 64, 0.1);
       }
 
       .card-header {
@@ -349,7 +349,7 @@
         margin-bottom: 16px;
 
         mat-icon {
-          color: #667eea;
+          color: #0A2540;
           font-size: 24px;
         }
 
@@ -414,7 +414,7 @@
         color: #374151;
 
         &:hover {
-          background: #667eea;
+          background: #0A2540;
           color: white;
         }
 
@@ -453,7 +453,7 @@
           }
 
           &.selected {
-            background: #667eea;
+            background: #0A2540;
           }
         }
       }
@@ -518,8 +518,8 @@
       }
 
       &.selected {
-        background: rgba(102, 126, 234, 0.1);
-        border-left: 4px solid #667eea;
+        background: rgba(10, 37, 64, 0.1);
+        border-left: 4px solid #0A2540;
       }
 
       .day-number {
@@ -531,8 +531,8 @@
       .day-price {
         font-size: 0.75rem;
         font-weight: 500;
-        color: #667eea;
-        background: rgba(102, 126, 234, 0.1);
+        color: #0A2540;
+        background: rgba(10, 37, 64, 0.1);
         padding: 2px 6px;
         border-radius: 4px;
         text-align: center;
@@ -559,7 +559,7 @@
   .pricing-modal {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-radius: 16px;
+    border-radius: 12px;
     max-width: 500px;
     width: 100%;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -640,7 +640,7 @@
 
   &.mat-focused .mat-form-field-flex {
     background: #ffffff;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 2px rgba(10, 37, 64, 0.2);
   }
 
   .mat-form-field-outline {
@@ -651,7 +651,7 @@
   }
 
   &.mat-focused .mat-form-field-outline-thick {
-    border-color: #667eea;
+    border-color: #0A2540;
     border-width: 2px;
   }
 
@@ -662,7 +662,7 @@
   }
 
   &.mat-focused .mat-form-field-label {
-    color: #667eea;
+    color: #0A2540;
   }
 
   input, textarea {

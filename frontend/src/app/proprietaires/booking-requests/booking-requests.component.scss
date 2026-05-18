@@ -1,10 +1,18 @@
+﻿@use '../../../styles/variables' as *;
+
+$primary: $color-navy;
+$gold: $color-gold;
+$bg-page: $color-bg-page;
+$text-muted: $color-text-muted;
+$border-default: 1px solid rgba(10,37,64,0.1);
+
 /* Premium Booking Requests Component - Modern Design */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 .booking-requests-container {
   min-height: 100vh;
   background: #ffffff;
-  font-family: 'Inter', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   position: relative;
   overflow-x: hidden;
 
@@ -58,7 +66,7 @@
 
         .pattern {
           position: absolute;
-          border: 2px solid rgba(255, 255, 255, 0.3);
+          border: none;
 
           &.pattern-1 { width: 100px; height: 100px; top: 10%; left: 5%; transform: rotate(45deg); }
           &.pattern-2 { width: 70px; height: 70px; bottom: 20%; right: 15%; border-radius: 50%; }
@@ -85,13 +93,13 @@
           position: relative;
           width: 56px;
           height: 56px;
-          background: rgba(255, 255, 255, 0.15);
-          border-radius: 16px;
+          background: none;
+          border-radius: 0;
           display: flex;
           align-items: center;
           justify-content: center;
           backdrop-filter: blur(20px);
-          border: 2px solid rgba(255, 255, 255, 0.3);
+          border: none;
 
           .icon-glow {
             position: absolute;
@@ -112,7 +120,7 @@
 
         .header-text {
           .page-title {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             font-size: 2.25rem;
             font-weight: 800;
             color: white;
@@ -141,7 +149,7 @@
                 font-size: 1.5rem;
                 font-weight: 700;
                 color: white;
-                font-family: 'Poppins', sans-serif;
+                font-family: 'DM Sans', sans-serif;
               }
 
               .stat-label {
@@ -170,7 +178,7 @@
           color: white;
           border: none;
           padding: 12px 24px;
-          border-radius: 14px;
+          border-radius: 12px;
           font-weight: 600;
           box-shadow: 0 6px 24px rgba(108, 99, 255, 0.3);
           transition: all 0.3s ease;
@@ -184,10 +192,10 @@
         .back-button {
           background: rgba(255, 255, 255, 0.15);
           color: white;
-          border: 2px solid rgba(255, 255, 255, 0.3);
+          border: none;
           backdrop-filter: blur(20px);
           padding: 10px 20px;
-          border-radius: 14px;
+          border-radius: 12px;
           font-weight: 600;
           transition: all 0.3s ease;
 
@@ -209,7 +217,7 @@
     .loading-content {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
-      border-radius: 20px;
+      border-radius: 12px;
       padding: 60px 32px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.3);
@@ -226,7 +234,7 @@
             position: absolute;
             inset: -12px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(10, 37, 64, 0.2) 0%, transparent 70%);
             animation: pulse 2s infinite;
           }
         }
@@ -234,7 +242,7 @@
 
       .loading-text {
         h3 {
-          font-family: 'Poppins', sans-serif;
+          font-family: 'DM Sans', sans-serif;
           font-size: 1.5rem;
           font-weight: 600;
           color: #374151;
@@ -260,38 +268,28 @@
     .stats-overview {
       margin-bottom: 32px;
 
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
+      .stats-grid { 
+        display: flex; 
+        gap: 1rem; 
+        margin-top: 1.5rem; 
 
         .stat-card {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(20px);
-          border-radius: 16px;
-          padding: 24px;
-          display: flex;
-          align-items: center;
-          gap: 20px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-          transition: all 0.4s ease;
-
-          &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-          }
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 1.5rem;
+          flex: 1;
+          border: 1px solid rgba(10,37,64,0.1);
 
           .stat-icon {
             width: 48px;
             height: 48px;
-            border-radius: 14px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
 
-            mat-icon {
+            i.fas, i.ph {
               font-size: 24px;
               width: 24px;
               height: 24px;
@@ -302,7 +300,7 @@
             flex: 1;
 
             h3 {
-              font-family: 'Poppins', sans-serif;
+              font-family: 'DM Sans', sans-serif;
               font-size: 2rem;
               font-weight: 700;
               margin: 0 0 6px 0;
@@ -324,23 +322,23 @@
           }
 
           &.pending {
-            .stat-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
-            .stat-content .stat-indicator { background: linear-gradient(135deg, #f59e0b, #d97706); }
+            .stat-icon { background: none; color: $gold; }
+            .stat-content .stat-indicator { background: linear-gradient(135deg, #C9A84C, #d97706); }
           }
 
           &.approved {
-            .stat-icon { background: linear-gradient(135deg, #10b981, #059669); }
+            .stat-icon { background: none; color: $gold; }
             .stat-content .stat-indicator { background: linear-gradient(135deg, #10b981, #059669); }
           }
 
           &.rejected {
-            .stat-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
+            .stat-icon { background: none; color: $gold; }
             .stat-content .stat-indicator { background: linear-gradient(135deg, #ef4444, #dc2626); }
           }
 
           &.total {
-            .stat-icon { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-            .stat-content .stat-indicator { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+            .stat-icon { background: none; color: $gold; }
+            .stat-content .stat-indicator { background: linear-gradient(135deg, #0F3460, #0A2540); }
           }
         }
       }
@@ -350,14 +348,14 @@
     .premium-tabs {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
-      border-radius: 20px;
+      border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.3);
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
       overflow: hidden;
 
       ::ng-deep .mat-mdc-tab-header {
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-bottom: 2px solid rgba(79, 70, 229, 0.1);
+        border-bottom: 2px solid rgba(10, 37, 64, 0.1);
 
         .mat-mdc-tab-label {
           padding: 18px 24px;
@@ -379,11 +377,11 @@
               justify-content: center;
               color: white;
 
-              &.pending { background: linear-gradient(135deg, #f59e0b, #d97706); }
+              &.pending { background: linear-gradient(135deg, #C9A84C, #d97706); }
               &.approved { background: linear-gradient(135deg, #10b981, #059669); }
               &.rejected { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
-              mat-icon {
+              i.fas {
                 font-size: 16px;
                 width: 16px;
                 height: 16px;
@@ -391,7 +389,7 @@
             }
 
             .tab-text {
-              font-family: 'Poppins', sans-serif;
+              font-family: 'DM Sans', sans-serif;
               font-weight: 600;
               font-size: 0.875rem;
             }
@@ -407,20 +405,20 @@
               justify-content: center;
               color: white;
 
-              &.pending { background: #f59e0b; }
+              &.pending { background: #C9A84C; }
               &.approved { background: #10b981; }
               &.rejected { background: #ef4444; }
             }
           }
 
           &.mdc-tab--active {
-            background: rgba(79, 70, 229, 0.05);
-            color: #4f46e5;
+            background: rgba(10, 37, 64, 0.05);
+            color: #0A2540;
           }
         }
 
         .mdc-tab-indicator__content--underline {
-          background: #4f46e5;
+          background: #0A2540;
           height: 3px;
           border-radius: 2px;
         }
@@ -464,7 +462,7 @@
 
             .empty-content {
               h3 {
-                font-family: 'Poppins', sans-serif;
+                font-family: 'DM Sans', sans-serif;
                 font-size: 1.75rem;
                 font-weight: 600;
                 color: #374151;
@@ -480,7 +478,7 @@
 
               button {
                 padding: 12px 32px;
-                border-radius: 16px;
+                border-radius: 12px;
                 font-weight: 600;
               }
             }
@@ -492,8 +490,8 @@
             gap: 24px;
 
             .premium-request-card {
-              background: rgba(255, 255, 255, 0.98);
-              border-radius: 16px;
+              background: none;
+              border-radius: 0;
               border: 1px solid rgba(255, 255, 255, 0.5);
               box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
               overflow: hidden;
@@ -506,7 +504,7 @@
                 box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
               }
 
-              &.pending { border-left: 3px solid #f59e0b; }
+              &.pending { border-left: 3px solid #C9A84C; }
               &.approved { border-left: 3px solid #10b981; }
               &.rejected { border-left: 3px solid #ef4444; }
 
@@ -520,7 +518,7 @@
                   width: 100%;
                   height: 2px;
 
-                  &.pending { background: linear-gradient(135deg, #f59e0b, #d97706); }
+                  &.pending { background: linear-gradient(135deg, #C9A84C, #d97706); }
                   &.approved { background: linear-gradient(135deg, #10b981, #059669); }
                   &.rejected { background: linear-gradient(135deg, #ef4444, #dc2626); }
                 }
@@ -544,14 +542,14 @@
                       .property-icon {
                         width: 24px;
                         height: 24px;
-                        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-                        border-radius: 8px;
+                        background: none;
+                        border-radius: 0;
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         color: white;
 
-                        mat-icon {
+                        i.fas {
                           font-size: 16px;
                           width: 16px;
                           height: 16px;
@@ -560,7 +558,7 @@
 
                       .property-details {
                         .property-title {
-                          font-family: 'Poppins', sans-serif;
+                          font-family: 'DM Sans', sans-serif;
                           font-size: 0.95rem;
                           font-weight: 600;
                           color: #1f2937;
@@ -578,7 +576,7 @@
                           text-transform: uppercase;
                           letter-spacing: 0.5px;
 
-                          mat-icon {
+                          i.fas {
                             font-size: 12px;
                             width: 12px;
                             height: 12px;
@@ -586,7 +584,7 @@
 
                           &.pending {
                             background: rgba(245, 158, 11, 0.1);
-                            color: #f59e0b;
+                            color: #C9A84C;
                           }
 
                           &.approved {
@@ -617,7 +615,7 @@
                         }
 
                         .date-value {
-                          font-family: 'Poppins', sans-serif;
+                          font-family: 'DM Sans', sans-serif;
                           font-size: 0.875rem;
                           font-weight: 600;
                           color: #374151;
@@ -645,15 +643,15 @@
                       gap: 4px;
                       margin-bottom: 4px;
 
-                      mat-icon {
-                        color: #4f46e5;
+                      i.fas {
+                        color: #0A2540;
                         font-size: 12px;
                         width: 12px;
                         height: 12px;
                       }
 
                       span {
-                        font-family: 'Poppins', sans-serif;
+                        font-family: 'DM Sans', sans-serif;
                         font-weight: 600;
                         color: #374151;
                         text-transform: uppercase;
@@ -706,7 +704,7 @@
                       position: relative;
                       z-index: 2;
 
-                      mat-icon {
+                      i.fas {
                         font-size: 14px;
                         width: 14px;
                         height: 14px;
@@ -725,7 +723,7 @@
                         background: linear-gradient(135deg, #34d399, #10b981);
                         opacity: 0;
                         transition: opacity 0.3s ease;
-                        border-radius: 13px;
+                        border-radius: 12px;
                         z-index: 1;
                       }
 
@@ -828,9 +826,7 @@
     }
 
     .content {
-      .stats-overview .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .stats-overview .stats-grid { display: flex; gap: 1rem; margin-top: 1.5rem; }
 
       .premium-tabs ::ng-deep .mat-mdc-tab-body-content {
         padding: 16px;
@@ -859,9 +855,7 @@
   }
 
   @media (max-width: 480px) {
-    .content .stats-overview .stats-grid {
-      grid-template-columns: 1fr;
-    }
+    .content .stats-overview .stats-grid { display: flex; gap: 1rem; margin-top: 1.5rem; }
 
     .premium-header .header-content .header-left .header-text .page-title {
       font-size: 1.625rem;

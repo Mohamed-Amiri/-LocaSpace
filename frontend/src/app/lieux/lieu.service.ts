@@ -158,9 +158,10 @@ export class LieuService {
   private loadValidatedLieux(): void {
     console.log('Loading validated lieux from:', this.apiUrl);
     
-    this.http.get<any[]>(this.apiUrl, this.httpOptions).pipe(
+    this.http.get<any>(this.apiUrl, this.httpOptions).pipe(
       retry(2),
-      map(backendLieux => {
+      map(response => {
+        const backendLieux = response.content || response; // Support both Page and raw array
         console.log('Received backend lieux:', backendLieux);
         if (!Array.isArray(backendLieux)) {
           console.warn('Expected array but received:', backendLieux);
@@ -170,7 +171,6 @@ export class LieuService {
       }),
       catchError(error => {
         console.error('Error loading validated lieux:', error);
-        // Return empty array on error, but don't crash the app
         return of([]);
       })
     ).subscribe({
@@ -180,7 +180,7 @@ export class LieuService {
       },
       error: (error) => {
         console.error('Failed to load lieux:', error);
-        this.lieuxSubject.next([]); // Emit empty array to prevent app crash
+        this.lieuxSubject.next([]);
       }
     });
   }
@@ -207,17 +207,23 @@ export class LieuService {
   // Search and filter methods
   searchLieux(keyword: string): Observable<Lieu[]> {
     const params = keyword ? `?keyword=${encodeURIComponent(keyword)}` : '';
-    return this.http.get<any[]>(`${this.apiUrl}/search${params}`, this.httpOptions).pipe(
+    return this.http.get<any>(`${this.apiUrl}/search${params}`, this.httpOptions).pipe(
       retry(1),
-      map(backendLieux => backendLieux.map(lieu => this.transformBackendToLieu(lieu))),
+      map(response => {
+        const backendLieux = response.content || response;
+        return backendLieux.map((lieu: any) => this.transformBackendToLieu(lieu));
+      }),
       catchError(this.handleError.bind(this))
     );
   }
 
   getLieuxByType(type: string): Observable<Lieu[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/type/${type}`, this.httpOptions).pipe(
+    return this.http.get<any>(`${this.apiUrl}/type/${type}`, this.httpOptions).pipe(
       retry(1),
-      map(backendLieux => backendLieux.map(lieu => this.transformBackendToLieu(lieu))),
+      map(response => {
+        const backendLieux = response.content || response;
+        return backendLieux.map((lieu: any) => this.transformBackendToLieu(lieu));
+      }),
       catchError(this.handleError.bind(this))
     );
   }

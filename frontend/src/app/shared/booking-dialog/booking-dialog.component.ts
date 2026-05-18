@@ -1,22 +1,20 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from '../../material.module';
 import { LocatairesService, Place, Booking } from '../../locataire/services/locataires.service';
-
-export interface BookingDialogData {
-  place: Place;
-}
 
 @Component({
   selector: 'app-booking-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MaterialModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './booking-dialog.component.html',
   styleUrls: ['./booking-dialog.component.scss']
 })
 export class BookingDialogComponent implements OnInit {
+  @Input() place!: Place;
+  @Output() submitted = new EventEmitter<Booking>();
+  @Output() cancelled = new EventEmitter<void>();
+
   bookingForm: FormGroup;
   loading = false;
   totalPrice = 0;
@@ -25,9 +23,7 @@ export class BookingDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private locatairesService: LocatairesService,
-    public dialogRef: MatDialogRef<BookingDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: BookingDialogData
+    private locatairesService: LocatairesService
   ) {
     this.bookingForm = this.fb.group({
       startDate: ['', Validators.required],
@@ -54,7 +50,7 @@ export class BookingDialogComponent implements OnInit {
       this.numberOfNights = Math.ceil(timeDiff / (1000 * 3600 * 24));
       
       if (this.numberOfNights > 0) {
-        this.totalPrice = this.numberOfNights * this.data.place.price;
+        this.totalPrice = this.numberOfNights * this.place.price;
       } else {
         this.totalPrice = 0;
         this.numberOfNights = 0;
@@ -67,7 +63,7 @@ export class BookingDialogComponent implements OnInit {
       this.loading = true;
       
       const bookingData: Partial<Booking> = {
-        placeId: this.data.place.id,
+        placeId: this.place.id,
         startDate: this.bookingForm.get('startDate')?.value,
         endDate: this.bookingForm.get('endDate')?.value,
         totalPrice: this.totalPrice,
@@ -77,7 +73,7 @@ export class BookingDialogComponent implements OnInit {
       this.locatairesService.createBooking(bookingData).subscribe({
         next: (booking) => {
           this.loading = false;
-          this.dialogRef.close(booking);
+          this.submitted.emit(booking);
         },
         error: (error) => {
           console.error('Erreur lors de la réservation:', error);
@@ -88,7 +84,7 @@ export class BookingDialogComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.dialogRef.close();
+    this.cancelled.emit();
   }
 
   isFormValid(): boolean {

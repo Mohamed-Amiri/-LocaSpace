@@ -1,19 +1,19 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MaterialModule } from '../../material.module';
+import { RouterModule, Router } from '@angular/router';
 import { LocatairesService, Booking } from '../services/locataires.service';
 import { ReservationService } from '../services/reservation.service';
 import { ReviewService } from '../services/review.service';
 import { CancelBookingDialogComponent } from '../../shared/cancel-booking-dialog/cancel-booking-dialog.component';
 import { AddReviewDialogComponent } from '../../shared/add-review-dialog/add-review-dialog.component';
+import { ToastService } from '../../shared/components/toast/toast.service';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { SkeletonComponent } from '../../shared/components/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-reservations',
   standalone: true,
-  imports: [CommonModule, MaterialModule, RouterModule],
+  imports: [CommonModule, RouterModule, CancelBookingDialogComponent, AddReviewDialogComponent, EmptyStateComponent, SkeletonComponent],
   templateUrl: './reservations.component.html',
   styleUrls: ['./reservations.component.scss']
 })
@@ -33,14 +33,25 @@ export class ReservationsComponent implements OnInit {
   selectedFilter = 'all';
   filteredBookings: Booking[] = [];
 
+  // Modal State
+  showCancelModal = false;
+  bookingToCancel: Booking | null = null;
+
+  showReviewModal = false;
+  bookingToReview: Booking | null = null;
+
   constructor(
     private locatairesService: LocatairesService,
     private reservationService: ReservationService,
     private reviewService: ReviewService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private toastService: ToastService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
+
+  navigateToSearch(): void {
+    this.router.navigate(['/locataire/search']);
+  }
 
   ngOnInit(): void {
     this.loadBookings();
@@ -65,17 +76,14 @@ export class ReservationsComponent implements OnInit {
     });
   }
 
-  // Refresh bookings without showing loading state
   refreshBookings(): void {
     this.reservationService.getUserBookings().subscribe({
       next: (bookings) => {
-        const previousCount = this.bookings.length;
         const previousStatuses = this.bookings.map(b => ({ id: b.id, status: b.status }));
         
         this.bookings = bookings;
         this.applyFilter();
         
-        // Check for status changes and show notification
         const currentStatuses = this.bookings.map(b => ({ id: b.id, status: b.status }));
         const statusChanges = currentStatuses.filter(current => {
           const previous = previousStatuses.find(p => p.id === current.id);
@@ -87,8 +95,6 @@ export class ReservationsComponent implements OnInit {
             const booking = this.bookings.find(b => b.id === change.id);
             return `Réservation ${booking?.place?.title || change.id}: ${this.getStatusLabel(change.status)}`;
           });
-          
-          // You could show a snack bar notification here if needed
           console.log('Status changes detected:', changeMessages);
         }
       },
@@ -112,53 +118,48 @@ export class ReservationsComponent implements OnInit {
     this.applyFilter();
   }
 
+  // ---- Cancel Booking Logic ----
   cancelBooking(booking: Booking): void {
-    const dialogRef = this.dialog.open(CancelBookingDialogComponent, {
-      width: '450px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      data: { booking },
-      disableClose: true,
-      panelClass: 'cancel-booking-dialog'
-    });
+    this.bookingToCancel = booking;
+    this.showCancelModal = true;
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.cancellingBookingId = booking.id;
+  closeCancelModal(): void {
+    this.showCancelModal = false;
+    this.bookingToCancel = null;
+  }
+
+  onCancelConfirmed(): void {
+    if (!this.bookingToCancel) return;
+    
+    const booking = this.bookingToCancel;
+    this.showCancelModal = false;
+    this.cancellingBookingId = booking.id;
+    
+    this.reservationService.cancelBooking(booking.id).subscribe({
+      next: () => {
+        console.log('Booking cancelled successfully:', booking.id);
+        booking.status = 'cancelled';
         
-        this.reservationService.cancelBooking(booking.id).subscribe({
-          next: () => {
-            console.log('Booking cancelled successfully:', booking.id);
-            
-            // Update the booking status immediately for instant feedback
-            booking.status = 'cancelled';
-            
-            // Switch to "Annulées" filter to show the cancelled booking (next tick to avoid NG0100)
-            setTimeout(() => {
-              this.onFilterSelect('cancelled');
-              this.cdr.detectChanges();
-            }, 0);
-            
-            this.cancellingBookingId = null;
-            
-            this.snackBar.open('Réservation annulée avec succès. Basculement vers les réservations annulées.', 'Fermer', {
-              duration: 5000,
-              panelClass: ['success-snackbar']
-            });
-          },
-          error: (error) => {
-            console.error('Erreur lors de l\'annulation:', error);
-            this.cancellingBookingId = null;
-            
-            this.snackBar.open('Erreur lors de l\'annulation de la réservation', 'Fermer', {
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
+        setTimeout(() => {
+          this.onFilterSelect('cancelled');
+          this.cdr.detectChanges();
+        }, 0);
+        
+        this.cancellingBookingId = null;
+        this.bookingToCancel = null;
+        this.toastService.success('Réservation annulée avec succès.');
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'annulation:', error);
+        this.cancellingBookingId = null;
+        this.toastService.error('Erreur lors de l\'annulation de la réservation');
       }
     });
   }
+
+  // ---- End Cancel Booking Logic ----
+
 
   isCancelling(bookingId: number): boolean {
     return this.cancellingBookingId === bookingId;
@@ -173,27 +174,15 @@ export class ReservationsComponent implements OnInit {
     
     this.reservationService.confirmBooking(booking.id).subscribe({
       next: () => {
-        // Update the booking status locally
         booking.status = 'confirmed';
-        
-        // Switch to "Confirmées" filter to show the confirmed booking
         this.onFilterSelect('confirmed');
-        
         this.confirmingBookingId = null;
-        
-        this.snackBar.open('Réservation confirmée avec succès !', 'Fermer', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
+        this.toastService.success('Réservation confirmée avec succès !');
       },
       error: (error) => {
         console.error('Erreur lors de la confirmation:', error);
         this.confirmingBookingId = null;
-        
-        this.snackBar.open('Erreur lors de la confirmation de la réservation', 'Fermer', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+        this.toastService.error('Erreur lors de la confirmation de la réservation');
       }
     });
   }
@@ -202,28 +191,7 @@ export class ReservationsComponent implements OnInit {
     if (booking.status === 'cancelled') {
       return 'Réservation déjà annulée';
     }
-    
-    // For testing purposes, this should rarely be shown
-    // since we allow cancellation of all non-cancelled bookings
     return 'Annulation non disponible';
-    
-    // Original time-based messages (uncomment for production):
-    /*
-    const startDate = new Date(booking.startDate);
-    const now = new Date();
-    const timeDiff = startDate.getTime() - now.getTime();
-    const hoursDiff = timeDiff / (1000 * 3600);
-    
-    if (hoursDiff <= 0) {
-      return 'Le séjour a déjà commencé';
-    }
-    
-    if (hoursDiff <= 24) {
-      return 'Annulation non disponible (moins de 24h)';
-    }
-    
-    return 'Annulation non disponible';
-    */
   }
 
   getStatusColor(status: string): string {
@@ -245,21 +213,7 @@ export class ReservationsComponent implements OnInit {
   }
 
   canCancelBooking(booking: Booking): boolean {
-    // For testing purposes, allow cancellation of any non-cancelled booking
-    // In production, you might want to add time-based restrictions
     return booking.status !== 'cancelled';
-    
-    // Original time-based rule (uncomment for production):
-    /*
-    if (booking.status === 'cancelled') return false;
-    
-    const startDate = new Date(booking.startDate);
-    const now = new Date();
-    const timeDiff = startDate.getTime() - now.getTime();
-    const hoursDiff = timeDiff / (1000 * 3600);
-    
-    return hoursDiff > 24; // Can cancel if more than 24 hours before start
-    */
   }
 
   formatDate(date: Date): string {
@@ -302,48 +256,37 @@ export class ReservationsComponent implements OnInit {
     return icons[filterValue] || '📋';
   }
 
+  // ---- Add Review Logic ----
   canAddReview(booking: Booking): boolean {
-    // Can add review if booking is confirmed and in the past
     if (booking.status !== 'confirmed') return false;
-    
     const endDate = new Date(booking.endDate);
     const now = new Date();
-    return endDate < now; // Booking has ended
+    return endDate < now;
   }
 
   addReview(booking: Booking): void {
-    const dialogRef = this.dialog.open(AddReviewDialogComponent, {
-      width: '500px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      data: { booking },
-      disableClose: true,
-      panelClass: 'add-review-dialog'
-    });
+    this.bookingToReview = booking;
+    this.showReviewModal = true;
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.reviewService.addReview({
-          placeId: booking.placeId,
-          bookingId: booking.id,
-          rating: result.rating,
-          comment: result.comment
-        }).subscribe({
-          next: (review) => {
-            this.snackBar.open('Avis publié avec succès ! Merci pour votre retour.', 'Fermer', {
-              duration: 5000,
-              panelClass: ['success-snackbar']
-            });
-          },
-          error: (error) => {
-            console.error('Erreur lors de la publication de l\'avis:', error);
-            this.snackBar.open('Erreur lors de la publication de l\'avis', 'Fermer', {
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
-          }
-        });
+  closeReviewModal(): void {
+    this.showReviewModal = false;
+    this.bookingToReview = null;
+  }
+
+  onReviewSubmitted(reviewData: { rating: number; comment: string; placeId: number; bookingId: number }): void {
+    this.showReviewModal = false;
+    
+    this.reviewService.addReview(reviewData).subscribe({
+      next: (review) => {
+        this.bookingToReview = null;
+        this.toastService.success('Avis publié avec succès ! Merci pour votre retour.');
+      },
+      error: (error) => {
+        console.error('Erreur lors de la publication de l\'avis:', error);
+        this.toastService.error('Erreur lors de la publication de l\'avis');
       }
     });
   }
+  // ---- End Add Review Logic ----
 }
