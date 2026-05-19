@@ -55,8 +55,8 @@ export interface PlaceCardData {
         <div class="card-header">
           <h3 class="place-name">{{ place.name }}</h3>
           <div class="place-price">
-            <span class="price-amount">€{{ place.price }}</span>
-            <span class="price-period">/jour</span>
+            <div class="price-amount">{{ place.price * 10 }} DH<span class="price-period">/jour</span></div>
+            <div class="price-secondary">~{{ place.price }}€</div>
           </div>
         </div>
         
@@ -92,7 +92,7 @@ export interface PlaceCardData {
   styles: [`
     .place-card {
       background: white;
-      border-radius: 24px;
+      border-radius: var(--radius-xl, 12px);
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -103,9 +103,9 @@ export interface PlaceCardData {
       display: block;
 
       &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-        border-color: rgba(37, 99, 235, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        border-color: var(--color-gold, #C9A84C);
       }
 
       .card-image {
@@ -149,17 +149,17 @@ export interface PlaceCardData {
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            color: #6B7280;
+            color: var(--color-text-muted, #6B7C93);
             z-index: 10;
 
             &:hover {
               background: rgba(255, 255, 255, 1);
-              color: #EF4444;
+              color: var(--color-error, #B83232);
               transform: scale(1.1);
             }
 
             &.active {
-              background: #EF4444;
+              background: var(--color-error, #B83232);
               color: white;
 
               svg {
@@ -186,22 +186,22 @@ export interface PlaceCardData {
               border: 1px solid rgba(255, 255, 255, 0.2);
 
               &--premium {
-                background: rgba(245, 158, 11, 0.9);
-                color: white;
+                background: var(--color-gold, #C9A84C);
+                color: var(--color-navy, #0A2540);
               }
 
-              &--nouveau, &--new {
-                background: rgba(34, 197, 94, 0.9);
-                color: white;
+              &--exclusif, &--exclusive {
+                background: var(--color-navy, #0A2540);
+                color: var(--color-gold, #C9A84C);
               }
 
               &--tendance, &--trending {
-                background: rgba(239, 68, 68, 0.9);
+                background: var(--color-error, #B83232);
                 color: white;
               }
 
               &--populaire, &--popular {
-                background: rgba(124, 58, 237, 0.9);
+                background: var(--color-navy, #0A2540);
                 color: white;
               }
 
@@ -234,9 +234,9 @@ export interface PlaceCardData {
           .place-name {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #111827;
+            color: var(--color-text-primary, #0A2540);
             margin: 0;
-            font-family: 'Poppins', sans-serif;
+            font-family: var(--font-display, 'Cormorant Garamond', serif);
           }
 
           .place-price {
@@ -244,14 +244,22 @@ export interface PlaceCardData {
             flex-shrink: 0;
 
             .price-amount {
-              font-size: 1.25rem;
+              font-size: 1.125rem;
               font-weight: 700;
-              color: #111827;
+              color: var(--color-navy, #0A2540);
             }
 
             .price-period {
-              font-size: 0.9rem;
-              color: #6B7280;
+              font-size: 0.8125rem;
+              font-weight: 400;
+              color: var(--color-text-muted, #6B7C93);
+              margin-left: 2px;
+            }
+            
+            .price-secondary {
+              font-size: 0.75rem;
+              color: var(--color-text-muted, #9AADC2);
+              margin-top: 2px;
             }
           }
         }
@@ -260,14 +268,14 @@ export interface PlaceCardData {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          color: #6B7280;
+          color: var(--color-text-muted, #6B7C93);
           font-size: 0.9rem;
           margin-bottom: 1rem;
           font-weight: 500;
 
           svg {
             flex-shrink: 0;
-            color: #9CA3AF;
+            color: var(--color-text-light, #9AADC2);
           }
         }
 
@@ -281,12 +289,12 @@ export interface PlaceCardData {
             align-items: center;
             gap: 0.5rem;
             font-size: 0.85rem;
-            color: #6B7280;
+            color: var(--color-text-muted, #6B7C93);
             font-weight: 500;
 
             svg {
               flex-shrink: 0;
-              color: #9CA3AF;
+              color: var(--color-text-light, #9AADC2);
             }
           }
         }
@@ -358,8 +366,8 @@ export class PlaceCardComponent {
   getBadgeType(badge: string): string {
     const badgeMap: { [key: string]: string } = {
       'Premium': 'premium',
-      'Nouveau': 'nouveau',
-      'New': 'new',
+      'Exclusif': 'exclusif',
+      'Exclusive': 'exclusive',
       'Tendance': 'tendance',
       'Trending': 'trending',
       'Populaire': 'populaire',

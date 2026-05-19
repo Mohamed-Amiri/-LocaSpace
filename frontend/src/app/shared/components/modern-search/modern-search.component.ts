@@ -47,47 +47,7 @@ import { GlassCardComponent } from '../glass-card/glass-card.component';
             </div>
           </div>
 
-          <!-- Date Input -->
-          <div class="search-field">
-            <div class="field-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-              </svg>
-            </div>
-            <div class="field-content">
-              <label class="field-label">Dates</label>
-              <input 
-                type="text" 
-                class="field-input"
-                placeholder="Quand ?" 
-                [(ngModel)]="dates"
-                readonly>
-            </div>
-          </div>
 
-          <!-- Guests Input -->
-          <div class="search-field">
-            <div class="field-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </div>
-            <div class="field-content">
-              <label class="field-label">Invités</label>
-              <input 
-                type="text" 
-                class="field-input"
-                placeholder="Combien ?" 
-                [(ngModel)]="guests"
-                readonly>
-            </div>
-          </div>
 
           <!-- Search Button -->
           <button class="search-button" (click)="onSearch()" [disabled]="!location">
@@ -132,17 +92,11 @@ import { GlassCardComponent } from '../glass-card/glass-card.component';
       background: transparent;
 
       &:hover {
-        background: rgba(37, 99, 235, 0.02);
+        background: rgba(10, 37, 64, 0.02);
       }
 
       &:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 25%;
-        bottom: 25%;
-        width: 1px;
-        background: rgba(0, 0, 0, 0.08);
+        display: none;
       }
 
       .field-icon {
@@ -171,20 +125,20 @@ import { GlassCardComponent } from '../glass-card/glass-card.component';
           background: transparent;
           outline: none;
           font-size: 1rem;
-          color: #111827;
+          color: var(--color-navy);
           font-weight: 500;
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
 
           &::placeholder {
-            color: #9CA3AF;
+            color: var(--color-text-light);
           }
 
           &:focus {
-            color: #2563EB;
+            color: var(--color-navy-mid);
           }
 
           &:focus + .field-icon {
-            color: #2563EB;
+            color: var(--color-navy-mid);
           }
         }
       }
@@ -220,16 +174,16 @@ import { GlassCardComponent } from '../glass-card/glass-card.component';
           padding: 1rem 1.5rem;
           cursor: pointer;
           transition: all 0.2s ease;
-          color: #374151;
+          color: var(--color-text-primary);
           font-weight: 500;
 
           &:hover {
-            background: rgba(37, 99, 235, 0.05);
-            color: #2563EB;
+            background: rgba(10, 37, 64, 0.05);
+            color: var(--color-navy);
           }
 
           svg {
-            color: #9CA3AF;
+            color: var(--color-text-light);
             flex-shrink: 0;
           }
         }
@@ -237,18 +191,19 @@ import { GlassCardComponent } from '../glass-card/glass-card.component';
     }
 
     .search-button {
-      background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+      background: var(--color-gold);
       border: none;
       border-radius: 20px;
       padding: 1.25rem 2rem;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      color: white;
+      color: var(--color-navy);
       font-weight: 600;
       font-size: 1rem;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+      box-shadow: 0 4px 12px rgba(201, 168, 76, 0.3);
       position: relative;
       overflow: hidden;
+      white-space: nowrap;
 
       &:hover:not(:disabled) {
         transform: translateY(-2px);
@@ -278,7 +233,7 @@ import { GlassCardComponent } from '../glass-card/glass-card.component';
         }
 
         .button-text {
-          font-family: 'Inter', sans-serif;
+          font-family: var(--font-body);
         }
       }
 

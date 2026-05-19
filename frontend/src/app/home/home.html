@@ -1,4 +1,4 @@
-﻿<!-- ═══════════════════════════════════════════════════════════════
+<!-- ═══════════════════════════════════════════════════════════════
      LocaSpace Home — Landing Page (Full French)
      ═══════════════════════════════════════════════════════════════ -->
 
@@ -45,51 +45,45 @@
   <div class="hero-background">
     <div class="hero-overlay"></div>
   </div>
+  <div class="hero-diagonal"></div>
   <div class="hero-content" [ngStyle]="heroContentStyle">
-    <div class="hero-badge">
-      <i class="ph ph-sparkle"></i>
-      <span>Plus de 10 000 espaces disponibles</span>
+    <div class="hero-trust-line fade-up-1">
+      Agadir <span class="dot">·</span> Marrakech <span class="dot">·</span> Casablanca <span class="dot">·</span> Tanger
     </div>
     <h1>
-      <span class="hero-title-main">Trouvez votre espace idéal,</span>
-      <span class="hero-title-accent">simplement.</span>
+      <span class="hero-title-main fade-up-2">Trouvez votre espace idéal,</span>
+      <span class="hero-title-accent fade-up-3">simplement.</span>
     </h1>
-    <p class="hero-subtitle">
+    <p class="hero-subtitle fade-up-4">
       Des milliers d'espaces pour chaque besoin — événements, bureaux, studios, villas. 
       Réservation simple et sécurisée.
     </p>
     
-    <!-- Search Bar -->
-    <div class="search-wrapper">
-      <app-modern-search (search)="onSearch($event)"></app-modern-search>
-    </div>
-
-    <!-- Popular Tags -->
-    <div class="hero-tags">
-      <span class="tags-label">Populaire :</span>
-      <a class="tag-chip" routerLink="/lieux" [queryParams]="{type: 'villa'}">Villa</a>
-      <a class="tag-chip" routerLink="/lieux" [queryParams]="{type: 'appartement'}">Appartement</a>
-      <a class="tag-chip" routerLink="/lieux" [queryParams]="{type: 'bureau'}">Bureau</a>
-      <a class="tag-chip" routerLink="/lieux" [queryParams]="{type: 'studio'}">Studio</a>
-    </div>
-  </div>
-</section>
-
-<!-- Categories Section -->
-<section class="categories-section">
-  <div class="container">
-    <div class="categories-scroll">
-      <a class="category-card" *ngFor="let cat of categories" [routerLink]="['/lieux']" [queryParams]="{type: cat.slug}">
-        <div class="category-icon">{{ cat.emoji }}</div>
-        <span class="category-name">{{ cat.name }}</span>
-        <span class="category-count">{{ cat.count }} espaces</span>
+    <!-- CTA Button -->
+    <div class="hero-cta-wrapper fade-up-5">
+      <a class="btn-hero-explore" routerLink="/lieux">
+        <span>Explorer les espaces</span>
+        <i class="ph ph-arrow-right"></i>
       </a>
     </div>
   </div>
 </section>
 
+<!-- Categories Strip Section -->
+<section class="categories-strip-section" style="border: none !important; margin-top: 0 !important;">
+  <div class="categories-fade-left"></div>
+  <div class="categories-scroll-container">
+    <a class="category-pill" *ngFor="let cat of categories" [routerLink]="['/lieux']" [queryParams]="{type: cat.slug}">
+      <i class="ph {{ cat.icon }} pill-icon"></i>
+      <span class="pill-name">{{ cat.name }}</span>
+      <span class="pill-count">({{ cat.count }})</span>
+    </a>
+  </div>
+  <div class="categories-fade-right"></div>
+</section>
+
 <!-- Popular Places Section -->
-<section class="popular-places">
+<section class="popular-places" style="margin-top: 0 !important; padding-top: 40px !important;">
   <div class="container">
     <div class="section-header">
       <div class="section-label">
@@ -97,15 +91,18 @@
         <span>Découvrir</span>
       </div>
       <h2>Espaces Populaires</h2>
-      <p class="section-subtitle">Des lieux exceptionnels sélectionnés pour vous</p>
+      <p class="section-subtitle">De Tanger à Agadir, des espaces qui vous ressemblent</p>
     </div>
     
-    <div class="places-grid">
-      <app-place-card 
-        *ngFor="let place of popularPlaces; trackBy: trackByPlaceId" 
-        [place]="place"
-        (toggleFavorite)="toggleFavorite($event)">
-      </app-place-card>
+    <div class="places-grid-wrapper">
+      <div class="places-grid">
+        <app-place-card 
+          *ngFor="let place of popularPlaces; trackBy: trackByPlaceId" 
+          [place]="place"
+          (toggleFavorite)="toggleFavorite($event)">
+        </app-place-card>
+      </div>
+      <div class="places-fade-right"></div>
     </div>
     
     <div class="section-footer">
@@ -117,8 +114,9 @@
   </div>
 </section>
 
-<!-- How It Works Section -->
-<section class="how-it-works">
+<!-- How It Works Section (Timeline Redesign) -->
+<section class="how-it-works" style="margin-top: 0 !important;">
+  <div class="zellige-pattern"></div>
   <div class="container">
     <div class="section-header">
       <div class="section-label">
@@ -129,60 +127,56 @@
       <p class="section-subtitle">Un processus rapide et intuitif</p>
     </div>
 
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-number">1</div>
-        <div class="step-icon">
-          <i class="ph ph-magnifying-glass"></i>
+    <div class="timeline-container">
+      <div class="timeline-line">
+        <div class="timeline-line-fill"></div>
+      </div>
+      <div class="timeline-steps">
+        <div class="timeline-step">
+          <div class="arabic-number">١</div>
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <span class="step-sup">01</span>
+            <h3>Recherchez</h3>
+            <p>Explorez notre catalogue d'espaces<br>et filtrez par type, lieu et budget.</p>
+          </div>
         </div>
-        <h3>Recherchez</h3>
-        <p>Explorez notre catalogue d'espaces et filtrez par type, lieu et budget.</p>
-      </div>
-      <div class="step-connector">
-        <svg width="48" height="2" viewBox="0 0 48 2"><line x1="0" y1="1" x2="48" y2="1" stroke="#E5E7EB" stroke-width="2" stroke-dasharray="4 4"/></svg>
-      </div>
-      <div class="step-card">
-        <div class="step-number">2</div>
-        <div class="step-icon">
-          <i class="ph ph-calendar-blank"></i>
+        
+        <div class="timeline-step">
+          <div class="arabic-number">٢</div>
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <span class="step-sup">02</span>
+            <h3>Réservez</h3>
+            <p>Choisissez vos dates et confirmez<br>votre réservation en quelques clics.</p>
+          </div>
         </div>
-        <h3>Réservez</h3>
-        <p>Choisissez vos dates et confirmez votre réservation en quelques clics.</p>
-      </div>
-      <div class="step-connector">
-        <svg width="48" height="2" viewBox="0 0 48 2"><line x1="0" y1="1" x2="48" y2="1" stroke="#E5E7EB" stroke-width="2" stroke-dasharray="4 4"/></svg>
-      </div>
-      <div class="step-card">
-        <div class="step-number">3</div>
-        <div class="step-icon">
-          <i class="ph ph-heart"></i>
+        
+        <div class="timeline-step">
+          <div class="arabic-number">٣</div>
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <span class="step-sup">03</span>
+            <h3>Profitez</h3>
+            <p>Savourez votre expérience dans<br>un espace qui correspond à vos attentes.</p>
+          </div>
         </div>
-        <h3>Profitez</h3>
-        <p>Savourez votre expérience dans un espace qui correspond à vos attentes.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Stats Section -->
-<section class="stats-section">
+<!-- Confiance & Partenaires (Stats Redesign) -->
+<section class="trust-partners-section">
   <div class="container">
-    <div class="stats-row">
-      <div class="stat-item">
-        <h3>10K+</h3>
-        <p>Espaces disponibles</p>
+    <div class="trust-content">
+      <div class="trust-statement">
+        Plus de {{ espacesCount | number:'1.0-0' }} espaces <span class="dot">·</span> {{ clientsCount | number:'1.0-0' }} clients satisfaits <span class="dot">·</span> Note {{ noteCount | number:'1.1-1' }}/5
       </div>
-      <div class="stat-item">
-        <h3>50K+</h3>
-        <p>Clients satisfaits</p>
-      </div>
-      <div class="stat-item">
-        <h3>4.9</h3>
-        <p>Note moyenne</p>
-      </div>
-      <div class="stat-item">
-        <h3>24/7</h3>
-        <p>Support client</p>
+      <div class="trust-partners">
+        <div class="partner-box">Partenaire certifié</div>
+        <div class="partner-box">Agence agréée</div>
+        <div class="partner-box">Qualité garantie</div>
       </div>
     </div>
   </div>
@@ -204,14 +198,12 @@
       <div class="carousel-container">
         <div class="carousel-track" [style.transform]="'translateX(' + currentTransform + '%)'">
           <div class="testimonial-card" *ngFor="let testimonial of testimonials">
-            <div class="quote-icon">
-              <i class="ph ph-quotes"></i>
-            </div>
+            <div class="quote-bg">"</div>
             <p class="quote">« {{ testimonial.quote }} »</p>
             <div class="author-info">
               <div class="author-avatar">{{ testimonial.initials }}</div>
               <div class="author-details">
-                <span class="author-name">{{ testimonial.author }}</span>
+                <span class="author-name">{{ testimonial.author }} <span class="author-city">— {{ testimonial.city }}</span></span>
                 <div class="rating">
                   <i class="ph ph-star-fill" *ngFor="let star of [1,2,3,4,5]"></i>
                 </div>
@@ -255,62 +247,11 @@
         </a>
       </div>
       <div class="cta-visual">
-        <div class="cta-shape cta-shape-1"></div>
-        <div class="cta-shape cta-shape-2"></div>
-        <i class="ph ph-house cta-icon"></i>
+        <div class="moroccan-arch"></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Footer -->
-<footer class="footer">
-  <div class="footer-container">
-    <div class="footer-main">
-      <!-- Brand -->
-      <div class="footer-brand">
-        <div class="brand-logo">
-          <div class="footer-logo-icon">
-            <i class="ph ph-buildings"></i>
-          </div>
-          <span class="brand-name">LocaSpace</span>
-        </div>
-        <p class="brand-tagline">Votre plateforme intelligente de location d'espaces</p>
-      </div>
-
-      <!-- Links -->
-      <div class="footer-links">
-        <div class="link-group">
-          <h3>Découvrir</h3>
-          <a routerLink="/lieux" [queryParams]="{type: 'villa'}">Villas</a>
-          <a routerLink="/lieux" [queryParams]="{type: 'appartement'}">Appartements</a>
-          <a routerLink="/lieux" [queryParams]="{type: 'bureau'}">Bureaux</a>
-          <a routerLink="/lieux" [queryParams]="{type: 'studio'}">Studios</a>
-        </div>
-        
-        <div class="link-group">
-          <h3>Support</h3>
-          <a routerLink="/contact">Nous contacter</a>
-          <a routerLink="/about">À propos</a>
-        </div>
-        
-        <div class="link-group">
-          <h3>Légal</h3>
-          <a routerLink="/terms">Conditions d'utilisation</a>
-          <a routerLink="/privacy">Politique de confidentialité</a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Bottom -->
-    <div class="footer-bottom">
-      <span>&copy; 2026 LocaSpace. Tous droits réservés.</span>
-      <div class="footer-locale">
-        <button class="locale-btn">
-          <i class="ph ph-globe"></i>
-          Français
-        </button>
-      </div>
-    </div>
-  </div>
-</footer>
+<app-footer></app-footer>
